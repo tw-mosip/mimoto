@@ -8,6 +8,7 @@ on:
       - 1.*
       - develop
       - release*
+      - oidc-mock-implementation
 
 jobs:
   build:
