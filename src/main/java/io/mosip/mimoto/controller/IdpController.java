@@ -8,7 +8,10 @@ import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.mimoto.constant.ApiName;
 import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
+import io.mosip.mimoto.dto.idp.TokenRequestDTO;
+import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
+import io.mosip.mimoto.exception.ApisResourceAccessException;
 import io.mosip.mimoto.exception.IdpException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.RestClientService;
@@ -18,12 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class IdpController {
@@ -98,6 +101,27 @@ public class IdpController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping(value = "/getToken", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public ResponseEntity getAuthCode(@RequestParam Map<String, String> params, @RequestHeader(required = false) String issuer) throws ApisResourceAccessException {
+        TokenRequestDTO tokenRequestDTO = new TokenRequestDTO();
+        tokenRequestDTO.setCode(params.get("code"));
+        tokenRequestDTO.setClient_id(params.get("client_id"));
+        tokenRequestDTO.setGrant_type(params.get("grant_type"));
+        tokenRequestDTO.setRedirect_uri(params.get("redirect_uri"));
+
+        if("github".equals(issuer)){
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseWrapper result = restTemplate.postForObject("https://github.com/login/oauth/access_token", tokenRequestDTO, ResponseWrapper.class);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } else {
+            tokenRequestDTO.setClient_assertion_type("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
+            tokenRequestDTO.setClient_assertion("");
+            ResponseWrapper<TokenResponseDTO> responseWrapper = (ResponseWrapper<TokenResponseDTO>) restClientService
+                    .postApi(ApiName.GET_TOKEN, tokenRequestDTO, ResponseWrapper.class, true);
+            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+        }
     }
 
     private ResponseWrapper getErrorResponse(String errorCode, String errorMessage) {
