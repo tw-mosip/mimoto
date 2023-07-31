@@ -110,9 +110,9 @@ public class IdpController {
         TokenRequestDTO tokenRequestDTO = new TokenRequestDTO();
         tokenRequestDTO.setCode(params.get("code"));
         tokenRequestDTO.setClient_id(params.get("client_id"));
+        tokenRequestDTO.setClient_secret("abb3ef56f401a4f821b7777d0352ce5dfd0d0d41");
         tokenRequestDTO.setGrant_type(params.get("grant_type"));
         tokenRequestDTO.setRedirect_uri(params.get("redirect_uri"));
-
 
         logger.info("Code -> " + tokenRequestDTO.getCode());
         logger.info("client_id -> " + tokenRequestDTO.getClient_id());
@@ -120,30 +120,11 @@ public class IdpController {
         logger.info("redirect_uri -> " + tokenRequestDTO.getRedirect_uri());
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity result = restTemplate.postForEntity("https://github.com/login/oauth/access_token", tokenRequestDTO, ResponseWrapper.class);
+        TokenResponseDTO result = restTemplate.postForObject("https://github.com/login/oauth/access_token", tokenRequestDTO, TokenResponseDTO.class);
 
-        logger.info("Result => " + result);
-        logger.info("Result response => " + result.getBody());
-
+        logger.info("Response tokenType-> ", result.getToken_type());
         logger.info("\n\n\n Completed Token Call -> ");
-        return ResponseEntity.status(HttpStatus.OK).body(result.getBody());
-
-//        if("github".equals(issuer)){
-//            RestTemplate restTemplate = new RestTemplate();
-//            ResponseWrapper result = restTemplate.postForObject("https://github.com/login/oauth/access_token", tokenRequestDTO, ResponseWrapper.class);
-//
-//            logger.info("Result => " + result);
-//            logger.info("Result response => " + result.getResponse());
-//
-//            logger.info("\n\n\n Completed Token Call -> ");
-//            return ResponseEntity.status(HttpStatus.OK).body(result);
-//        } else {
-//            tokenRequestDTO.setClient_assertion_type("urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-//            tokenRequestDTO.setClient_assertion("");
-//            ResponseWrapper<TokenResponseDTO> responseWrapper = (ResponseWrapper<TokenResponseDTO>) restClientService
-//                    .postApi(ApiName.GET_TOKEN, tokenRequestDTO, ResponseWrapper.class, true);
-//            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
-//        }
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     private ResponseWrapper getErrorResponse(String errorCode, String errorMessage) {
