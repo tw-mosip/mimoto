@@ -17,9 +17,9 @@ import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.RestClientService;
 import io.mosip.mimoto.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -106,25 +106,24 @@ public class IdpController {
     @PostMapping(value = "/getToken", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public ResponseEntity getAuthCode(@RequestParam Map<String, String> params) throws ApisResourceAccessException {
 
-        logger.info("\n\n\n Started Token Call -> " );
-        TokenRequestDTO tokenRequestDTO = new TokenRequestDTO();
-        tokenRequestDTO.setCode(params.get("code"));
-        tokenRequestDTO.setClient_id(params.get("client_id"));
-        tokenRequestDTO.setClient_secret("abb3ef56f401a4f821b7777d0352ce5dfd0d0d41");
-        tokenRequestDTO.setGrant_type(params.get("grant_type"));
-        tokenRequestDTO.setRedirect_uri(params.get("redirect_uri"));
-
-        logger.info("Code -> " + tokenRequestDTO.getCode());
-        logger.info("client_id -> " + tokenRequestDTO.getClient_id());
-        logger.info("grant_type -> " + tokenRequestDTO.getGrant_type());
-        logger.info("redirect_uri -> " + tokenRequestDTO.getRedirect_uri());
+        logger.info("\n\n\n Started Token Call get-token-> " + params.toString());
 
         RestTemplate restTemplate = new RestTemplate();
-        TokenResponseDTO result = restTemplate.postForObject("https://github.com/login/oauth/access_token", tokenRequestDTO, TokenResponseDTO.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        logger.info("Response tokenType-> ", result.getToken_type());
-        logger.info("\n\n\n Completed Token Call -> ");
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("code", params.get("code"));
+        map.add("client_id", params.get("client_id"));
+        map.add("client_secret", "abb3ef56f401a4f821b7777d0352ce5dfd0d0d41");
+        map.add("grant_type", params.get("grant_type"));
+        map.add("redirect_uri", params.get("redirect_uri"));
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        TokenResponseDTO response = restTemplate.postForObject( "https://github.com/login/oauth/access_token", request , TokenResponseDTO.class );
+
+        //logger.info("Completed Call -> " + response.getBody());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     private ResponseWrapper getErrorResponse(String errorCode, String errorMessage) {
