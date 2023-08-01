@@ -114,7 +114,7 @@ public class IdpController {
 
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         map.add("code", params.get("code"));
-        map.add("client_id", params.get("client_id"));
+        map.add("client_id", "c578665bb6dea8ba01be");
         map.add("client_secret", "abb3ef56f401a4f821b7777d0352ce5dfd0d0d41");
         map.add("grant_type", params.get("grant_type"));
         map.add("redirect_uri", params.get("redirect_uri"));
