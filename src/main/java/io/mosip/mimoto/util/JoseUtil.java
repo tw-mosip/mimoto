@@ -1,5 +1,7 @@
 package io.mosip.mimoto.util;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -15,8 +17,10 @@ import org.jose4j.jws.JsonWebSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -24,6 +28,10 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -35,6 +43,9 @@ public class JoseUtil {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Autowired
+    private CryptoCoreUtil cryptoCoreUtil;
 
     public static JwkDto getJwkFromPublicKey(String publicKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
@@ -116,5 +127,29 @@ public class JoseUtil {
         }
 
         return responseWrapper;
+    }
+
+    public String getJWT(String clientId) {
+
+        Map<String, Object> header = new HashMap<>();
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
+
+        KeyStore.PrivateKeyEntry privateKeyEntry= null;
+        try {
+            privateKeyEntry = cryptoCoreUtil.loadP12();
+        } catch (IOException e) {
+           logger.error("Exception happened while loading the p12 file for invoking token call.");
+        }
+
+        return JWT.create()
+                .withHeader(header)
+                .withIssuer(clientId)
+                .withSubject(clientId)
+                .withAudience("url of the authorization Server")
+                .withExpiresAt(Date.from(Instant.now()))
+                .withIssuedAt(Date.from(Instant.now()))
+                .withClaim("","")
+                .sign(Algorithm.HMAC256(privateKeyEntry.getPrivateKey().toString()));
     }
 }

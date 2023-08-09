@@ -17,6 +17,7 @@ import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.RestClientService;
 import io.mosip.mimoto.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -47,6 +48,15 @@ public class IdpController {
 
     @Autowired
     RequestValidator requestValidator;
+
+    @Value("${mosip.oidc.client.id}")
+    String clientId;
+
+    @Value("${mosip.oidc.client.secret}")
+    String clientSecret;
+
+    @Value("${GET_TOKEN}")
+    String getTokenUrl;
 
     @PostMapping("/binding-otp")
     @SuppressWarnings("unchecked")
@@ -103,7 +113,7 @@ public class IdpController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping(value = "/getToken", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    @PostMapping(value = "/get-token", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public ResponseEntity getAuthCode(@RequestParam Map<String, String> params) throws ApisResourceAccessException {
 
         logger.info("\n\n\n Started Token Call get-token-> " + params.toString());
@@ -112,15 +122,17 @@ public class IdpController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
         map.add("code", params.get("code"));
-        map.add("client_id", "c578665bb6dea8ba01be");
-        map.add("client_secret", "abb3ef56f401a4f821b7777d0352ce5dfd0d0d41");
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
         map.add("grant_type", params.get("grant_type"));
         map.add("redirect_uri", params.get("redirect_uri"));
+        map.add("client_assertion", joseUtil.getJWT(clientId));
+        map.add("client_assertion_type", "jwt-bearer");
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-        TokenResponseDTO response = restTemplate.postForObject( "https://github.com/login/oauth/access_token", request , TokenResponseDTO.class );
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        TokenResponseDTO response = restTemplate.postForObject( getTokenUrl, request , TokenResponseDTO.class );
 
         //logger.info("Completed Call -> " + response.getBody());
         return ResponseEntity.status(HttpStatus.OK).body(response);
