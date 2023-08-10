@@ -100,8 +100,7 @@ public class Utilities {
     /**
      * The get reg issuers config json.
      */
-    //TODO: Change value & var name as per need
-    @Value("${registration.processor.identityjson}")
+    @Value("${mosip.openid.issuers}")
     private String getIssuersConfigJson;
 
     private String mappingJsonString = null;
@@ -112,7 +111,6 @@ public class Utilities {
 
     private String issuersConfigJsonString = null;
 
-    @Autowired
     public Utilities(@Value("classpath:issuers-config.json") Resource resource) throws IOException {
         issuersConfigJsonString = (Files.readString(resource.getFile().toPath()));
     }
