@@ -111,10 +111,6 @@ public class Utilities {
 
     private String issuersConfigJsonString = null;
 
-    public Utilities(@Value("classpath:issuers-config.json") Resource resource) throws IOException {
-        issuersConfigJsonString = (Files.readString(resource.getFile().toPath()));
-    }
-
     public JSONObject getTemplate() throws JsonParseException, JsonMappingException, IOException {
         return objectMapper.readValue(classLoader.getResourceAsStream(defaultTemplate), JSONObject.class);
     }
