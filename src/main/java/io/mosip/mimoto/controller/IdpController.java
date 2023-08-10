@@ -47,8 +47,8 @@ public class IdpController {
     @Autowired
     RequestValidator requestValidator;
 
-    @Value("${GET_TOKEN}")
-    String getTokenUrl;
+//    @Value("${GET_TOKEN}")
+//    String getTokenUrl;
 
     @Autowired
     IdpService idpService;
@@ -114,7 +114,7 @@ public class IdpController {
         RestTemplate restTemplate = new RestTemplate();
         try {
             HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params);
-            TokenResponseDTO response = restTemplate.postForObject(getTokenUrl, request, TokenResponseDTO.class);
+            TokenResponseDTO response = restTemplate.postForObject("https://esignet.dev1.mosip.net/v1/esignet/oauth/token", request, TokenResponseDTO.class);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception ex){
             ResponseWrapper response = getErrorResponse(PlatformErrorMessages.MIMOTO_IDP_GENERIC_EXCEPTION.getCode(), ex.getMessage());
