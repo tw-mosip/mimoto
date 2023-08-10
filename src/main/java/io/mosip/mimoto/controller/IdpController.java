@@ -8,18 +8,16 @@ import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.mimoto.constant.ApiName;
 import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
-import io.mosip.mimoto.dto.idp.TokenRequestDTO;
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
-import io.mosip.mimoto.exception.ApisResourceAccessException;
 import io.mosip.mimoto.exception.IdpException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
+import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.service.RestClientService;
 import io.mosip.mimoto.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -49,14 +47,11 @@ public class IdpController {
     @Autowired
     RequestValidator requestValidator;
 
-    @Value("${mosip.oidc.client.id}")
-    String clientId;
-
-    @Value("${mosip.oidc.client.secret}")
-    String clientSecret;
-
     @Value("${GET_TOKEN}")
     String getTokenUrl;
+
+    @Autowired
+    IdpService idpService;
 
     @PostMapping("/binding-otp")
     @SuppressWarnings("unchecked")
@@ -114,28 +109,17 @@ public class IdpController {
     }
 
     @PostMapping(value = "/get-token", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseEntity getAuthCode(@RequestParam Map<String, String> params) throws ApisResourceAccessException {
-
+    public ResponseEntity getToken(@RequestParam Map<String, String> params) {
         logger.info("\n\n\n Started Token Call get-token-> " + params.toString());
-
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-        map.add("code", params.get("code"));
-        map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
-        map.add("grant_type", params.get("grant_type"));
-        map.add("redirect_uri", params.get("redirect_uri"));
-        map.add("client_assertion", joseUtil.getJWT(clientId));
-        map.add("client_assertion_type", "jwt-bearer");
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        TokenResponseDTO response = restTemplate.postForObject( getTokenUrl, request , TokenResponseDTO.class );
-
-        //logger.info("Completed Call -> " + response.getBody());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        try {
+            HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params);
+            TokenResponseDTO response = restTemplate.postForObject(getTokenUrl, request, TokenResponseDTO.class);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception ex){
+            ResponseWrapper response = getErrorResponse(PlatformErrorMessages.MIMOTO_IDP_GENERIC_EXCEPTION.getCode(), ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 
     private ResponseWrapper getErrorResponse(String errorCode, String errorMessage) {
