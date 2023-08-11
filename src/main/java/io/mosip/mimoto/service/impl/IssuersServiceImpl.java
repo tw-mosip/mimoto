@@ -1,9 +1,9 @@
 package io.mosip.mimoto.service.impl;
 
 import com.google.gson.Gson;
-import io.mosip.mimoto.dto.IssuerConfigDTO;
-import io.mosip.mimoto.dto.IssuerConfigMapDTO;
-import io.mosip.mimoto.dto.IssuerMapDTO;
+import com.google.gson.GsonBuilder;
+import io.mosip.mimoto.dto.IssuerDTO;
+import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.Utilities;
 import org.slf4j.Logger;
@@ -16,20 +16,18 @@ import java.util.Optional;
 
 @Service
 public class IssuersServiceImpl implements IssuersService {
-    private final Gson gson = new Gson();
-
     @Autowired
     private Utilities utilities;
 
     private final Logger logger = LoggerFactory.getLogger(IssuersServiceImpl.class);
 
     @Override
-    public IssuerMapDTO getAllIssuers() {
-        IssuerMapDTO issuers = new IssuerMapDTO();
+    public IssuersDTO getAllIssuers() {
+        IssuersDTO issuers = new IssuersDTO();
         try {
             String issuersConfigJsonValue = utilities.getIssuersConfigJsonValue();
-            logger.info("Issuers Config String - > {}", issuersConfigJsonValue);
-            issuers = gson.fromJson(issuersConfigJsonValue, IssuerMapDTO.class);
+            Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -39,17 +37,18 @@ public class IssuersServiceImpl implements IssuersService {
 
 
     @Override
-    public IssuerConfigDTO getIssuerConfig(String issuerId) {
-        IssuerConfigDTO issuerConfigDTO = new IssuerConfigDTO();
+    public IssuerDTO getIssuerConfig(String issuerId) {
+        IssuerDTO issuerDTO = null;
         try {
-            IssuerConfigMapDTO issuers = gson.fromJson(utilities.getIssuersConfigJsonValue(), IssuerConfigMapDTO.class);
-             Optional<IssuerConfigDTO> issuerConfigResp = issuers.getIssuers().stream()
+            IssuersDTO issuers = new Gson().fromJson(utilities.getIssuersConfigJsonValue(), IssuersDTO.class);
+            Optional<IssuerDTO> issuerConfigResp = issuers.getIssuers().stream()
                     .filter(issuer -> issuer.getId().equals(issuerId))
-                            .findFirst();
-            return issuerConfigResp.orElseGet(IssuerConfigDTO::new);
+                    .findFirst();
+            if (issuerConfigResp.isPresent())
+                issuerDTO = issuerConfigResp.get();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        return issuerConfigDTO;
+        return issuerDTO;
     }
 }

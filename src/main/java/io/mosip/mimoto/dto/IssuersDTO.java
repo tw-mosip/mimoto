@@ -1,11 +1,13 @@
 package io.mosip.mimoto.dto;
 
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
-public class IssuerMapDTO {
+public class IssuersDTO {
+    @Expose
     List<IssuerDTO> issuers;
+
 }

@@ -1,9 +1,7 @@
 package io.mosip.mimoto.controller;
 
 import io.mosip.mimoto.core.http.ResponseWrapper;
-import io.mosip.mimoto.dto.IssuerConfigDTO;
-import io.mosip.mimoto.dto.IssuerConfigMapDTO;
-import io.mosip.mimoto.dto.IssuerMapDTO;
+import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ public class IssuersController {
 
     @GetMapping()
     public ResponseEntity<Object> getAllIssuers() {
-        ResponseWrapper<IssuerMapDTO> responseWrapper = new ResponseWrapper<>();
+        ResponseWrapper<IssuersDTO> responseWrapper = new ResponseWrapper<>();
         //TODO: Modify id
         responseWrapper.setId("mosip.inji.properties");
         responseWrapper.setVersion("v1");
@@ -34,7 +32,7 @@ public class IssuersController {
 
     @GetMapping("/{issuer-id}")
     public ResponseEntity<Object> getIssuerConfig(@PathVariable("issuer-id") String issuerId) {
-        ResponseWrapper<IssuerConfigDTO> responseWrapper = new ResponseWrapper<>();
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         //TODO: Modify id
         responseWrapper.setId("mosip.inji.properties");
         responseWrapper.setVersion("v1");

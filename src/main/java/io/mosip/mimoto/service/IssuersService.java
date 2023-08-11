@@ -1,10 +1,10 @@
 package io.mosip.mimoto.service;
 
-import io.mosip.mimoto.dto.IssuerConfigDTO;
-import io.mosip.mimoto.dto.IssuerMapDTO;
+import io.mosip.mimoto.dto.IssuerDTO;
+import io.mosip.mimoto.dto.IssuersDTO;
 
 public interface IssuersService {
-    IssuerMapDTO getAllIssuers();
+    IssuersDTO getAllIssuers();
 
-    IssuerConfigDTO getIssuerConfig(String issuerId);
+    IssuerDTO getIssuerConfig(String issuerId);
 }
