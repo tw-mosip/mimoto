@@ -17,8 +17,7 @@ import io.mosip.mimoto.model.EventModel;
 import io.mosip.mimoto.service.RestClientService;
 import io.mosip.mimoto.service.impl.CredentialShareServiceImpl;
 import io.mosip.mimoto.util.*;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,6 +41,7 @@ import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -114,37 +114,35 @@ public class InjiControllerTest {
                 .andExpect(status().isOk());
     }
 
+    String issuersJsonString = "{\"issuers\": [{\"id\": \"id1\",\"displayName\": \"Issuer 1\",\"logoUrl\": \"logo url\",\"clientId\": 123,\"redirectionUri\": \"/redirection\",\"serviceConfiguration\": {\"authorizationEndpoint\": \"/authorize\",\"tokenEndpoint\": \"/access_token\",\"revocationEndpoint\": \"/revoke\"}},{  \"id\": \"id2\",  \"displayName\": \"Issuer 2\",  \"logoUrl\": \"logo url\",  \"clientId\": 123,  \"wellKnownEndpoint\": \"/.well-known\"}  ]}";
 
     @Test
-    @Ignore
-    public void getIssuerConfigTest() throws Exception {
-        JSONParser parser = new JSONParser();
-        String stringToParse = "{\n" +
-                "  \"mosip\": {\n" +
-                "    \"name\": \"Mosip\",\n" +
-                "    \"logo_url\": \"\",\n" +
-                "    \"display_name\": \"Mosip Identity Platform\",\n" +
-                "    \"well_known_url\": \"\",\n" +
-                "    \"client_id\": \"\",\n" +
-                "    \"client_secret\": \"\",\n" +
-                "    \"redirect_uri\": \"\",\n" +
-                "    \"service_configuration\": {\n" +
-                "      \"authorizationEndpoint\": \"https: //github.com/login/oauth/authorize\",\n" +
-                "      \"tokenEndpoint\": \"https: //api.dev3.mosip.net/residentmobileapp/getToken\",\n" +
-                "      \"revocationEndpoint\": \"https: //github.com/settings/connections/applications/c578665bb6dea8ba01be\",\n" +
-                "    },\n" +
-                "    \"additionalHeaders\": {\n" +
-                "      \"Accept\": \"application/json\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-        JSONObject json = (JSONObject) parser.parse(stringToParse);
-        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(stringToParse);
+    public void getAllIssuersTest() throws Exception {
+        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(issuersJsonString);
 
-        this.mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.issuers", Matchers.everyItem(
+                        Matchers.allOf(
+                                Matchers.hasKey("id"),
+                                Matchers.hasKey("displayName"),
+                                Matchers.hasKey("logoUrl"),
+                                Matchers.hasKey("clientId"),
+                                Matchers.hasKey("wellKnownEndpoint"),
+                                Matchers.not(Matchers.hasKey("redirectionUri")),
+                                Matchers.not(Matchers.hasKey("serviceConfiguration")),
+                                Matchers.not(Matchers.hasKey("additionalHeaders"))
+                        )
+                )));
     }
 
+    @Test
+    public void getIssuerConfigTest() throws Exception {
+        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(issuersJsonString);
+
+        mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
 
     @Test
     public void processOfflineTest() throws Exception {
