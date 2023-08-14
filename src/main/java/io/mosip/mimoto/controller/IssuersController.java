@@ -47,8 +47,7 @@ public class IssuersController {
         IssuerDTO issuerConfig = issuersService.getIssuerConfig(issuerId);
         responseWrapper.setResponse(issuerConfig);
         if (issuerConfig == null) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode(), PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode(), PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage()));
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
