@@ -5,7 +5,7 @@ public class InvalidIssuerIdException extends BaseUncheckedException {
     /**
      * Unique id for serialization
      */
-    private static final long serialVersionUID = -5350213197226295789L;
+    private static final long serialVersionUID = -5350213127226295789L;
 
     /**
      * Constructor with errorCode, and errorMessage
