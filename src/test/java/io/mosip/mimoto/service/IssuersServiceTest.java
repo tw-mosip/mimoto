@@ -36,7 +36,7 @@ public class IssuersServiceTest {
     List<String> issuerConfigRelatedFields = List.of("additionalHeaders", "serviceConfiguration", "redirectionUri");
 
 
-    private static IssuerDTO getIssuerDTO(String issuerName, List<String> nullFields) {
+    public static IssuerDTO getIssuerDTO(String issuerName, List<String> nullFields) {
         IssuerDTO issuer = new IssuerDTO();
         issuer.setId(issuerName + "id");
         issuer.setDisplayName(issuerName);

@@ -8,6 +8,8 @@ import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.mimoto.TestBootApplication;
 import io.mosip.mimoto.core.http.ResponseWrapper;
+import io.mosip.mimoto.dto.IssuerDTO;
+import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.resident.*;
 import io.mosip.mimoto.exception.ApisResourceAccessException;
@@ -17,6 +19,7 @@ import io.mosip.mimoto.model.Event;
 import io.mosip.mimoto.model.EventModel;
 import io.mosip.mimoto.service.RestClientService;
 import io.mosip.mimoto.service.impl.CredentialShareServiceImpl;
+import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.*;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -37,9 +40,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import static io.mosip.mimoto.service.IssuersServiceTest.getIssuerDTO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,6 +71,9 @@ public class InjiControllerTest {
 
     @MockBean
     private CredentialShareServiceImpl credentialShareService;
+
+    @MockBean
+    private IssuersServiceImpl issuersService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -119,7 +125,10 @@ public class InjiControllerTest {
 
     @Test
     public void getAllIssuersTest() throws Exception {
-        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(issuersJsonString);
+        IssuersDTO issuers = new IssuersDTO();
+        List<String> issuerConfigRelatedFields = List.of("additionalHeaders", "serviceConfiguration", "redirectionUri");
+        issuers.setIssuers((List.of(getIssuerDTO("Issuer1", issuerConfigRelatedFields), getIssuerDTO("Issuer2", issuerConfigRelatedFields))));
+        Mockito.when(issuersService.getAllIssuers()).thenReturn(issuers);
 
         mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -139,12 +148,13 @@ public class InjiControllerTest {
 
     @Test
     public void getIssuerConfigTest() throws Exception {
-        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(issuersJsonString);
+        Mockito.when(issuersService.getIssuerConfig("id1")).thenReturn(getIssuerDTO("Issuer1", Collections.emptyList()));
+        Mockito.when(issuersService.getIssuerConfig("invalidId")).thenReturn(null);
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is( PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode())))
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
     }
 
