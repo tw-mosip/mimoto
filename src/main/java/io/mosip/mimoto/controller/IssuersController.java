@@ -23,11 +23,12 @@ public class IssuersController {
     @Autowired
     IssuersService issuersService;
 
+    private static final String ID = "mosip.mimoto.issuers";
+
     @GetMapping()
     public ResponseEntity<Object> getAllIssuers() {
         ResponseWrapper<IssuersDTO> responseWrapper = new ResponseWrapper<>();
-        //TODO: Modify id
-        responseWrapper.setId("mosip.inji.properties");
+        responseWrapper.setId(ID);
         responseWrapper.setVersion("v1");
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
         responseWrapper.setResponse(issuersService.getAllIssuers());
@@ -38,8 +39,7 @@ public class IssuersController {
     @GetMapping("/{issuer-id}")
     public ResponseEntity<Object> getIssuerConfig(@PathVariable("issuer-id") String issuerId) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-        //TODO: Modify id
-        responseWrapper.setId("mosip.inji.properties");
+        responseWrapper.setId(ID);
         responseWrapper.setVersion("v1");
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
 
