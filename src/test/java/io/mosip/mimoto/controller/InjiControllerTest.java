@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 
-import static io.mosip.mimoto.service.IssuersServiceTest.getIssuerDTO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -121,13 +120,25 @@ public class InjiControllerTest {
                 .andExpect(status().isOk());
     }
 
-    String issuersJsonString = "{\"issuers\": [{\"id\": \"id1\",\"displayName\": \"Issuer 1\",\"logoUrl\": \"logo url\",\"clientId\": 123,\"redirectionUri\": \"/redirection\",\"serviceConfiguration\": {\"authorizationEndpoint\": \"/authorize\",\"tokenEndpoint\": \"/access_token\",\"revocationEndpoint\": \"/revoke\"}},{  \"id\": \"id2\",  \"displayName\": \"Issuer 2\",  \"logoUrl\": \"logo url\",  \"clientId\": 123,  \"wellKnownEndpoint\": \"/.well-known\"}  ]}";
+    static IssuerDTO getIssuerDTO(String issuerName) {
+        IssuerDTO issuer = new IssuerDTO();
+        issuer.setId(issuerName + "id");
+        issuer.setDisplayName(issuerName);
+        issuer.setLogoUrl("/logo");
+        issuer.setClientId("123");
+        if (issuerName.equals("Issuer1")) issuer.setWellKnownEndpoint("/.well-known");
+        else {
+            issuer.setRedirectionUri(null);
+            issuer.setServiceConfiguration(null);
+            issuer.setAdditionalHeaders(null);
+        }
+        return issuer;
+    }
 
     @Test
     public void getAllIssuersTest() throws Exception {
         IssuersDTO issuers = new IssuersDTO();
-        List<String> issuerConfigRelatedFields = List.of("additionalHeaders", "serviceConfiguration", "redirectionUri");
-        issuers.setIssuers((List.of(getIssuerDTO("Issuer1", issuerConfigRelatedFields), getIssuerDTO("Issuer2", issuerConfigRelatedFields))));
+        issuers.setIssuers((List.of(getIssuerDTO("Issuer1"), getIssuerDTO("Issuer2"))));
         Mockito.when(issuersService.getAllIssuers()).thenReturn(issuers);
 
         mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
@@ -148,7 +159,7 @@ public class InjiControllerTest {
 
     @Test
     public void getIssuerConfigTest() throws Exception {
-        Mockito.when(issuersService.getIssuerConfig("id1")).thenReturn(getIssuerDTO("Issuer1", Collections.emptyList()));
+        Mockito.when(issuersService.getIssuerConfig("id1")).thenReturn(getIssuerDTO("Issuer1"));
         Mockito.when(issuersService.getIssuerConfig("invalidId")).thenReturn(null);
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
