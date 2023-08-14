@@ -12,6 +12,7 @@ import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.resident.*;
 import io.mosip.mimoto.exception.ApisResourceAccessException;
 import io.mosip.mimoto.exception.BaseUncheckedException;
+import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.model.Event;
 import io.mosip.mimoto.model.EventModel;
 import io.mosip.mimoto.service.RestClientService;
@@ -142,6 +143,9 @@ public class InjiControllerTest {
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
+        mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is( PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
     }
 
     @Test
