@@ -4,6 +4,7 @@ import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
+import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -31,7 +33,12 @@ public class IssuersController {
         responseWrapper.setId(ID);
         responseWrapper.setVersion("v1");
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
-        responseWrapper.setResponse(issuersService.getAllIssuers());
+        try {
+            responseWrapper.setResponse(issuersService.getAllIssuers());
+        } catch (ApiNotAccessibleException | IOException e) {
+            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode(), PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
@@ -44,7 +51,14 @@ public class IssuersController {
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
 
 
-        IssuerDTO issuerConfig = issuersService.getIssuerConfig(issuerId);
+        IssuerDTO issuerConfig;
+        try {
+            issuerConfig = issuersService.getIssuerConfig(issuerId);
+        } catch (ApiNotAccessibleException | IOException exception) {
+            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode(), PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+        }
+
         responseWrapper.setResponse(issuerConfig);
 
         if (issuerConfig == null) {

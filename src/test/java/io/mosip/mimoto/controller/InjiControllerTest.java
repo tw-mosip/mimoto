@@ -12,6 +12,7 @@ import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.resident.*;
+import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.ApisResourceAccessException;
 import io.mosip.mimoto.exception.BaseUncheckedException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
@@ -139,7 +140,9 @@ public class InjiControllerTest {
     public void getAllIssuersTest() throws Exception {
         IssuersDTO issuers = new IssuersDTO();
         issuers.setIssuers((List.of(getIssuerDTO("Issuer1"), getIssuerDTO("Issuer2"))));
-        Mockito.when(issuersService.getAllIssuers()).thenReturn(issuers);
+        Mockito.when(issuersService.getAllIssuers())
+                .thenReturn(issuers)
+                .thenThrow(new ApiNotAccessibleException());
 
         mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -155,19 +158,32 @@ public class InjiControllerTest {
                                 Matchers.not(Matchers.hasKey("additionalHeaders"))
                         )
                 )));
+
+        mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
     }
 
     @Test
     public void getIssuerConfigTest() throws Exception {
-        Mockito.when(issuersService.getIssuerConfig("id1")).thenReturn(getIssuerDTO("Issuer1"));
+        Mockito.when(issuersService.getIssuerConfig("id1"))
+                .thenReturn(getIssuerDTO("Issuer1"))
+                .thenThrow(new ApiNotAccessibleException());
         Mockito.when(issuersService.getIssuerConfig("invalidId")).thenReturn(null);
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
+
         mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode())))
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
+
+        mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
     }
 
     @Test

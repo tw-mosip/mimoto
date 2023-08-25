@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.ServiceConfiguration;
+import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.Utilities;
 import org.junit.Before;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +38,7 @@ public class IssuersServiceTest {
     List<String> issuerConfigRelatedFields = List.of("additionalHeaders", "serviceConfiguration", "redirectionUri");
 
 
-     static IssuerDTO getIssuerDTO(String issuerName, List<String> nullFields) {
+    static IssuerDTO getIssuerDTO(String issuerName, List<String> nullFields) {
         IssuerDTO issuer = new IssuerDTO();
         issuer.setId(issuerName + "id");
         issuer.setDisplayName(issuerName);
@@ -68,7 +70,7 @@ public class IssuersServiceTest {
     }
 
     @Test
-    public void shouldReturnIssuersWithIssuerConfigAsNull() {
+    public void shouldReturnIssuersWithIssuerConfigAsNull() throws ApiNotAccessibleException, IOException {
         IssuersDTO expectedIssuers = new IssuersDTO();
         List<IssuerDTO> issuers = new ArrayList<>(List.of(getIssuerDTO("Issuer1", issuerConfigRelatedFields), getIssuerDTO("Issuer2", issuerConfigRelatedFields)));
         expectedIssuers.setIssuers(issuers);
@@ -78,8 +80,15 @@ public class IssuersServiceTest {
         assertEquals(expectedIssuers, allIssuers);
     }
 
+    @Test(expected = ApiNotAccessibleException.class)
+    public void shouldThrowApiNotAccessibleExceptionWhenIssuersJsonStringIsNullForGettingAllIssuers() throws IOException, ApiNotAccessibleException {
+        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(null);
+
+        issuersService.getAllIssuers();
+    }
+
     @Test
-    public void shouldReturnIssuerDataAndConfigForTheIssuerIdIfExist() {
+    public void shouldReturnIssuerDataAndConfigForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException {
         IssuerDTO expectedIssuer = getIssuerDTO("Issuer1", issuerConfigRelatedFields);
 
         IssuerDTO issuer = issuersService.getIssuerConfig("Issuer1id");
@@ -88,9 +97,16 @@ public class IssuersServiceTest {
     }
 
     @Test
-    public void shouldReturnNullIfTheIssuerIdNotExists() {
+    public void shouldReturnNullIfTheIssuerIdNotExists() throws ApiNotAccessibleException, IOException {
         IssuerDTO issuer = issuersService.getIssuerConfig("Issuer3id");
 
         assertNull(issuer);
+    }
+
+    @Test(expected = ApiNotAccessibleException.class)
+    public void shouldThrowApiNotAccessibleExceptionWhenIssuersJsonStringIsNullForGettingIssuerConfig() throws IOException, ApiNotAccessibleException {
+        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(null);
+
+        issuersService.getIssuerConfig("Issuers1id");
     }
 }
