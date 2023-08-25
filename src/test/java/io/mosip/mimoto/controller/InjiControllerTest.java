@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 
+import static io.mosip.mimoto.exception.PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION;
+import static io.mosip.mimoto.exception.PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -161,8 +163,8 @@ public class InjiControllerTest {
 
         mockMvc.perform(get("/issuers").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
     }
 
     @Test
@@ -177,13 +179,13 @@ public class InjiControllerTest {
 
         mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getMessage())));
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
     }
 
     @Test

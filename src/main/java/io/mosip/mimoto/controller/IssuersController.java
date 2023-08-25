@@ -5,7 +5,6 @@ import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
+
+import static io.mosip.mimoto.exception.PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION;
+import static io.mosip.mimoto.exception.PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION;
 
 @RestController
 @RequestMapping(value = "/issuers")
@@ -36,7 +38,7 @@ public class IssuersController {
         try {
             responseWrapper.setResponse(issuersService.getAllIssuers());
         } catch (ApiNotAccessibleException | IOException e) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode(), PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+            responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
         }
 
@@ -55,14 +57,14 @@ public class IssuersController {
         try {
             issuerConfig = issuersService.getIssuerConfig(issuerId);
         } catch (ApiNotAccessibleException | IOException exception) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getCode(), PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+            responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
         }
 
         responseWrapper.setResponse(issuerConfig);
 
         if (issuerConfig == null) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getCode(), PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION.getMessage())));
+            responseWrapper.setErrors(List.of(new ErrorDTO(INVALID_ISSUER_ID_EXCEPTION.getCode(), INVALID_ISSUER_ID_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseWrapper);
         }
 
