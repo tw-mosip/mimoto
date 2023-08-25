@@ -7,6 +7,8 @@ import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ public class IssuersController {
 
     private static final String ID = "mosip.mimoto.issuers";
 
+    private final Logger logger = LoggerFactory.getLogger(IssuersController.class);
+
     @GetMapping()
     public ResponseEntity<Object> getAllIssuers() {
         ResponseWrapper<IssuersDTO> responseWrapper = new ResponseWrapper<>();
@@ -38,6 +42,7 @@ public class IssuersController {
         try {
             responseWrapper.setResponse(issuersService.getAllIssuers());
         } catch (ApiNotAccessibleException | IOException e) {
+            logger.error("Exception occurred while fetching issuers ",e);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
         }
@@ -57,6 +62,7 @@ public class IssuersController {
         try {
             issuerConfig = issuersService.getIssuerConfig(issuerId);
         } catch (ApiNotAccessibleException | IOException exception) {
+            logger.error("Exception occurred while fetching issuers ",exception);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
         }
