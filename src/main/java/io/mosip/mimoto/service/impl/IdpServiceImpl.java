@@ -19,8 +19,8 @@ public class IdpServiceImpl implements IdpService {
     @Value("${mosip.oidc.client.id}")
     String clientId;
 
-    @Value("${mosip.oidc.client.secret}")
-    String clientSecret;
+    @Value("${mosip.oidc.client.assertion.type}")
+    String clientAssertionType;
 
     @Autowired
     JoseUtil joseUtil;
@@ -33,11 +33,10 @@ public class IdpServiceImpl implements IdpService {
         MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
         map.add("code", params.get("code"));
         map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
         map.add("grant_type", params.get("grant_type"));
         map.add("redirect_uri", params.get("redirect_uri"));
-        map.add("client_assertion", joseUtil.getJWT(clientId));
-        map.add("client_assertion_type", "jwt-bearer");
+        map.add("client_assertion", joseUtil.getJWT(clientId).replace("[","").replace("]",""));
+        map.add("client_assertion_type", clientAssertionType);
 
         return new HttpEntity<>(map, headers);
     }

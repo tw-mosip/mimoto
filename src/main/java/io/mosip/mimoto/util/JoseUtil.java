@@ -2,6 +2,7 @@ package io.mosip.mimoto.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -15,15 +16,14 @@ import io.mosip.mimoto.dto.mimoto.WalletBindingInternalResponseDto;
 import io.mosip.mimoto.dto.mimoto.WalletBindingResponseDto;
 import org.jose4j.jws.JsonWebSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
@@ -46,6 +46,18 @@ public class JoseUtil {
 
     @Autowired
     private CryptoCoreUtil cryptoCoreUtil;
+
+    @Value("${mosip.oidc.p12.filename}")
+    private String fileName;
+
+    @Value("")
+    private String cyptoPassword;
+
+    @Value("${mosip.oidc.p12.alias}")
+    private String alias;
+
+    @Value("${mosip.oidc.esignet.aud}")
+    private String audience;
 
     public static JwkDto getJwkFromPublicKey(String publicKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
@@ -132,24 +144,22 @@ public class JoseUtil {
     public String getJWT(String clientId) {
 
         Map<String, Object> header = new HashMap<>();
-        header.put("alg", "HS256");
-        header.put("typ", "JWT");
+        header.put("alg", "RS256");
 
         KeyStore.PrivateKeyEntry privateKeyEntry= null;
         try {
-            privateKeyEntry = cryptoCoreUtil.loadP12();
+            privateKeyEntry = cryptoCoreUtil.loadP12(fileName, alias, cyptoPassword);
         } catch (IOException e) {
            logger.error("Exception happened while loading the p12 file for invoking token call.");
         }
-
+        RSAPrivateKey privateKey = (RSAPrivateKey) privateKeyEntry.getPrivateKey();
         return JWT.create()
                 .withHeader(header)
                 .withIssuer(clientId)
                 .withSubject(clientId)
-                .withAudience("url of the authorization Server")
+                .withAudience(audience)
                 .withExpiresAt(Date.from(Instant.now()))
                 .withIssuedAt(Date.from(Instant.now()))
-                .withClaim("","")
-                .sign(Algorithm.HMAC256(privateKeyEntry.getPrivateKey().toString()));
+                .sign(Algorithm.RSA256(null, privateKey));
     }
 }

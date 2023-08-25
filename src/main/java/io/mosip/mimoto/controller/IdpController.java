@@ -47,6 +47,9 @@ public class IdpController {
     @Autowired
     RequestValidator requestValidator;
 
+    @Value("${mosip.oidc.esignet.token.endpoint}")
+    String getTokenEndpoint;
+
 //    @Value("${GET_TOKEN}")
 //    String getTokenUrl;
 
@@ -114,9 +117,10 @@ public class IdpController {
         RestTemplate restTemplate = new RestTemplate();
         try {
             HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params);
-            TokenResponseDTO response = restTemplate.postForObject("https://esignet.dev1.mosip.net/v1/esignet/oauth/token", request, TokenResponseDTO.class);
+            TokenResponseDTO response = restTemplate.postForObject(getTokenEndpoint, request, TokenResponseDTO.class);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception ex){
+            logger.error("Exception Occured while invoking the get-token endpoint", ex);
             ResponseWrapper response = getErrorResponse(PlatformErrorMessages.MIMOTO_IDP_GENERIC_EXCEPTION.getCode(), ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
