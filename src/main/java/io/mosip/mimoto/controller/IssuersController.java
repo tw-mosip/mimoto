@@ -44,7 +44,7 @@ public class IssuersController {
         } catch (ApiNotAccessibleException | IOException e) {
             logger.error("Exception occurred while fetching issuers ",e);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
@@ -64,7 +64,7 @@ public class IssuersController {
         } catch (ApiNotAccessibleException | IOException exception) {
             logger.error("Exception occurred while fetching issuers ",exception);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         }
 
         responseWrapper.setResponse(issuerConfig);
