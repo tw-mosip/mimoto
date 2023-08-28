@@ -42,9 +42,9 @@ public class IssuersController {
         try {
             responseWrapper.setResponse(issuersService.getAllIssuers());
         } catch (ApiNotAccessibleException | IOException e) {
-            logger.error("Exception occurred while fetching issuers ",e);
+            logger.error("Exception occurred while fetching issuers ", e);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
@@ -62,14 +62,15 @@ public class IssuersController {
         try {
             issuerConfig = issuersService.getIssuerConfig(issuerId);
         } catch (ApiNotAccessibleException | IOException exception) {
-            logger.error("Exception occurred while fetching issuers ",exception);
+            logger.error("Exception occurred while fetching issuers ", exception);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         }
 
         responseWrapper.setResponse(issuerConfig);
 
         if (issuerConfig == null) {
+            logger.error("invalid issuer id passed - {}", issuerId);
             responseWrapper.setErrors(List.of(new ErrorDTO(INVALID_ISSUER_ID_EXCEPTION.getCode(), INVALID_ISSUER_ID_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseWrapper);
         }
