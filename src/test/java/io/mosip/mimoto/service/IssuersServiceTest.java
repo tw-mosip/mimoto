@@ -47,7 +47,7 @@ public class IssuersServiceTest {
         if (issuerName.equals("Issuer1")) issuer.setWellKnownEndpoint("/.well-known");
         else {
             if (!nullFields.contains("redirectionUri"))
-                issuer.setRedirectionUri("/redirection");
+                issuer.setRedirectUrl("/redirection");
             if (!nullFields.contains("serviceConfiguration")) {
                 ServiceConfiguration serviceConfiguration = new ServiceConfiguration();
                 serviceConfiguration.setAuthorizationEndpoint("/authorization");
