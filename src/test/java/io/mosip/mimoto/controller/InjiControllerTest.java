@@ -131,9 +131,10 @@ public class InjiControllerTest {
         issuer.setClientId("123");
         if (issuerName.equals("Issuer1")) issuer.setWellKnownEndpoint("/.well-known");
         else {
-            issuer.setRedirectionUri(null);
+            issuer.setRedirectUrl(null);
             issuer.setServiceConfiguration(null);
             issuer.setAdditionalHeaders(null);
+            issuer.setScopes(null);
         }
         return issuer;
     }
@@ -155,9 +156,10 @@ public class InjiControllerTest {
                                 Matchers.hasKey("logoUrl"),
                                 Matchers.hasKey("clientId"),
                                 Matchers.hasKey("wellKnownEndpoint"),
-                                Matchers.not(Matchers.hasKey("redirectionUri")),
+                                Matchers.not(Matchers.hasKey("redirectUrl")),
                                 Matchers.not(Matchers.hasKey("serviceConfiguration")),
-                                Matchers.not(Matchers.hasKey("additionalHeaders"))
+                                Matchers.not(Matchers.hasKey("additionalHeaders")),
+                                Matchers.not(Matchers.hasKey("scopes"))
                         )
                 )));
 
