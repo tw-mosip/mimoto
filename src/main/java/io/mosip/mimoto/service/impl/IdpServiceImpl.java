@@ -37,6 +37,7 @@ public class IdpServiceImpl implements IdpService {
         map.add("redirect_uri", params.get("redirect_uri"));
         map.add("client_assertion", joseUtil.getJWT(clientId).replace("[","").replace("]",""));
         map.add("client_assertion_type", clientAssertionType);
+        map.add("code_verifier", params.get("code_verifier"));
 
         return new HttpEntity<>(map, headers);
     }
