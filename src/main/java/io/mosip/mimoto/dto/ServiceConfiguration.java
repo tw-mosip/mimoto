@@ -7,4 +7,6 @@ public class ServiceConfiguration {
     String authorizationEndpoint;
     String tokenEndpoint;
     String revocationEndpoint;
+    String credentialEndpoint;
+    String credentialAudience;
 }

@@ -17,6 +17,8 @@ public class IssuerDTO {
     @Expose
     String displayName;
     @Expose
+    String protocol;
+    @Expose
     String logoUrl;
     @Expose
     String clientId;
