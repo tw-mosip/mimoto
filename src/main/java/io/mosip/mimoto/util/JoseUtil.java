@@ -50,7 +50,7 @@ public class JoseUtil {
     @Value("${mosip.oidc.p12.filename}")
     private String fileName;
 
-    @Value("")
+    @Value("${mosip.oidc.p12.password}")
     private String cyptoPassword;
 
     @Value("${mosip.oidc.p12.alias}")
