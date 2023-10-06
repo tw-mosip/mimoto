@@ -158,7 +158,7 @@ public class JoseUtil {
                 .withIssuer(clientId)
                 .withSubject(clientId)
                 .withAudience(audience)
-                .withExpiresAt(Date.from(Instant.now()))
+                .withExpiresAt(Date.from(Instant.now().plusMillis(120000)))
                 .withIssuedAt(Date.from(Instant.now()))
                 .sign(Algorithm.RSA256(null, privateKey));
     }
