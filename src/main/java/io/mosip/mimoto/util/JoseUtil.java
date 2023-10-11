@@ -53,6 +53,9 @@ public class JoseUtil {
     @Value("${mosip.oidc.p12.password}")
     private String cyptoPassword;
 
+    @Value("${mosip.oidc.p12.path}")
+    String keyStorePath;
+
     @Value("${mosip.oidc.p12.alias}")
     private String alias;
 
@@ -146,9 +149,10 @@ public class JoseUtil {
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "RS256");
 
+        String keyStorePathWithFileName = keyStorePath + "/" + fileName;
         KeyStore.PrivateKeyEntry privateKeyEntry= null;
         try {
-            privateKeyEntry = cryptoCoreUtil.loadP12(fileName, alias, cyptoPassword);
+            privateKeyEntry = cryptoCoreUtil.loadP12(keyStorePathWithFileName, alias, cyptoPassword);
         } catch (IOException e) {
            logger.error("Exception happened while loading the p12 file for invoking token call.");
         }
