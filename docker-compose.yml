@@ -1,0 +1,7 @@
+version: "2.4"
+
+services:
+  nginx:
+    image: sreejithl1903/inji-web-demo
+    ports:
+      - '81:80'

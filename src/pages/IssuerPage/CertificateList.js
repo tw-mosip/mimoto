@@ -1,0 +1,55 @@
+import React, { useEffect } from 'react';
+import GridComponent from "../../components/molecules/GridComponent";
+import {Typography} from "@mui/material";
+import Box from "@mui/material/Box";
+import styled from "@emotion/styled";
+import { IssuersData } from '../Home/testData';
+import {DATA_KEY_IN_LOCAL_STORAGE, getESignetRedirectURL} from "../../utils/config";
+import {generateCodeChallenge, generateRandomString} from "../../utils/oauth-utils";
+import CustonDownloadButton from "../../components/atoms/CustomDownloadButton.js";
+
+
+export const issuerDetails = IssuersData;
+
+const CertificatesBox = styled(Box)`
+    margin: 30px auto;
+    max-width: 1140px;
+    
+`;
+
+const Title = styled(Typography)`
+    font: normal normal 600 20px/16px Inter;
+    margin-bottom: 10px;
+`;
+
+const getCardsData = (issuerId, credentialList, clientId) => {
+    return credentialList.map(cred => {
+        return {
+            imageUrl: cred.display[0].logo.url,
+            title: cred.display[0].name,
+            icon: <CustonDownloadButton/>,
+            onClick: () => {
+                let {codeVerifier, codeChallenge} = generateCodeChallenge();
+                let state = generateRandomString();
+                localStorage.setItem(DATA_KEY_IN_LOCAL_STORAGE,
+                    JSON.stringify({issuerId: issuerId, certificateId: cred.id, codeVerifier: codeVerifier, state: state, clientId: clientId}));
+                window.location.replace(getESignetRedirectURL(cred.scope, clientId, codeChallenge, state));
+            },
+            clickable: true
+        }
+    });
+}
+
+function CertificateList({issuerId, credentialList, clientId}) {
+    const cards = getCardsData(issuerId, credentialList, clientId);
+    return (
+        <CertificatesBox>
+            <Title variant='h6'>
+                List of Certificates
+            </Title>
+            <GridComponent cards={cards}/>
+        </CertificatesBox>
+    );
+}
+
+export default CertificateList;
