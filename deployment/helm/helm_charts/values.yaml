@@ -1,0 +1,10 @@
+global:
+  host: "loadtesting.xix.in"
+  esignet:
+    redirect_url: "https://loadtesting.xix.in/inji-web"
+    base_url: "http://192.168.2.186:3001"
+  momito:
+    base_url: "http://192.168.2.186:8089"
+  secrets:
+    EXAMPLE_SECRET_1: aHZzLioqKioqKioqKioqKioqKioqKioqKioqKg==
+    Example_secret_2: e3tkYXRhYmFzZV90eXBlOnBvc3RncmVzfX06Ly97e2RhdGFic2VfdXNlbmFtZX19Ont7ZGF0YWJhc2VfcGFzc3dvcmR9fUB7e2RhdGFiYXNlX2hvc3Q6bG9jYWxob3N0fX06e3tkYXRhYmFzZV9wb3J0OjU0MzJ9fS97e2RhdGFiYXNlX25hbWU6c3VuYmlyZHJjfX0=
