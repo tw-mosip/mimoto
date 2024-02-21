@@ -1,6 +1,6 @@
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import {ESIGNET_REDIRECT_URI, FETCH_ACCESS_TOKEN_FROM_CODE_API} from "./config";
+import {ESIGNET_REDIRECT_URI, getFetchAccessTokenFromCodeApi} from "./config";
 import axios from "axios";
 
 export const generateCodeChallenge = () => {
@@ -32,7 +32,7 @@ export const fetchAccessToken = async (issuer, code, clientId, codeVerifier) => 
     console.log('code before sending request: ', code);
     const config = {
         method: 'post',
-        url: FETCH_ACCESS_TOKEN_FROM_CODE_API + `?issuer=${issuer}`,
+        url: getFetchAccessTokenFromCodeApi(issuer),
         headers: {
             'accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
