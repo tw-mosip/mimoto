@@ -419,12 +419,12 @@ metrics:
 ## Slash is important!
 inji_web:
   inji_web_port: '3004'
-  inji_web_service_host: 'mimoto.mimoto'
+  inji_web_service_host: 'esignet.esignet'
   configmaps:
     inji-web:
-      REACT_APP_ESIGNET_UI_URL: 'http://192.168.2.186:3001'
-      REACT_APP_ESIGNET_REDIRECT_URL: 'http://localhost:81'
-      REACT_APP_MIMOTO_URL: '/mimoto'
+      REACT_APP_ESIGNET_UI_URL: 'http://esignet.esignet/v1/esignet'
+      REACT_APP_ESIGNET_REDIRECT_URL: ''
+      REACT_APP_MIMOTO_URL: 'v1/mimoto'
 
 
 ## injiweb UI swagger should have only internal access. Hence linked to internal gateway
