@@ -7,7 +7,7 @@ if [ $# -ge 1 ] ; then
 fi
 
 NS=esignet
-CHART_VERSION=1.2.0
+CHART_VERSION=1.0.0
 
 echo Create $NS namespace
 kubectl create ns $NS
@@ -24,8 +24,8 @@ function installing_inji-web() {
 
   ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
 
-  echo Installing OIDC UI
-  helm -n $NS install inji-web mosip/inji-web \
+  echo Installing INJIWEB
+  helm -n $NS install inji-web /home/bhuminathan/injiwebfinal/inji-web/helm/inji-web \
   -f values.yaml \
   --set istio.hosts\[0\]=$ESIGNET_HOST \
   --version $CHART_VERSION

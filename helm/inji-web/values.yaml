@@ -74,7 +74,7 @@ startupProbe:
   enabled: true
   httpGet:
     path: /
-    port: 3000
+    port: 3004
   initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 5
@@ -85,7 +85,7 @@ livenessProbe:
   enabled: true
   httpGet:
     path: /
-    port: 3000
+    port: 3004
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -96,7 +96,7 @@ readinessProbe:
   enabled: true
   httpGet:
     path: /
-    port: 3000
+    port: 3004
   initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 5
@@ -249,6 +249,7 @@ extraEnvVarsCM:
   - config-server-share
   - artifactory-share
   - softhsm-esignet-share
+  - oidc-ui
   - inji-web
 
 ## Secret with extra environment variables
@@ -419,12 +420,12 @@ metrics:
 ## Slash is important!
 inji_web:
   inji_web_port: '3004'
-  inji_web_service_host: 'esignet.esignet'
+  inji_web_service_host: 'https://api-internal.sandbox.xxx.net'
   configmaps:
     inji-web:
-      REACT_APP_ESIGNET_UI_URL: 'http://esignet.esignet/v1/esignet'
+      REACT_APP_ESIGNET_UI_URL: 'https://api-internal.sandbox.xxx.net/v1/esignet'
       REACT_APP_ESIGNET_REDIRECT_URL: ''
-      REACT_APP_MIMOTO_URL: 'v1/mimoto'
+      REACT_APP_MIMOTO_URL: 'https://api.sandbox.xxx.net/v1/mimoto'
 
 
 ## injiweb UI swagger should have only internal access. Hence linked to internal gateway
@@ -439,5 +440,5 @@ istio:
       portName: http
       port: 80
   hosts:
-    - esignet.sandbox.xyz.net
+    - inji.sandbox.xyz.net
   prefix: /
