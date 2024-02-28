@@ -35,7 +35,7 @@ const IssuerTitle = styled(Typography)`
 
 function Header({credentialsList, updateCredentialsList, defaultList}) {
     const navigate = useNavigate();
-    const { issuerId } = useParams();
+    const { issuerId, displayName} = useParams();
     const [defaultOptions, setDefaultOptions] = useState([]);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ function Header({credentialsList, updateCredentialsList, defaultList}) {
                             <BackArrow />
                         </IconButton>
                         <IssuerTitle>
-                            {issuerId}
+                            {displayName}
                         </IssuerTitle>
                     </Box>
                 </Grid>
@@ -61,7 +61,7 @@ function Header({credentialsList, updateCredentialsList, defaultList}) {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Search Certificate"
+                                label="Search Credentials"
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',

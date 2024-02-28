@@ -2,3 +2,4 @@
 .idea
 helm/inji-web/charts
 helm/inji-web/Chart.lock
+inji-web/node_modules

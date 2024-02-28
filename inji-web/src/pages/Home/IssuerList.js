@@ -27,7 +27,7 @@ const getCardsData = (issuersList, navigate) => {
             title: issuer.display[0].name,
             icon: null,
             onClick: () => {
-                navigate(`/issuers/${issuer.credential_issuer}`)
+                navigate(`/issuers/${issuer.credential_issuer}/${issuer.display[0].name}`)
             },
             clickable: true
         }
