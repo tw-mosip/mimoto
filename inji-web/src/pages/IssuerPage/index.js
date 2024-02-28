@@ -37,7 +37,7 @@ function Issuer() {
     useEffect(() => {
         // make an api call only when the state is not available
         if (issuerClientId && issuerDisplayName) return;
-        _axios.get(getSearchIssuersUrl(issuerId))
+        _axios.get(getSearchIssuersUrl(issuerDisplayName? issuerDisplayName : issuerId))
             .then((response) => {
                 let issuers =  response.data.response.issuers;
                 if (issuers.length !== 0) {
@@ -54,7 +54,7 @@ function Issuer() {
     // TODO: show a loader while loading and error message in case of any errors
     return (
         <PageTemplate>
-            <Header issuerDisplayName={issuerDisplayName} credentialsList={credentialsList}
+            <Header issuerDisplayName={issuerDisplayName ? issuerDisplayName : issuerId} credentialsList={credentialsList}
                     loading={loading} updateCredentialsList={setCredentialsList} defaultList={defaultList}/>
             {loading 
                 ? <LoadingScreen />
