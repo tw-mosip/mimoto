@@ -1,6 +1,8 @@
 /* ESIGNET CONFIG */
-export const ESIGNET_UI_URL = process.env.REACT_APP_ESIGNET_UI_URL || "http://192.168.2.186:3001";
-export const ESIGNET_REDIRECT_URI = process.env.REACT_APP_ESIGNET_REDIRECT_URL || "http://localhost:81";
+// nginx config redirects the request to esignet running in the same namespace
+export const ESIGNET_UI_URL = process.env.REACT_APP_ESIGNET_UI_URL || "";
+// Since it is to be redirected to the same application again
+export const ESIGNET_REDIRECT_URI = window.location.origin;
 
 export const getESignetRedirectURL = (scope, clientId, codeChallenge, state) => {
     return `${ESIGNET_UI_URL}/authorize` +
@@ -15,7 +17,7 @@ export const getESignetRedirectURL = (scope, clientId, codeChallenge, state) => 
 
 
 /* MIMOTO CONFIG */
-export const MIMOTO_URL = process.env.REACT_APP_MIMOTO_URL || "/mimoto";
+export const MIMOTO_URL = process.env.REACT_APP_MIMOTO_URL || "/v1/mimoto";
 export const FETCH_ISSUERS_URL = `${MIMOTO_URL}/v2/issuers`;
 export const getSearchIssuersUrl = (issuer) => `${MIMOTO_URL}/v2/issuers?search=${issuer}`;
 export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/v2/issuers/${issuerId}/credentials-supported`;
