@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import _axios from 'axios';
 import { IssuersData } from "./testData";
 import {FETCH_ISSUERS_URL, MIMOTO_URL} from "../../utils/config";
+import LoadingScreen from "../../utils/LoadingScreen";
 
 export default function Home(props) {
 
@@ -42,8 +43,9 @@ export default function Home(props) {
     return (
         <PageTemplate>
             <SearchIssuers options={issuersList} setFilteredIssuerList={setFilteredList}/>
-            {/* <IssuersList issuersList={filteredList.length === 0 ? issuersList: filteredList}/> */}
-            <IssuersList issuersList={ issuersList}/>
+            {loading ? <LoadingScreen /> :
+                <IssuersList issuersList={ issuersList}/>
+            }
         </PageTemplate>
     )
 }

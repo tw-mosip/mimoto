@@ -9,7 +9,7 @@ import {DownloadButton, InjiNavbar, StyledGridItem, StyledLink, StyledToolbar} f
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/inji-logo.png";
 
-const links = ['Link 1', 'Link 2', 'Link 3'];
+const links = [];
 
 function Navbar(props) {
 
