@@ -8,8 +8,10 @@ import {Grid, Link, Typography} from "@mui/material";
 import {DownloadButton, InjiNavbar, StyledGridItem, StyledLink, StyledToolbar} from "./styles";
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/inji-logo.png";
+import DownloadAppStore from '../../assets/DownloadAppStore.svg';
+import DownloadFromGooglePlay from '../../assets/DownloadFromPlay.svg';
 
-const links = [];
+const links = ["About MOSIP"];
 
 function Navbar(props) {
 
@@ -22,21 +24,29 @@ function Navbar(props) {
                         <StyledGridItem item xs={3} onClick={() => {navigate('/')}}>
                             <img src={logo} alt='logo' width='116px' height='28px'/>
                         </StyledGridItem>
-                        <StyledGridItem item xs={9} style={{justifyContent: 'end'}}>
+                        <StyledGridItem item xs={5.5} style={{justifyContent: 'end'}}>
                             <Box>
                                 {
                                     links.map((link) => (
                                         <StyledLink key={link}>{link}</StyledLink>
                                     ))
                                 }
-                                <Tooltip title="Download INJI">
+                                {/* <Tooltip title="Download INJI">
                                     <DownloadButton>
                                         <Typography variant='body1' style={{font: "normal normal 600 14px/16px Inter", textTransform: "none"}}>
                                             Download Inji
                                         </Typography>
                                     </DownloadButton>
-                                </Tooltip>
+                                </Tooltip> */}
                             </Box>
+                        </StyledGridItem>
+                        <StyledGridItem item xs={3.5} style={{justifyContent: 'end'}}>
+                                <Tooltip title="Download INJI">
+                                    <img src={DownloadAppStore} width='155px' height='50px' style={{margin:'10px'}}/>
+                                </Tooltip>
+                                <Tooltip title="Download INJI">
+                                    <img src={DownloadFromGooglePlay} width='155px' height='50px' style={{margin:'10px'}}/>
+                                </Tooltip>
                         </StyledGridItem>
                     </Grid>
                 </StyledToolbar>

@@ -23,7 +23,7 @@ export default function InteractiveCard({ id, title, imageURL, actionIcon, onCli
                 border: "none"
             }}
         >
-            <AspectRatio ratio="1" sx={{minWidth: 50, height: 50, marginRight: "10px"}}>
+            <AspectRatio objectFit="contain" ratio="1" sx={{minWidth: 50, height: 50, marginRight: "10px"}}>
                 <img
                     sx={{minWidth: 50, height: 50}}
                     src={imageURL}
