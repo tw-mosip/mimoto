@@ -72,7 +72,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                 setFormatedOptions(response?.data?.response?.issuers.map((option) => {
                     return {
                         label: option?.display[0].name ,
-                        value: option?.display[0].name
+                        value: option?.credential_issuer,
+                        clientId: option?.client_id
                     }
                 }));
             } 
@@ -83,22 +84,25 @@ function SearchIssuers({options, setFilteredIssuerList}) {
 
     }, []);
 
+
+    function getReqValue (value) {
+        if (value) {
+            let reqValue = formatedOptions.filter(i => i.label === value);
+            navigate(`/issuers/${reqValue[0]?.value}`, {state: {issuerDisplayName: value, clientId: reqValue[0]?.clientId}} )
+        }
+    }
+
     function setFilterOptions(event) {
 
         let value = event?.target?.value;
 
-        console.log(event);
         if (event?.type === 'click' ) {
             value = event?.target?.outerText
-            if (value) {
-                navigate(`/issuers/${value}`)
-            }
+            getReqValue(value)
         }
         if (event.key === "Enter") {
             value = event.target.value
-            if (value) {
-                navigate(`/issuers/${value}`)
-            }
+            getReqValue(value);
         }
         
         if (value) {
@@ -110,7 +114,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                     setFormatedOptions(response?.data?.response?.issuers.map((option) => {
                         return {
                             label: option?.display[0].name ,
-                            value: option?.display[0].name
+                            value: option?.credential_issuer,
+                            clientId: option?.client_id
                         }
                     }));
                 } 

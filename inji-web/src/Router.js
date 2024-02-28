@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
         element: <Home />,
     },
     {
-        path: "/issuers/:issuerId/:displayName",
+        path: "/issuers/:issuerId",
         element: <Issuer/>,
     },
     {

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Grid, IconButton, Typography, Autocomplete, TextField} from "@mui/material";
+import {Grid, IconButton, Typography, Autocomplete, TextField, CircularProgress} from "@mui/material";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -33,9 +33,8 @@ const IssuerTitle = styled(Typography)`
     font-family: Inter;
 `;
 
-function Header({credentialsList, updateCredentialsList, defaultList}) {
+function Header({issuerDisplayName, loading, credentialsList, updateCredentialsList, defaultList}) {
     const navigate = useNavigate();
-    const { issuerId, displayName} = useParams();
     const [defaultOptions, setDefaultOptions] = useState([]);
 
     useEffect(() => {
@@ -51,7 +50,7 @@ function Header({credentialsList, updateCredentialsList, defaultList}) {
                             <BackArrow />
                         </IconButton>
                         <IssuerTitle>
-                            {displayName}
+                            {loading && !issuerDisplayName ? <CircularProgress/> : issuerDisplayName}
                         </IssuerTitle>
                     </Box>
                 </Grid>
