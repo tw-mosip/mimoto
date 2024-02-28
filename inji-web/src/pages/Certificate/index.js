@@ -29,11 +29,15 @@ const SuccessComponent = () => {
     );
 }
 
-const ResultBackButton = ({issuerId}) => {
+const ResultBackButton = ({issuerId, issuerDisplayName}) => {
     const navigate = useNavigate();
     return (
         <Button
-            onClick={() => {navigate(`/issuers/${issuerId}`)}}
+            onClick={() => {navigate(`/issuers/${issuerId}`, {
+                state: {
+                    issuerDisplayName
+                }
+            })}}
             style={{margin: '12px auto', color: 'black', border: '1px solid #E86E04', borderRadius: '12px', padding: '8px 12px'}}>
             <ArrowBackIcon style={{fontSize: '16px', marginRight: '12px'}}/>Back
         </Button>
@@ -52,6 +56,7 @@ const ResultBackButton = ({issuerId}) => {
 
 const DisplayComponent = ({message, inProgress}) => {
     const {issuerId} = useParams();
+    const issuerDisplayName = useLocation().state?.issuerDisplayName;
     switch (message) {
         case 'Invalid user credentials':
         case 'Failed to verify the user credentials':
@@ -64,7 +69,7 @@ const DisplayComponent = ({message, inProgress}) => {
                     <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <ResultBackButton issuerId={issuerId}/>
+                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
                 </Grid>
             </>);
         case 'Verifying credentials':
@@ -92,7 +97,7 @@ const DisplayComponent = ({message, inProgress}) => {
                         <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
                     </Grid>
                     <Grid item xs={12}>
-                        <ResultBackButton issuerId={issuerId}/>
+                        <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
                     </Grid>
                 </>
             );
@@ -106,7 +111,6 @@ function Certificate(props) {
     const { issuerId, certificateId } = useParams();
 
     useEffect(() => {
-        console.log(location);
         const searchParams = location.search?.replace("?", "")
             .split('&');
         const searchParamsMap = {};
