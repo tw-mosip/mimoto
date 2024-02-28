@@ -4,7 +4,7 @@ import Header from "./Header";
 import CertificateList from "./CertificateList";
 import _axios from 'axios';
 import {getCredentialsSupportedUrl, getSearchIssuersUrl} from "../../utils/config";
-import { useParams, useLocation } from 'react-router-dom';
+import {useParams, useLocation, useNavigate} from 'react-router-dom';
 import LoadingScreen from '../../utils/LoadingScreen';
 
 function Issuer() {
@@ -14,10 +14,11 @@ function Issuer() {
 
     const location = useLocation();
     const [issuerClientId, setIssuerClientId] = useState(location.state ? location.state['clientId'] : undefined);
-    const [issuerDisplayName, setIssuerDisplayName] = useState(location.state ? location.state['issuerDisplayName'] : undefined);
+    const issuerDisplayName = location.state?.issuerDisplayName;
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState();
 
+    const navigate = useNavigate();
 
     useEffect(() => {
         _axios.get(getCredentialsSupportedUrl(issuerId))
@@ -37,12 +38,12 @@ function Issuer() {
     useEffect(() => {
         // make an api call only when the state is not available
         if (issuerClientId && issuerDisplayName) return;
-        _axios.get(getSearchIssuersUrl(issuerDisplayName? issuerDisplayName : issuerId))
+        if (!issuerClientId && !issuerDisplayName) navigate("/issuers");// We need Display name to fetch the client id
+        _axios.get(getSearchIssuersUrl(issuerDisplayName))
             .then((response) => {
                 let issuers =  response.data.response.issuers;
                 if (issuers.length !== 0) {
                     setIssuerClientId(issuers[0].client_id);
-                    setIssuerDisplayName(issuers[0].display[0].name);
                 }
             })
             .catch((error) => {
@@ -58,7 +59,8 @@ function Issuer() {
                     loading={loading} updateCredentialsList={setCredentialsList} defaultList={defaultList}/>
             {loading 
                 ? <LoadingScreen />
-                : <CertificateList credentialList={credentialsList} issuerId={issuerId} clientId={issuerClientId}/>
+                : <CertificateList credentialList={credentialsList} issuerId={issuerId}
+                                   issuerDisplayName={issuerDisplayName} clientId={issuerClientId}/>
             }
         </PageTemplate>
     );

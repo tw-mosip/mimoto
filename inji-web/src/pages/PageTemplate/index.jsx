@@ -21,7 +21,11 @@ function PageTemplate({children}) {
                 return;
             }
             if (vcRedirectionDetails) {
-                navigate(`issuers/${vcRedirectionDetails.issuerId}/certificate/${vcRedirectionDetails.certificateId}` + location.search);
+                navigate(`issuers/${vcRedirectionDetails.issuerId}/certificate/${vcRedirectionDetails.certificateId}` + location.search, {
+                    state: {
+                        issuerDisplayName: vcRedirectionDetails.issuerDisplayName
+                    }
+                });
             }
         }
     }, []);

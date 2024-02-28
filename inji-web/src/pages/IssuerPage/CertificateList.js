@@ -22,7 +22,7 @@ const Title = styled(Typography)`
     margin-bottom: 10px;
 `;
 
-const getCardsData = (issuerId, credentialList, clientId) => {
+const getCardsData = (issuerId, issuerDisplayName, credentialList, clientId) => {
     return credentialList.map(cred => {
         return {
             imageUrl: cred.display[0].logo.url,
@@ -32,7 +32,14 @@ const getCardsData = (issuerId, credentialList, clientId) => {
                 let {codeVerifier, codeChallenge} = generateCodeChallenge();
                 let state = generateRandomString();
                 localStorage.setItem(DATA_KEY_IN_LOCAL_STORAGE,
-                    JSON.stringify({issuerId: issuerId, certificateId: cred.id, codeVerifier: codeVerifier, state: state, clientId: clientId}));
+                    JSON.stringify({
+                        issuerId,
+                        issuerDisplayName,
+                        certificateId: cred.id,
+                        codeVerifier: codeVerifier,
+                        state: state,
+                        clientId: clientId
+                    }));
                 window.location.replace(getESignetRedirectURL(cred.scope, clientId, codeChallenge, state));
             },
             clickable: true
@@ -40,8 +47,8 @@ const getCardsData = (issuerId, credentialList, clientId) => {
     });
 }
 
-function CertificateList({issuerId, credentialList, clientId}) {
-    const cards = getCardsData(issuerId, credentialList, clientId);
+function CertificateList({issuerId, issuerDisplayName, credentialList, clientId}) {
+    const cards = getCardsData(issuerId, issuerDisplayName, credentialList, clientId);
     return (
         <CertificatesBox>
             <Title variant='h6'>
