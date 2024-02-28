@@ -45,7 +45,7 @@ function CertificateList({issuerId, credentialList, clientId}) {
     return (
         <CertificatesBox>
             <Title variant='h6'>
-                List of Certificates
+                List of Credentials
             </Title>
             <GridComponent cards={cards}/>
         </CertificatesBox>

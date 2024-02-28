@@ -60,7 +60,7 @@ function Header({issuerDisplayName, loading, credentialsList, updateCredentialsL
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Search Certificate"
+                                label="Search Credentials"
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',

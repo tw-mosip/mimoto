@@ -7,10 +7,6 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-ENV REACT_APP_ESIGNET_UI_URL=
-ENV REACT_APP_ESIGNET_REDIRECT_URl=
-ENV REACT_APP_MIMOTO_URL=
-
 # Install Node.js dependencies
 RUN npm install
 

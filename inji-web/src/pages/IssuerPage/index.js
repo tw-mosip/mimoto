@@ -5,9 +5,10 @@ import CertificateList from "./CertificateList";
 import _axios from 'axios';
 import {getCredentialsSupportedUrl, getSearchIssuersUrl} from "../../utils/config";
 import { useParams, useLocation } from 'react-router-dom';
+import LoadingScreen from '../../utils/LoadingScreen';
 
 function Issuer() {
-    const { issuerId } = useParams();
+    const { issuerId, displayName } = useParams();
     const [credentialsList, setCredentialsList] = useState([]);
     const [defaultList, setDefaultList] = useState([]);
 
@@ -55,7 +56,10 @@ function Issuer() {
         <PageTemplate>
             <Header issuerDisplayName={issuerDisplayName} credentialsList={credentialsList}
                     loading={loading} updateCredentialsList={setCredentialsList} defaultList={defaultList}/>
-            <CertificateList credentialList={credentialsList} issuerId={issuerId} clientId={issuerClientId}/>
+            {loading 
+                ? <LoadingScreen />
+                : <CertificateList credentialList={credentialsList} issuerId={issuerId} clientId={issuerClientId}/>
+            }
         </PageTemplate>
     );
 }
