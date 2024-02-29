@@ -15,7 +15,7 @@ export default function InteractiveCard({ id, title, imageURL, actionIcon, onCli
             sx={{
                 '&:hover': {boxShadow: 'md', borderColor: 'neutral.outlinedHoverBorder'},
                 cursor: clickable ? 'pointer' : 'auto',
-                background: '#FFFFFF 0% 0% no-repeat padding-box',
+                background: '#F0F4F8 0% 0% no-repeat padding-box',
                 boxShadow: '0px 3px 6px #18479329',
                 borderRadius: '6px',
                 opacity: 1,
