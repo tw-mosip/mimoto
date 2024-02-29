@@ -20,7 +20,7 @@ export default function GridComponent({cards}) {
     <Box >
       <Grid
           container
-          spacing={{ xs: 2, md:1 }}
+          spacing={{ xs: 2, md:2 }}
           direction="row"
       >
           {cards.map((card, index) => (
