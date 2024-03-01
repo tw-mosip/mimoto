@@ -154,14 +154,14 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                         <Grid item xs={12}>
                             <Box style={{display: 'flex', justifyItems: 'center', alignContent: 'center', alignItems: 'center', justifyContent: 'center',margin:10}}>
                                 <PageTitle >
-                                    Downloading a certificate is one-click away!
+                                    Downloading a credential is one-click away!
                                 </PageTitle >
                             </Box>
                         </Grid>
                         <Grid item xs={12}>
                         <Box style={{display: 'flex', justifyItems: 'center', alignContent: 'center', alignItems: 'center', justifyContent: 'center', margin:10}}>
                                 <PageSubTitle>
-                                Please search for the issuer and in the next step, select certificate to download.
+                                Please search for the issuer and in the next step, select credential to download.
                                 </PageSubTitle>
                             </Box>
                         </Grid>
