@@ -20,8 +20,8 @@ const getCodeVerifierAndClientId = () => {
 }
 
 const getDownloadErrorMessage = (error) => {
-    if (!error || !error.data || !error.data.errors) return 'Failed to download the credentials';
-    return error.data.errors[0].errorMessage;
+    if (!error?.response?.data?.errors) return 'Failed to download the credentials';
+    return error.response.data.errors[0].errorMessage;
 };
 
 const ErrorComponent = () => {
