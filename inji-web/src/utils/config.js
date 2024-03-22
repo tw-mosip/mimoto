@@ -18,11 +18,11 @@ export const getESignetRedirectURL = (scope, clientId, codeChallenge, state) => 
 
 /* MIMOTO CONFIG */
 export const MIMOTO_URL = process.env.REACT_APP_MIMOTO_URL || "/v1/mimoto";
-export const FETCH_ISSUERS_URL = `${MIMOTO_URL}/v2/issuers`;
-export const getSearchIssuersUrl = (issuer) => `${MIMOTO_URL}/v2/issuers?search=${issuer}`;
-export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/v2/issuers/${issuerId}/credentials-supported`;
+export const FETCH_ISSUERS_URL = `${MIMOTO_URL}/issuers`;
+export const getSearchIssuersUrl = (issuer) => `${MIMOTO_URL}/issuers?search=${issuer}`;
+export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/issuers/${issuerId}/credentials-supported`;
 export const getFetchAccessTokenFromCodeApi = (issuer) => `${MIMOTO_URL}/get-token/${issuer}`;
-export const getVcDownloadAPI = (issuerId, credentialId) => `${MIMOTO_URL}/v2/issuers/${issuerId}/credentials/${credentialId}/download`;
+export const getVcDownloadAPI = (issuerId, credentialId) => `${MIMOTO_URL}/issuers/${issuerId}/credentials/${credentialId}/download`;
 
 /* MISC */
 export const DATA_KEY_IN_LOCAL_STORAGE = "vcDownloadDetails";
