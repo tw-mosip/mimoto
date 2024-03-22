@@ -19,6 +19,11 @@ const getCodeVerifierAndClientId = () => {
     return {clientId, codeVerifier};
 }
 
+const getDownloadErrorMessage = (error) => {
+    if (!error || !error.data || !error.data.errors) return 'Failed to download the credentials';
+    return error.data.errors[0].errorMessage;
+};
+
 const ErrorComponent = () => {
     return (<ErrorIcon style={{fontSize: '40px', color: 'red', margin: '12px auto'}}/>);
 };
@@ -136,8 +141,8 @@ function Certificate(props) {
                     setProgress(false);
                 })
                 .catch(error => {
-                    console.log(error)
-                    setMessage('Failed to download the credentials');
+                    console.error("Error occurred while downloading the credential. Error message: ", error);
+                    setMessage(getDownloadErrorMessage(error));
                     setProgress(false);
                 });
         })
