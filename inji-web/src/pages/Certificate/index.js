@@ -70,20 +70,6 @@ const DisplayComponent = ({message, inProgress}) => {
     const {issuerId} = useParams();
     const issuerDisplayName = useLocation().state?.issuerDisplayName;
     switch (message) {
-        case 'Invalid user credentials':
-        case 'Failed to verify the user credentials':
-        case 'Failed to download the credentials':
-            return (<>
-                <Grid item xs={12}>
-                    <ErrorComponent/>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
-                </Grid>
-            </>);
         case 'Verifying credentials':
         case 'Downloading credentials':
             return (
@@ -113,6 +99,22 @@ const DisplayComponent = ({message, inProgress}) => {
                     </Grid>
                 </>
             );
+        case 'Invalid user credentials':
+        case 'Failed to verify the user credentials':
+        case 'Failed to download the credentials':
+        default:
+            return (<>
+                <Grid item xs={12}>
+                    <ErrorComponent/>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
+                </Grid>
+            </>);
+
     }
 }
 
