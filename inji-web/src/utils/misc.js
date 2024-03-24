@@ -23,7 +23,7 @@ export const getUrlParamsMap = (searchString) => {
 export const getFileName = (contentDispositionHeader) => {
     if (!contentDispositionHeader) return null;
     // sample header value => Content-Disposition: 'attachment; filename="x"' and we need "x"
-    const filenameMatch = contentDispositionHeader.match(/filename="([^"]+)"/);
+    const filenameMatch = contentDispositionHeader.match(/filename=(.*?)(;|$)/);
     if (filenameMatch && filenameMatch.length > 1) {
         return filenameMatch[1];
     }
