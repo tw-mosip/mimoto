@@ -10,6 +10,7 @@ import Header from "./Header";
 import {fetchAccessToken} from "../../utils/oauth-utils";
 import {downloadCredentials} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
+import {CustomError} from "../../errors/CustomError";
 
 const getCodeVerifierAndClientId = () => {
     let details = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
@@ -20,8 +21,14 @@ const getCodeVerifierAndClientId = () => {
 }
 
 const getDownloadErrorMessage = (error) => {
-    if (!error?.response?.data?.errors) return 'Failed to download the credentials';
-    return error.response.data.errors[0].errorMessage;
+    try {
+        if (error instanceof CustomError) {
+            let responseErrorObject = JSON.parse(error.details.error);
+            if (responseErrorObject?.errors)
+                return responseErrorObject.errors[0].errorMessage;
+        }
+    } catch (exception) {}
+    return 'Failed to download the credentials';
 };
 
 const ErrorComponent = () => {
