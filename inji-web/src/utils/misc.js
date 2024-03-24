@@ -20,6 +20,16 @@ export const getUrlParamsMap = (searchString) => {
     return searchParamsMap;
 }
 
+export const getFileName = (contentDispositionHeader) => {
+    if (!contentDispositionHeader) return null;
+    // sample header value => Content-Disposition: 'attachment; filename="x"' and we need "x"
+    const filenameMatch = contentDispositionHeader.match(/filename="([^"]+)"/);
+    if (filenameMatch && filenameMatch.length > 1) {
+        return filenameMatch[1];
+    }
+    return null;
+};
+
 export const downloadCredentials = async (issuerId, certificateId, token) => {
     const response = await axios.get(getVcDownloadAPI(issuerId, certificateId), {
         headers: {/*
@@ -30,6 +40,7 @@ export const downloadCredentials = async (issuerId, certificateId, token) => {
         responseType: 'blob' // Set the response type to 'arraybuffer' to receive binary data
     });
     const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    let fileName = getFileName(response.headers['content-disposition']) ?? `${certificateId}.pdf`;
 
     // Create a temporary URL for the Blob
     const url = window.URL.createObjectURL(blob);
@@ -39,7 +50,7 @@ export const downloadCredentials = async (issuerId, certificateId, token) => {
     link.href = url;
 
     // Set the filename for download
-    link.setAttribute('download', `${certificateId}.pdf`);
+    link.setAttribute('download', fileName);
     link.setAttribute('target', '_blank'); // Open the link in a new tab or window
 
     // Trigger a click event to download the file
