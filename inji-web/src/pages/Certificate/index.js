@@ -10,6 +10,7 @@ import Header from "./Header";
 import {fetchAccessToken} from "../../utils/oauth-utils";
 import {downloadCredentials} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
+import {CustomError} from "../../errors/CustomError";
 
 const getCodeVerifierAndClientId = () => {
     let details = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
@@ -18,6 +19,17 @@ const getCodeVerifierAndClientId = () => {
     localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
     return {clientId, codeVerifier};
 }
+
+const getDownloadErrorMessage = (error) => {
+    try {
+        if (error instanceof CustomError) {
+            let responseErrorObject = JSON.parse(error.details.error);
+            if (responseErrorObject?.errors)
+                return responseErrorObject.errors[0].errorMessage;
+        }
+    } catch (exception) {}
+    return 'Failed to download the credentials';
+};
 
 const ErrorComponent = () => {
     return (<ErrorIcon style={{fontSize: '40px', color: 'red', margin: '12px auto'}}/>);
@@ -58,20 +70,6 @@ const DisplayComponent = ({message, inProgress}) => {
     const {issuerId} = useParams();
     const issuerDisplayName = useLocation().state?.issuerDisplayName;
     switch (message) {
-        case 'Invalid user credentials':
-        case 'Failed to verify the user credentials':
-        case 'Failed to download the credentials':
-            return (<>
-                <Grid item xs={12}>
-                    <ErrorComponent/>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
-                </Grid>
-            </>);
         case 'Verifying credentials':
         case 'Downloading credentials':
             return (
@@ -101,6 +99,22 @@ const DisplayComponent = ({message, inProgress}) => {
                     </Grid>
                 </>
             );
+        case 'Invalid user credentials':
+        case 'Failed to verify the user credentials':
+        case 'Failed to download the credentials':
+        default:
+            return (<>
+                <Grid item xs={12}>
+                    <ErrorComponent/>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
+                </Grid>
+            </>);
+
     }
 }
 
@@ -136,8 +150,8 @@ function Certificate(props) {
                     setProgress(false);
                 })
                 .catch(error => {
-                    console.log(error)
-                    setMessage('Failed to download the credentials');
+                    console.error("Error occurred while downloading the credential. Error message: ", error);
+                    setMessage(getDownloadErrorMessage(error));
                     setProgress(false);
                 });
         })
