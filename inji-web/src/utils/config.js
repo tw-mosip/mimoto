@@ -20,7 +20,7 @@ export const getESignetRedirectURL = (scope, clientId, codeChallenge, state) => 
 export const MIMOTO_URL = process.env.REACT_APP_MIMOTO_URL || "/v1/mimoto";
 export const FETCH_ISSUERS_URL = `${MIMOTO_URL}/issuers`;
 export const getSearchIssuersUrl = (issuer) => `${MIMOTO_URL}/issuers?search=${issuer}`;
-export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/issuers/${issuerId}/credentials-supported`;
+export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/issuers/${issuerId}/credentialTypes`;
 export const getFetchAccessTokenFromCodeApi = (issuer) => `${MIMOTO_URL}/get-token/${issuer}`;
 export const getVcDownloadAPI = (issuerId, credentialId) => `${MIMOTO_URL}/issuers/${issuerId}/credentials/${credentialId}/download`;
 
