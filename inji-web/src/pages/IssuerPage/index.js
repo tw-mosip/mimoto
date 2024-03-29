@@ -11,6 +11,7 @@ function Issuer() {
     const { issuerId, displayName } = useParams();
     const [credentialsList, setCredentialsList] = useState([]);
     const [defaultList, setDefaultList] = useState([]);
+    const [authEndpoint, setAuthEndpoint] = useState();
 
     const location = useLocation();
     const [issuerClientId, setIssuerClientId] = useState(location.state ? location.state['clientId'] : undefined);
@@ -23,9 +24,9 @@ function Issuer() {
     useEffect(() => {
         _axios.get(getCredentialsSupportedUrl(issuerId))
         .then(response => {
-            if (response?.data?.response?.supportedCredentials)
             setCredentialsList(response?.data?.response?.supportedCredentials);
             setDefaultList(response?.data?.response?.supportedCredentials);
+            setAuthEndpoint(response?.data?.response?.authorization_endpoint);
             setLoading(false);
         })
         .catch(error => {
@@ -60,6 +61,7 @@ function Issuer() {
             {loading 
                 ? <LoadingScreen />
                 : <CertificateList credentialList={credentialsList} issuerId={issuerId}
+                                   authEndpoint={authEndpoint}
                                    issuerDisplayName={issuerDisplayName} clientId={issuerClientId}/>
             }
         </PageTemplate>

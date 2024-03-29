@@ -1,11 +1,9 @@
 /* ESIGNET CONFIG */
-// nginx config redirects the request to esignet running in the same namespace
-export const ESIGNET_UI_URL = process.env.REACT_APP_ESIGNET_UI_URL || "";
 // Since it is to be redirected to the same application again
 export const ESIGNET_REDIRECT_URI = window.location.origin;
 
-export const getESignetRedirectURL = (scope, clientId, codeChallenge, state) => {
-    return `${ESIGNET_UI_URL}/authorize` +
+export const getESignetRedirectURL = (authEndpoint, scope, clientId, codeChallenge, state) => {
+    return `${authEndpoint}` +
         `?response_type=code&` +
         `client_id=${clientId}&` +
         `scope=${scope}&` +
