@@ -22,7 +22,7 @@ const Title = styled(Typography)`
     margin-bottom: 10px;
 `;
 
-const getCardsData = (issuerId, issuerDisplayName, credentialList, clientId) => {
+const getCardsData = (issuerId, issuerDisplayName, authEndpoint, credentialList, clientId) => {
     return credentialList.map(cred => {
         return {
             imageUrl: cred.display[0].logo.url,
@@ -40,15 +40,15 @@ const getCardsData = (issuerId, issuerDisplayName, credentialList, clientId) => 
                         state: state,
                         clientId: clientId
                     }));
-                window.location.replace(getESignetRedirectURL(cred.scope, clientId, codeChallenge, state));
+                window.location.replace(getESignetRedirectURL(authEndpoint, cred.scope, clientId, codeChallenge, state));
             },
             clickable: true
         }
     });
 }
 
-function CertificateList({issuerId, issuerDisplayName, credentialList, clientId}) {
-    const cards = getCardsData(issuerId, issuerDisplayName, credentialList, clientId);
+function CertificateList({issuerId, issuerDisplayName, authEndpoint, credentialList, clientId}) {
+    const cards = getCardsData(issuerId, issuerDisplayName, authEndpoint, credentialList, clientId);
     return (
         <CertificatesBox>
             <Title variant='h6'>
