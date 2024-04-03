@@ -59,10 +59,13 @@ const PageSubTitle = styled(Typography)`
     opacity: 1;
 `;
 
+let abortController = new AbortController();
+
 function SearchIssuers({options, setFilteredIssuerList}) {
     const navigate = useNavigate();
     const [formatedOptions, setFormatedOptions] = useState([]);
     const [defaultOptions, setDefaultOptions] = useState(options);
+    const [loadingIssuers, setLoadingIssuers] = useState(false);
 
     useEffect(() => {
         _axios.get(FETCH_ISSUERS_URL)
@@ -100,13 +103,15 @@ function SearchIssuers({options, setFilteredIssuerList}) {
             value = event?.target?.outerText
             getReqValue(value)
         }
-        if (event.key === "Enter") {
-            value = event.target.value
-            getReqValue(value);
-        }
-        
-        if (value) {
-            _axios.get(getSearchIssuersUrl(value))
+
+        setLoadingIssuers(true);
+        setFormatedOptions([]);
+
+        abortController.abort();
+        abortController = new AbortController();
+        _axios.get((!!value) ? getSearchIssuersUrl(value) : FETCH_ISSUERS_URL, {
+            signal: abortController.signal
+        })
             .then(response => {
                 if (response?.data?.response?.issuers) {
                     // setFilteredIssuerList(response?.data?.response?.issuers.filter(issuer => issuer?.display[0].name.toLowerCase().includes(value.toLowerCase())));
@@ -118,13 +123,14 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                             clientId: option?.client_id
                         }
                     }));
-                } 
+                }
             })
             .catch(error => {
                 console.error('Error fetching issuers:', error);
+            })
+            .finally(() => {
+                setLoadingIssuers(false);
             });
-        }
-
     }
 
     function onClickRedirect(event) {
@@ -167,6 +173,7 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                         </Grid>
                         <Grid item xs={12} style={{maxWidth: 800, marginTop: 70}}>
                             <Autocomplete
+                                loading={loadingIssuers}
                                 options={formatedOptions}
                                 freeSolo
                                 getOptionLabel={option => option.label} // Access label from option object
@@ -189,6 +196,12 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                                             ...params.InputProps,
                                             type: 'search',
                                             disableUnderline: true,
+                                            onKeyDown: (e) => {
+                                                // Stop from redirecting after pressing enter
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
+                                            }
                                         }}
                                         autoHighlight={true}
                                     />

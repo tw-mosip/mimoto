@@ -24,10 +24,10 @@ const getCardsData = (issuersList, navigate) => {
     return issuersList.map(issuer => {
         return {
             imageUrl: issuer.display[0].logo.url,
-            title: issuer.display[0].name,
+            title: issuer.display[0].title,
             icon: null,
             onClick: () => {
-                navigate(`/issuers/${issuer.credential_issuer}`, {state: {issuerDisplayName: issuer.display[0].name, clientId: issuer.client_id}})
+                navigate(`/issuers/${issuer.credential_issuer}`, {state: {issuerDisplayName: issuer.display[0].title, clientId: issuer.client_id}})
 
             },
             clickable: true
