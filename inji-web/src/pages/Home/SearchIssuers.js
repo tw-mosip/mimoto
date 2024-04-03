@@ -189,6 +189,12 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                                             ...params.InputProps,
                                             type: 'search',
                                             disableUnderline: true,
+                                            onKeyDown: (e) => {
+                                                // Stop from redirecting after pressing enter
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
+                                            }
                                         }}
                                         autoHighlight={true}
                                     />
