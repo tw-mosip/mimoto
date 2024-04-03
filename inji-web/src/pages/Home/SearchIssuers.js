@@ -61,6 +61,11 @@ const PageSubTitle = styled(Typography)`
 
 let abortController = new AbortController();
 
+const getSelectedIssuerObject = (formattedOptions, name) => {
+    let issuerDetails = formattedOptions.filter(option => option.label === name);
+    return issuerDetails?.length === 1 ? issuerDetails[0] : {}
+}
+
 function SearchIssuers({options, setFilteredIssuerList}) {
     const navigate = useNavigate();
     const [formatedOptions, setFormatedOptions] = useState([]);
@@ -76,7 +81,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                     return {
                         label: option?.display[0].name ,
                         value: option?.credential_issuer,
-                        clientId: option?.client_id
+                        clientId: option?.client_id,
+                        title: option?.display[0].title
                     }
                 }));
             } 
@@ -90,8 +96,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
 
     function getReqValue (value) {
         if (value) {
-            let reqValue = formatedOptions.filter(i => i.label === value);
-            navigate(`/issuers/${reqValue[0]?.value}`, {state: {issuerDisplayName: value, clientId: reqValue[0]?.clientId}} )
+            let reqValue = getSelectedIssuerObject(formatedOptions, value);
+            navigate(`/issuers/${reqValue?.value}`, {state: {issuerDisplayName: reqValue?.title, clientId: reqValue?.clientId}} )
         }
     }
 
@@ -120,7 +126,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                         return {
                             label: option?.display[0].name ,
                             value: option?.credential_issuer,
-                            clientId: option?.client_id
+                            clientId: option?.client_id,
+                            title: option?.display[0].title
                         }
                     }));
                 }
@@ -139,7 +146,8 @@ function SearchIssuers({options, setFilteredIssuerList}) {
         let value = event?.target?.value;
 
         if( value && value?.length> 0) {
-        navigate(`/issuers/${value}`)
+            const issuerDetails = getSelectedIssuerObject(formatedOptions, value);
+            navigate(`/issuers/${value}`, {state: {issuerDisplayName: issuerDetails?.title, clientId: issuerDetails?.clientId}});
         }
 
     }
