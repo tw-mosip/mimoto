@@ -59,6 +59,8 @@ const PageSubTitle = styled(Typography)`
     opacity: 1;
 `;
 
+let abortController = new AbortController();
+
 function SearchIssuers({options, setFilteredIssuerList}) {
     const navigate = useNavigate();
     const [formatedOptions, setFormatedOptions] = useState([]);
@@ -104,7 +106,12 @@ function SearchIssuers({options, setFilteredIssuerList}) {
 
         setLoadingIssuers(true);
         setFormatedOptions([]);
-        _axios.get((!!value) ? getSearchIssuersUrl(value) : FETCH_ISSUERS_URL)
+
+        abortController.abort();
+        abortController = new AbortController();
+        _axios.get((!!value) ? getSearchIssuersUrl(value) : FETCH_ISSUERS_URL, {
+            signal: abortController.signal
+        })
             .then(response => {
                 if (response?.data?.response?.issuers) {
                     // setFilteredIssuerList(response?.data?.response?.issuers.filter(issuer => issuer?.display[0].name.toLowerCase().includes(value.toLowerCase())));
