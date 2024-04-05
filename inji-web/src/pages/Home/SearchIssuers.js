@@ -85,13 +85,16 @@ function SearchIssuers() {
             getReqValue(value)
         }
 
-        // Clear the previous state
+        // Clear the previous state and abort the last request (search string has changed)
         setFormatedOptions([]);
         abortController.abort();
         abortController = new AbortController();
 
         // Do not show anything if the search box is empty
-        if (!(!!value)) { return; }
+        if (!(!!value)) {
+            setLoadingIssuers(false);
+            return;
+        }
 
         setLoadingIssuers(true);
         _axios.get(getSearchIssuersUrl(value), {
@@ -111,6 +114,8 @@ function SearchIssuers() {
                 }
             })
             .catch(error => {
+                // The older requests are aborted as we type and the search string changes
+                if (error.code === 'ERR_CANCELED') return;
                 console.error('Error fetching issuers:', error);
                 setLoadingIssuers(false);
             });
