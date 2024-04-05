@@ -66,33 +66,10 @@ const getSelectedIssuerObject = (formattedOptions, name) => {
     return issuerDetails?.length === 1 ? issuerDetails[0] : {}
 }
 
-function SearchIssuers({options, setFilteredIssuerList}) {
+function SearchIssuers() {
     const navigate = useNavigate();
     const [formatedOptions, setFormatedOptions] = useState([]);
-    const [defaultOptions, setDefaultOptions] = useState(options);
     const [loadingIssuers, setLoadingIssuers] = useState(false);
-
-    useEffect(() => {
-        _axios.get(FETCH_ISSUERS_URL)
-        .then(response => {
-            if (response?.data?.response?.issuers) {
-                setDefaultOptions(response?.data?.response?.issuers);
-                setFormatedOptions(response?.data?.response?.issuers.map((option) => {
-                    return {
-                        label: option?.display[0].name ,
-                        value: option?.credential_issuer,
-                        clientId: option?.client_id,
-                        title: option?.display[0].title
-                    }
-                }));
-            } 
-        })
-        .catch(error => {
-            console.error('Error fetching issuers:', error);
-        });
-
-    }, []);
-
 
     function getReqValue (value) {
         if (value) {
@@ -102,26 +79,26 @@ function SearchIssuers({options, setFilteredIssuerList}) {
     }
 
     function setFilterOptions(event) {
-
         let value = event?.target?.value;
-
         if (event?.type === 'click' ) {
             value = event?.target?.outerText
             getReqValue(value)
         }
 
-        setLoadingIssuers(true);
+        // Clear the previous state
         setFormatedOptions([]);
-
         abortController.abort();
         abortController = new AbortController();
-        _axios.get((!!value) ? getSearchIssuersUrl(value) : FETCH_ISSUERS_URL, {
+
+        // Do not show anything if the search box is empty
+        if (!(!!value)) { return; }
+
+        setLoadingIssuers(true);
+        _axios.get(getSearchIssuersUrl(value), {
             signal: abortController.signal
         })
             .then(response => {
                 if (response?.data?.response?.issuers) {
-                    // setFilteredIssuerList(response?.data?.response?.issuers.filter(issuer => issuer?.display[0].name.toLowerCase().includes(value.toLowerCase())));
-                    setDefaultOptions(response?.data?.response?.issuers);
                     setFormatedOptions(response?.data?.response?.issuers.map((option) => {
                         return {
                             label: option?.display[0].name ,
@@ -130,12 +107,11 @@ function SearchIssuers({options, setFilteredIssuerList}) {
                             title: option?.display[0].title
                         }
                     }));
+                    setLoadingIssuers(false);
                 }
             })
             .catch(error => {
                 console.error('Error fetching issuers:', error);
-            })
-            .finally(() => {
                 setLoadingIssuers(false);
             });
     }

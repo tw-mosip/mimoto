@@ -42,7 +42,7 @@ export default function Home(props) {
     // TODO: show a loader while loading and error message in case of any errors
     return (
         <PageTemplate>
-            <SearchIssuers options={issuersList} setFilteredIssuerList={setFilteredList}/>
+            <SearchIssuers/>
             {loading ? <LoadingScreen /> :
                 <IssuersList issuersList={ issuersList}/>
             }
