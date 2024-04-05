@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import _axios from 'axios';
 import {FETCH_ISSUERS_URL, getSearchIssuersUrl} from '../../utils/config';
 import { useNavigate } from 'react-router-dom';
+import {removeUinAndESignetIssuers} from "../../utils/misc";
 
 export const StyledHeader = styled(Box)`
     opacity: 1;
@@ -102,14 +103,18 @@ function SearchIssuers() {
         })
             .then(response => {
                 if (response?.data?.response?.issuers) {
-                    setFormatedOptions(response?.data?.response?.issuers.map((option) => {
-                        return {
-                            label: option?.display[0].name ,
-                            value: option?.credential_issuer,
-                            clientId: option?.client_id,
-                            title: option?.display[0].title
-                        }
-                    }));
+                    setFormatedOptions(response?.data?.response?.issuers
+                        .map((option) => {
+                            return {
+                                label: option?.display[0].name,
+                                value: option?.credential_issuer,
+                                clientId: option?.client_id,
+                                title: option?.display[0].title
+                            }
+                        })
+                        // remove these 2 issuers
+                        .filter(option => removeUinAndESignetIssuers(option.label))
+                    );
                     setLoadingIssuers(false);
                 }
             })
