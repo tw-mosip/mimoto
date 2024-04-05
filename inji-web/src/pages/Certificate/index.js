@@ -12,11 +12,11 @@ import {downloadCredentials} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
 import {CustomError} from "../../errors/CustomError";
 
-const getCodeVerifierAndClientId = () => {
-    let details = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
+const useCodeVerifierAndClientId = () => {
+    const [details, setDetails] = useState(JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}"));
+    localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
     let codeVerifier = details['codeVerifier'];
     let clientId = details['clientId'];
-    localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
     return {clientId, codeVerifier};
 }
 
@@ -124,7 +124,7 @@ function Certificate(props) {
     const [message, setMessage] = useState('Verifying credentials');
     const location = useLocation();
     const { issuerId, certificateId } = useParams();
-    let {clientId, codeVerifier} = getCodeVerifierAndClientId();
+    let {clientId, codeVerifier} = useCodeVerifierAndClientId();
 
     useEffect(() => {
         const searchParams = location.search?.replace("?", "")
