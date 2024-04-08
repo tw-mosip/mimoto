@@ -12,11 +12,11 @@ import {downloadCredentials} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
 import {CustomError} from "../../errors/CustomError";
 
-const getCodeVerifierAndClientId = () => {
-    let details = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
+const useCodeVerifierAndClientId = () => {
+    const [details, setDetails] = useState(JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}"));
+    localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
     let codeVerifier = details['codeVerifier'];
     let clientId = details['clientId'];
-    localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
     return {clientId, codeVerifier};
 }
 
@@ -41,13 +41,14 @@ const SuccessComponent = () => {
     );
 }
 
-const ResultBackButton = ({issuerId, issuerDisplayName}) => {
+const ResultBackButton = ({issuerId, issuerDisplayName, clientId}) => {
     const navigate = useNavigate();
     return (
         <Button
             onClick={() => {navigate(`/issuers/${issuerId}`, {
                 state: {
-                    issuerDisplayName
+                    issuerDisplayName,
+                    clientId
                 }
             })}}
             style={{margin: '12px auto', color: 'black', border: '1px solid #E86E04', borderRadius: '12px', padding: '8px 12px'}}>
@@ -66,7 +67,7 @@ const ResultBackButton = ({issuerId, issuerDisplayName}) => {
              download success
 */
 
-const DisplayComponent = ({message, inProgress}) => {
+const DisplayComponent = ({message, inProgress, clientId}) => {
     const {issuerId} = useParams();
     const issuerDisplayName = useLocation().state?.issuerDisplayName;
     switch (message) {
@@ -95,7 +96,7 @@ const DisplayComponent = ({message, inProgress}) => {
                         <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
                     </Grid>
                     <Grid item xs={12}>
-                        <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
+                        <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName} clientId={clientId}/>
                     </Grid>
                 </>
             );
@@ -111,7 +112,7 @@ const DisplayComponent = ({message, inProgress}) => {
                     <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName}/>
+                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName} clientId={clientId}/>
                 </Grid>
             </>);
 
@@ -123,6 +124,7 @@ function Certificate(props) {
     const [message, setMessage] = useState('Verifying credentials');
     const location = useLocation();
     const { issuerId, certificateId } = useParams();
+    let {clientId, codeVerifier} = useCodeVerifierAndClientId();
 
     useEffect(() => {
         const searchParams = location.search?.replace("?", "")
@@ -139,7 +141,6 @@ function Certificate(props) {
         }
         let code = searchParamsMap["code"];
         setMessage('Verifying credentials');
-        let {clientId, codeVerifier} = getCodeVerifierAndClientId();
 
         fetchAccessToken(issuerId, code, clientId, codeVerifier).then(response => {
             let token = response.data.access_token;
@@ -166,7 +167,7 @@ function Certificate(props) {
             <Header/>
             <Box style={{minHeight:'100vh', width:'90%', margin: '40px auto'}}>
                 <Grid container style={{ display: 'grid', justifyContent: 'center', justifyItems: 'center'}}>
-                    <DisplayComponent message={message} inProgress={progress}/>
+                    <DisplayComponent message={message} inProgress={progress} clientId={clientId}/>
                 </Grid>
             </Box>
         </PageTemplate>

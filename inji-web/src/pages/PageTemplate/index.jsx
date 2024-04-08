@@ -1,13 +1,16 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import {getUrlParamsMap} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
+import AlertMessage from "../../components/utils/AlertMessage";
 
 function PageTemplate({children}) {
     const location = useLocation();
     const navigate = useNavigate();
+    const [error, setError] = useState(location?.state?.error);
+    const [showAlert, setShowAlert] = useState(!!location?.state?.error);
 
     useEffect(() => {
         if (location.pathname !== "/") return;
@@ -17,7 +20,11 @@ function PageTemplate({children}) {
             let vcRedirectionDetails = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
             if (!sessionState || !vcRedirectionDetails || sessionState !== vcRedirectionDetails["state"]) {
                 console.error('invalid state');
-                navigate("/");
+                navigate("/", {
+                    state: {
+                        error: "Invalid session. Redirected to home page"
+                    }
+                });
                 return;
             }
             if (vcRedirectionDetails) {
@@ -34,6 +41,13 @@ function PageTemplate({children}) {
             <Navbar/>
             {children}
             <Footer/>
+            <AlertMessage
+                message={error}
+                severity='error'
+                handleClose={() => {
+                    setShowAlert(false);
+                }}
+                open={showAlert}/>
         </div>
     );
 }

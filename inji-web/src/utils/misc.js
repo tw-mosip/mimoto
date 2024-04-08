@@ -73,3 +73,6 @@ export const downloadCredentials = async (issuerId, certificateId, token) => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 };
+
+// Not present in this list
+export const removeUinAndESignetIssuers = (name) => ["UIN, VID, AID", "e-Signet"].indexOf(name) === -1;
