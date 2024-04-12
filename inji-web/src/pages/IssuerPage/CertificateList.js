@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import GridComponent from "../../components/molecules/GridComponent";
 import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
-import { IssuersData } from '../Home/testData';
+import {IssuersData} from '../Home/testData';
 import {DATA_KEY_IN_LOCAL_STORAGE, getESignetRedirectURL} from "../../utils/config";
 import {generateCodeChallenge, generateRandomString} from "../../utils/oauth-utils";
 import CustonDownloadButton from "../../components/atoms/CustomDownloadButton.js";
@@ -40,7 +40,7 @@ const getCardsData = (issuerId, issuerDisplayName, authEndpoint, credentialList,
                         state: state,
                         clientId: clientId
                     }));
-                window.location.replace(getESignetRedirectURL(authEndpoint, cred.scope, clientId, codeChallenge, state));
+                window.location.assign(getESignetRedirectURL(authEndpoint, cred.scope, clientId, codeChallenge, state));
             },
             clickable: true
         }
