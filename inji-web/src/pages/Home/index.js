@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Grid } from "@mui/material";
 import PageTemplate from "../PageTemplate";
 import Image from '../../assets/Background.svg';
@@ -5,7 +6,7 @@ import IssuersList from "../Home/IssuerList";
 import SearchIssuers from "../Home/SearchIssuers";
 import { useEffect, useState } from "react";
 import _axios from 'axios';
-import { IssuersData } from "./testData";
+import { SampleIssuersData } from "./testData";
 import {FETCH_ISSUERS_URL, MIMOTO_URL} from "../../utils/config";
 import LoadingScreen from "../../utils/LoadingScreen";
 import {removeUinAndESignetIssuers} from "../../utils/misc";

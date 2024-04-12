@@ -1,5 +1,12 @@
-import {render} from "@testing-library/react";
-import IssuerList from "./IssuerList.js";
+import React from "react";
+import {render, screen} from "@testing-library/react";
+import { act } from "react-dom/test-utils";
+import {SampleIssuersData} from "./testData";
+import * as axios from "axios";
+import Home from "./index";
+
+// Mock out all top level functions, such as get, put, delete and post:
+jest.mock("axios");
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'), // Use the actual implementation of react-router-dom
@@ -15,8 +22,16 @@ jest.mock('react-router-dom', () => ({
     }),
 }));
 
+jest.mock('../../assets/inji-logo.png', () => ({
+    ...jest.requireActual('../../assets/inji-logo.png'),
+    imageSrc: '../../assets/inji-logo.png.js', // Mock the src attribute to return a string value
+}));
+
 describe("Test home page", () => {
-    test("Issuer List", () => {
-        render(<IssuerList issuersList={[]}/>)
+    test("Home page rendering", async () => {
+        axios.get.mockImplementation(() => Promise.resolve({ data: SampleIssuersData }));
+        render(<Home/>);
+        expect(await screen.findByText("List of Issuers")).toBeVisible();
+        expect(await screen.findByText('Download Sunbird Credentials')).toBeInTheDocument()
     })
 })

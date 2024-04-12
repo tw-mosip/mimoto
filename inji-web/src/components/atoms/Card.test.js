@@ -32,6 +32,7 @@ test("Test Interactive Card", () => {
             id={card.id}
         />
     );
+    // check if the card is rendered and the on click handler(interaction) is fired as expected
     const cardElement = screen.getByTestId(card.id);
     expect(cardElement).toBeInTheDocument();
 
