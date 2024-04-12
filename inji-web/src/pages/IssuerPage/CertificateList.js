@@ -3,13 +3,13 @@ import GridComponent from "../../components/molecules/GridComponent";
 import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
-import { IssuersData } from '../Home/testData';
+import { SampleIssuersData } from '../Home/testData';
 import {DATA_KEY_IN_LOCAL_STORAGE, getESignetRedirectURL} from "../../utils/config";
 import {generateCodeChallenge, generateRandomString} from "../../utils/oauth-utils";
 import CustonDownloadButton from "../../components/atoms/CustomDownloadButton.js";
 
 
-export const issuerDetails = IssuersData;
+export const issuerDetails = SampleIssuersData;
 
 const CertificatesBox = styled(Box)`
     margin: 30px auto;

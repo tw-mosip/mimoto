@@ -197,7 +197,7 @@ function SearchIssuers() {
                                                 }
                                             }
                                         }}
-                                        autoHighlight={true}
+                                        autoFocus={true}
                                     />
                                   </Paper>
                                     

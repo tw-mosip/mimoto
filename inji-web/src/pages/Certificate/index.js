@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import PageTemplate from "../PageTemplate";
 import Box from "@mui/material/Box";
-import {CircularProgress, Grid, Modal, Typography, Button} from "@mui/material";
-import ErrorIcon from '@mui/icons-material/Error';
-import DoneIcon from '@mui/icons-material/Done';
+import {Grid, Button} from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import Header from "./Header";
@@ -11,6 +9,7 @@ import {fetchAccessToken} from "../../utils/oauth-utils";
 import {downloadCredentials} from "../../utils/misc";
 import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
 import {CustomError} from "../../errors/CustomError";
+import {DisplayComponent} from "./DisplayComponent";
 
 const useCodeVerifierAndClientId = () => {
     const [details, setDetails] = useState(JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}"));
@@ -30,94 +29,6 @@ const getDownloadErrorMessage = (error) => {
     } catch (exception) {}
     return 'Failed to download the credentials';
 };
-
-const ErrorComponent = () => {
-    return (<ErrorIcon style={{fontSize: '40px', color: 'red', margin: '12px auto'}}/>);
-};
-
-const SuccessComponent = () => {
-    return (
-        <DoneIcon style={{fontSize: '40px', color: 'green', margin: '12px auto'}}/>
-    );
-}
-
-const ResultBackButton = ({issuerId, issuerDisplayName, clientId}) => {
-    const navigate = useNavigate();
-    return (
-        <Button
-            onClick={() => {navigate(`/issuers/${issuerId}`, {
-                state: {
-                    issuerDisplayName,
-                    clientId
-                }
-            })}}
-            style={{margin: '12px auto', color: 'black', border: '1px solid #E86E04', borderRadius: '12px', padding: '8px 12px'}}>
-            <ArrowBackIcon style={{fontSize: '16px', marginRight: '12px'}}/>Back
-        </Button>
-    )
-}
-
-/*
-    cases
-    code not received
-    code received
-         get access token failed -
-         get access token success
-             download fails
-             download success
-*/
-
-const DisplayComponent = ({message, inProgress, clientId}) => {
-    const {issuerId} = useParams();
-    const issuerDisplayName = useLocation().state?.issuerDisplayName;
-    switch (message) {
-        case 'Verifying credentials':
-        case 'Downloading credentials':
-            return (
-                <Modal open={inProgress}>
-                    <Grid container style={{width: "35%", borderRadius: "12px",
-                        margin: "30vh auto", display: 'grid', justifyContent: 'center', justifyItems: 'center', background: "white"}}>
-                        <Grid item xs={12}>
-                            <CircularProgress style={{fontSize: '24px', margin: '12px auto'}}/>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
-                        </Grid>
-                    </Grid>
-                </Modal>
-            );
-        case 'Download complete':
-            return (
-                <>
-                    <Grid item xs={12}>
-                        <SuccessComponent/>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName} clientId={clientId}/>
-                    </Grid>
-                </>
-            );
-        case 'Invalid user credentials':
-        case 'Failed to verify the user credentials':
-        case 'Failed to download the credentials':
-        default:
-            return (<>
-                <Grid item xs={12}>
-                    <ErrorComponent/>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant='h6' style={{margin: '12px auto'}}>{message}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <ResultBackButton issuerId={issuerId} issuerDisplayName={issuerDisplayName} clientId={clientId}/>
-                </Grid>
-            </>);
-
-    }
-}
 
 function Certificate(props) {
     const [progress, setProgress] = useState(true);
