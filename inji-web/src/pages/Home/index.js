@@ -22,7 +22,7 @@ export default function Home(props) {
         _axios.get(FETCH_ISSUERS_URL)
         .then(response => {
             if (response?.data?.response?.issuers) {
-                setIssuersList(response?.data?.response?.issuers?.filter(issuer => removeUinAndESignetIssuers(issuer.display[0].name)));
+                setIssuersList(response?.data?.response?.issuers?.filter(issuer => removeUinAndESignetIssuers(issuer.display[0].title)));
             }
             setLoading(false);
         })

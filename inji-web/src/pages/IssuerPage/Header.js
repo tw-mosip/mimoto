@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {Grid, IconButton, Typography, Autocomplete, TextField, CircularProgress} from "@mui/material";
+import {Autocomplete, CircularProgress, Grid, IconButton, TextField, Typography} from "@mui/material";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-    getCertificatesAutoCompleteOptions
-} from "../../utils/misc";
+import {useNavigate} from 'react-router-dom';
+import {getCertificatesAutoCompleteOptions} from "../../utils/misc";
 
 export const StyledHeader = styled(Box)`
     background-color: #F2FBFF;
@@ -74,7 +72,7 @@ function Header({issuerDisplayName, loading, credentialsList, updateCredentialsL
                                     } else {
                                         updateCredentialsList(defaultOptions)
                                     }
-                                    
+
                                 }}
                                 onClick={(event) => {
                                     if (!event?.target?.value) {

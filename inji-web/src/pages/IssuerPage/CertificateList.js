@@ -40,7 +40,7 @@ const getCardsData = (issuerId, issuerDisplayName, authEndpoint, credentialList,
                         state: state,
                         clientId: clientId
                     }));
-                window.location.replace(getESignetRedirectURL(authEndpoint, cred.scope, clientId, codeChallenge, state));
+                window.location.assign(getESignetRedirectURL(authEndpoint, cred.scope, clientId, codeChallenge, state));
             },
             clickable: true
         }

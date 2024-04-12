@@ -106,7 +106,7 @@ function SearchIssuers() {
                     setFormatedOptions(response?.data?.response?.issuers
                         .map((option) => {
                             return {
-                                label: option?.display[0].name,
+                                label: option?.display[0].title,
                                 value: option?.credential_issuer,
                                 clientId: option?.client_id,
                                 title: option?.display[0].title

@@ -75,4 +75,4 @@ export const downloadCredentials = async (issuerId, certificateId, token) => {
 };
 
 // Not present in this list
-export const removeUinAndESignetIssuers = (name) => ["UIN, VID, AID", "e-Signet"].indexOf(name) === -1;
+export const removeUinAndESignetIssuers = (name) => ["Download MOSIP Credentials via OTP", "Download MOSIP Credentials"].indexOf(name) === -1;
