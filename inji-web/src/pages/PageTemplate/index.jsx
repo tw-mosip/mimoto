@@ -3,8 +3,8 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import {getUrlParamsMap} from "../../utils/misc";
-import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
 import AlertMessage from "../../components/utils/AlertMessage";
+import {getActiveSession} from "../../utils/sessionUtils";
 
 function PageTemplate({children}) {
     const location = useLocation();
@@ -17,7 +17,7 @@ function PageTemplate({children}) {
         let searchParamsMap = getUrlParamsMap(location.search);
         if (Object.keys(searchParamsMap).indexOf("code") !== -1) {
             let sessionState = searchParamsMap["state"];
-            let vcRedirectionDetails = JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}");
+            let vcRedirectionDetails = getActiveSession(sessionState);
             if (!sessionState || !vcRedirectionDetails || sessionState !== vcRedirectionDetails["state"]) {
                 console.error('invalid state');
                 navigate("/", {
