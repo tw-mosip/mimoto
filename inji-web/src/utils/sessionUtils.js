@@ -6,9 +6,9 @@ export const addNewSession = (session) => {
 }
 
 export const getAllActiveSession = () => {
-    const activeSession = localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE);
-    if(activeSession){
-        return JSON.parse(activeSession);
+    const activeSessions = localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE);
+    if(activeSessions){
+        return JSON.parse(activeSessions);
     }
     return [];
 }
