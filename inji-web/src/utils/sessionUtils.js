@@ -14,7 +14,8 @@ export const getAllActiveSession = () => {
 }
 
 export const getActiveSession = (state) => {
-    return getAllActiveSession().find(session => session.state === state);
+    const activeSession = getAllActiveSession().filter(session => session.state === state);
+    return activeSession.length>0 ? activeSession[0] : {};
 }
 
 export const removeActiveSession = (state) => {
