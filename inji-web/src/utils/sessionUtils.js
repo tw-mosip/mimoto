@@ -18,6 +18,6 @@ export const getActiveSession = (state) => {
 }
 
 export const removeActiveSession = (state) => {
-    const remainingSessions = getAllActiveSession().find(session => session.state !== state);
+    const remainingSessions = getAllActiveSession().filter(session => session.state !== state);
     localStorage.setItem(DATA_KEY_IN_LOCAL_STORAGE, JSON.stringify(remainingSessions));
 }
