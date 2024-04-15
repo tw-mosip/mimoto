@@ -13,7 +13,6 @@ on:
       - 1.*
       - develop
       - MOSIP*
-      - INJIWEB-126*
 
 jobs:
   build-dockers-inji-web:
