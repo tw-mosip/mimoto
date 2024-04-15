@@ -15,7 +15,6 @@ const useCodeVerifierAndClientId = (location) => {
     const details = getActiveSession(state);
     let codeVerifier = details['codeVerifier'];
     let clientId = details['clientId'];
-    removeActiveSession(state);
     return {clientId, codeVerifier};
 }
 
@@ -54,6 +53,8 @@ function Certificate(props) {
                 .then(response => {
                     setMessage('Download complete');
                     setProgress(false);
+                    const state =  getUrlParamsMap(location.search).state;
+                    removeActiveSession(state);
                 })
                 .catch(error => {
                     console.error("Error occurred while downloading the credential. Error message: ", error);
