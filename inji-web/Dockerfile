@@ -2,9 +2,7 @@
 FROM node:14 as build
 
 # Set the working directory in the container
-ENV work_dir=/app
-
-WORKDIR /home/${container_user}
+WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
@@ -20,11 +18,6 @@ RUN npm run build
 
 # Use an official Nginx image as the final production image
 FROM nginx:latest
-
-ARG container_user=mosip
-ARG container_user_group=mosip
-ARG container_user_uid=1001
-ARG container_user_gid=1001
 
 # Add the ARGs as environment variables
 ARG SOURCE
@@ -46,9 +39,5 @@ COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port 80
 EXPOSE 3004
 
-RUN chown -R ${container_user}:${container_user} /home/${container_user}
-
 # The main command to start Nginx when the container runs
 CMD ["nginx", "-g", "daemon off;"]
-
-USER ${container_user_uid}:${container_user_gid}
