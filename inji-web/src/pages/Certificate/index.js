@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from 'react';
 import PageTemplate from "../PageTemplate";
 import Box from "@mui/material/Box";
-import {Grid, Button} from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {Grid} from "@mui/material";
+import {useLocation, useParams} from "react-router-dom";
 import Header from "./Header";
 import {fetchAccessToken} from "../../utils/oauth-utils";
-import {downloadCredentials} from "../../utils/misc";
-import {DATA_KEY_IN_LOCAL_STORAGE} from "../../utils/config";
+import {downloadCredentials, getUrlParamsMap} from "../../utils/misc";
 import {CustomError} from "../../errors/CustomError";
 import {DisplayComponent} from "./DisplayComponent";
+import {getActiveSession, removeActiveSession} from "../../utils/sessionUtils";
 
-const useCodeVerifierAndClientId = () => {
-    const [details, setDetails] = useState(JSON.parse(localStorage.getItem(DATA_KEY_IN_LOCAL_STORAGE) || "{}"));
-    localStorage.removeItem(DATA_KEY_IN_LOCAL_STORAGE);
+const useCodeVerifierAndClientId = (location) => {
+    const state =  getUrlParamsMap(location.search).state;
+    const details = getActiveSession(state);
     let codeVerifier = details['codeVerifier'];
     let clientId = details['clientId'];
+    removeActiveSession(state);
     return {clientId, codeVerifier};
 }
 
@@ -35,16 +35,10 @@ function Certificate(props) {
     const [message, setMessage] = useState('Verifying credentials');
     const location = useLocation();
     const { issuerId, certificateId } = useParams();
-    let {clientId, codeVerifier} = useCodeVerifierAndClientId();
+    let {clientId, codeVerifier} = useCodeVerifierAndClientId(location);
 
     useEffect(() => {
-        const searchParams = location.search?.replace("?", "")
-            .split('&');
-        const searchParamsMap = {};
-        searchParams.forEach(param => {
-            let keyValue = param.split("=");
-            searchParamsMap[keyValue[0]] = keyValue[1];
-        });
+        const searchParamsMap = getUrlParamsMap(location.search);
         if (Object.keys(searchParamsMap).indexOf("code") === -1) {
             setMessage('Invalid user credentials');
             setProgress(false);

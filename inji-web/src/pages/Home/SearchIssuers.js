@@ -140,7 +140,7 @@ function SearchIssuers() {
     return (
         // <StyledHeader>
 
-                <Box                 
+                <Box
                 style={{
                     background: `transparent url(${Image}) 0% 0% no-repeat padding-box`,
                     opacity: 1,
@@ -148,7 +148,7 @@ function SearchIssuers() {
                     width: '100%',
                     backgroundImageWidth: '100%',
                     backgroundSize: 'cover'
-                    
+
                 }}>
                     <StyledGrid container>
                         <Grid item xs={12}>
@@ -169,7 +169,6 @@ function SearchIssuers() {
                             <Autocomplete
                                 loading={loadingIssuers}
                                 options={formatedOptions}
-                                freeSolo
                                 getOptionLabel={option => option.label} // Access label from option object
                                 onClick={onClickRedirect}
                                 onInputChange={setFilterOptions}
@@ -200,11 +199,11 @@ function SearchIssuers() {
                                         autoFocus={true}
                                     />
                                   </Paper>
-                                    
+
                                 )}
                             />
                         </Grid>
-                </StyledGrid> 
+                </StyledGrid>
             </Box>
 
 

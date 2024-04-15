@@ -22,5 +22,3 @@ export const getCredentialsSupportedUrl = (issuerId) => `${MIMOTO_URL}/issuers/$
 export const getFetchAccessTokenFromCodeApi = (issuer) => `${MIMOTO_URL}/get-token/${issuer}`;
 export const getVcDownloadAPI = (issuerId, credentialId) => `${MIMOTO_URL}/issuers/${issuerId}/credentials/${credentialId}/download`;
 
-/* MISC */
-export const DATA_KEY_IN_LOCAL_STORAGE = "vcDownloadDetails";
