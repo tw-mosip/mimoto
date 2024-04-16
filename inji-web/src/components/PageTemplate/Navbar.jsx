@@ -21,7 +21,10 @@ function Navbar(props) {
                         </StyledGridItem>
                         <StyledGridItem item xs={9} style={{justifyContent: 'end'}}>
                             <Box>
-                                <StyledLink href={"https://docs.mosip.io/inji"}>{"About Inji"}</StyledLink>
+                                <StyledLink href={"/help"}>{"Help"}</StyledLink>
+                            </Box>
+                            <Box>
+                                <StyledLink href={"https://docs.mosip.io/inji"} target="_blank" rel="noopener noreferrer">{"About Inji"}</StyledLink>
                             </Box>
                         </StyledGridItem>
                     </Grid>

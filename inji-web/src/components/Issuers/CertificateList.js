@@ -1,11 +1,11 @@
 import React from 'react';
-import GridComponent from "../../components/molecules/GridComponent";
+import GridComponent from "../molecules/GridComponent";
 import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import {getESignetRedirectURL} from "../../utils/config";
 import {generateCodeChallenge, generateRandomString} from "../../utils/oauth-utils";
-import CustonDownloadButton from "../../components/atoms/CustomDownloadButton.js";
+import CustonDownloadButton from "../atoms/CustomDownloadButton.js";
 import {addNewSession, } from "../../utils/sessionUtils";
 
 

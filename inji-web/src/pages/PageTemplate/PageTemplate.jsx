@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import Navbar from "../../components/PageTemplate/Navbar";
+import Footer from "../../components/PageTemplate/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import {getUrlParamsMap} from "../../utils/misc";
 import AlertMessage from "../../components/utils/AlertMessage";
 import {getActiveSession} from "../../utils/sessionUtils";
+import {ToastContainer} from "react-toastify";
 
 function PageTemplate({children}) {
     const location = useLocation();
@@ -41,6 +42,7 @@ function PageTemplate({children}) {
             <Navbar/>
             {children}
             <Footer/>
+            <ToastContainer />
             <AlertMessage
                 message={error}
                 severity='error'

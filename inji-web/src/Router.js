@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import Issuer from "./pages/IssuerPage";
-import Home from "./pages/Home";
-import Certificate from "./pages/Certificate";
+import Issuer from "./pages/IssuerPage/IssuersPage";
+import Home from "./pages/Home/HomePage";
+import Certificate from "./pages/Certificate/CertificatePage";
+import {HelpPage} from "./pages/Help/HelpPage";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
     },
     {
         path: "/issuers/:issuerId/certificate/:certificateId",
-        element: <Certificate/>,
+        element: <Certificate />,
+    },
+    {
+        path: "/help",
+        element: <HelpPage />,
     },
 ]);

@@ -1,21 +1,19 @@
 import React from "react";
-import { Box, Grid } from "@mui/material";
-import PageTemplate from "../PageTemplate";
-import Image from '../../assets/Background.svg';
-import IssuersList from "../Home/IssuerList";
-import SearchIssuers from "../Home/SearchIssuers";
+import PageTemplate from "../PageTemplate/PageTemplate";
+import IssuersList from "../../components/Home/IssuerList";
+import SearchIssuers from "../../components/Home/SearchIssuers";
 import { useEffect, useState } from "react";
 import _axios from 'axios';
-import { SampleIssuersData } from "./testData";
-import {FETCH_ISSUERS_URL, MIMOTO_URL} from "../../utils/config";
-import LoadingScreen from "../../utils/LoadingScreen";
+import {FETCH_ISSUERS_URL} from "../../utils/config";
+import LoadingScreen from "../../components/Common/LoadingScreen";
 import {removeUinAndESignetIssuers} from "../../utils/misc";
+import {toast} from "react-toastify";
 
 export default function Home(props) {
 
     const [issuersList, setIssuersList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState();
+    const [errorMessage, setErrorMessage] = useState("");
 
     // logic to fetch the list of IssuerPage on page load
     useEffect(() => {
@@ -27,9 +25,17 @@ export default function Home(props) {
             setLoading(false);
         })
         .catch(error => {
-            console.error('Error fetching issuers:', error);
+            toast.error("No issuers found. Please try again later.", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                progress: undefined,
+                theme: "colored"
+            });
+            console.error('Error fetching issuers:', error.message);
             setLoading(false);
-            setErrorMessage(error);
+            setErrorMessage(error.message);
         });
     }, []);
 

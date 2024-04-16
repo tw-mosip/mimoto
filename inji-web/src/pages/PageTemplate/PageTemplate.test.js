@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import axios from 'axios';
-import Footer from "./Footer.jsx";
-import Navbar from "./Navbar.jsx";
-import PageTemplate from "./index.jsx";
+import Footer from "../../components/PageTemplate/Footer.jsx";
+import Navbar from "../../components/PageTemplate/Navbar.jsx";
+import PageTemplate from "./PageTemplate.jsx";
 
 jest.mock('axios');
 jest.mock('react-router-dom', () => ({

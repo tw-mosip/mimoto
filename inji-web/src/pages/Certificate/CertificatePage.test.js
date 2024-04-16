@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {render, screen} from "@testing-library/react";
-import Certificate from "./index";
+import Certificate from "./CertificatePage";
 
 jest.mock('../../assets/inji-logo.png', () => ({
     ...jest.requireActual('../../assets/inji-logo.png'),

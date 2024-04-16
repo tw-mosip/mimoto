@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import PageTemplate from "../PageTemplate";
-import Header from "./Header";
-import CertificateList from "./CertificateList";
+import PageTemplate from "../PageTemplate/PageTemplate";
+import Header from "../../components/Issuers/Header";
+import CertificateList from "../../components/Issuers/CertificateList";
 import _axios from 'axios';
 import {getCredentialsSupportedUrl, getSearchIssuersUrl} from "../../utils/config";
 import {useParams, useLocation, useNavigate} from 'react-router-dom';
-import LoadingScreen from '../../utils/LoadingScreen';
+import LoadingScreen from '../../components/Common/LoadingScreen';
 
 function Issuer() {
     const { issuerId, displayName } = useParams();
@@ -58,7 +58,7 @@ function Issuer() {
         <PageTemplate>
             <Header issuerDisplayName={issuerDisplayName ? issuerDisplayName : issuerId} credentialsList={credentialsList}
                     loading={loading} updateCredentialsList={setCredentialsList} defaultList={defaultList}/>
-            {loading 
+            {loading
                 ? <LoadingScreen />
                 : <CertificateList credentialList={credentialsList} issuerId={issuerId}
                                    authEndpoint={authEndpoint}

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import PageTemplate from "../PageTemplate";
+import PageTemplate from "../PageTemplate/PageTemplate";
 import Box from "@mui/material/Box";
 import {Grid} from "@mui/material";
 import {useLocation, useParams} from "react-router-dom";
-import Header from "./Header";
+import Header from "../../components/Certificate/Header";
 import {fetchAccessToken} from "../../utils/oauth-utils";
 import {downloadCredentials, getUrlParamsMap} from "../../utils/misc";
 import {CustomError} from "../../errors/CustomError";
-import {DisplayComponent} from "./DisplayComponent";
+import {DisplayComponent} from "../../components/Certificate/DisplayComponent";
 import {getActiveSession, removeActiveSession} from "../../utils/sessionUtils";
 
 const useCodeVerifierAndClientId = (location) => {
