@@ -42,7 +42,7 @@ function PageTemplate({children}) {
             <Navbar/>
             {children}
             <Footer/>
-            <ToastContainer />
+            <ToastContainer style={{width: '450px'}}/>
             <AlertMessage
                 message={error}
                 severity='error'
