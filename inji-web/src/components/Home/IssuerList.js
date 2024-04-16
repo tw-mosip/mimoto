@@ -1,11 +1,11 @@
 import React from 'react';
-import GridComponent from "../../components/molecules/GridComponent";
+import GridComponent from "../molecules/GridComponent";
 import {Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 
 import { useNavigate } from 'react-router-dom';
-import CustonDownloadButton from "../../components/atoms/CustomDownloadButton.js";
+import Paper from "@mui/material/Paper";
 
 
 const IssuersBox = styled(Box)`
@@ -19,6 +19,10 @@ const Title = styled(Typography)`
     font: normal normal 600 20px/16px Inter;
     margin-bottom: 10px;
 `;
+
+const CenteredTypography = styled(Typography)`
+  text-align-last: center;
+`
 
 const getCardsData = (issuersList, navigate) => {
     return issuersList.map(issuer => {
@@ -35,6 +39,13 @@ const getCardsData = (issuersList, navigate) => {
     });
 }
 
+const PaperStyled = styled(Paper)`
+    margin: 30px auto;
+  padding: 40px;
+    max-width: 1140px;
+  
+`;
+
 function IssuersList({issuersList}) {
     const navigate = useNavigate();
     const cards = getCardsData(issuersList, navigate);
@@ -43,7 +54,10 @@ function IssuersList({issuersList}) {
             <Title variant='h6'>
                 List of Issuers
             </Title>
-            <GridComponent cards={cards}/>
+            {(issuersList.length === 0) ? <PaperStyled >
+                <CenteredTypography>{"No issuers found. Please refresh your browser window or try again later"}</CenteredTypography>
+            </PaperStyled> :<GridComponent cards={cards}/> }
+
         </IssuersBox>
     );
 }

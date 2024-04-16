@@ -1,9 +1,9 @@
 import React from "react";
 import {render, screen} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import {SampleIssuersData} from "./testData";
+import {SampleIssuersData} from "../../components/Home/testData";
 import * as axios from "axios";
-import Home from "./index";
+import Home from "./HomePage";
 
 // Mock out all top level functions, such as get, put, delete and post:
 jest.mock("axios");

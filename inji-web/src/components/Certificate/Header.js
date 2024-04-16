@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Grid, IconButton, Typography, Autocomplete, TextField} from "@mui/material";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
@@ -30,7 +30,7 @@ const CertificateTitle = styled(Typography)`
     font-family: Inter;
 `;
 
-function Header() {
+function Header({title}) {
     const navigate = useNavigate();
     const { issuerId, certificateId } = useParams();
 
@@ -43,7 +43,7 @@ function Header() {
                             <BackArrow />
                         </IconButton>
                         <CertificateTitle>
-                            {issuerId}
+                            {title ? title : issuerId}
                         </CertificateTitle>
                     </Box>
                 </Grid>

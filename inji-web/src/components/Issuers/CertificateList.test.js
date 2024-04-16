@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Certificate from "../Certificate";
+import Certificate from "../../pages/Certificate/CertificatePage";
 import CertificateList from "./CertificateList";
 import {SampleCredentialsSupportedData, SampleIssuersData} from "../Home/testData";
 
