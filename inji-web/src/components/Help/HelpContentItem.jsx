@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import {HorizontalLine} from "../atoms/HorizontalLine";
 
-export const HelpContentItem = ({panelId, expanded, handleChange, panelHeading, panelContent}) => {
+export const HelpContentItem = ({panelId, expanded, handleChange, panelHeading, panelContents}) => {
     return <Accordion expanded={expanded === panelId} onChange={handleChange(panelId)} style={{width: "200%", marginBottom: "20px"}}>
         <AccordionSummary
             expandIcon={<ArrowDropDownIcon />}
@@ -17,9 +17,10 @@ export const HelpContentItem = ({panelId, expanded, handleChange, panelHeading, 
             </Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <Typography style={{ padding: '5px' }}>
+            {panelContents.map(panelContent => <Typography style={{ padding: '5px' }}>
                 {panelContent}
-            </Typography>
+            </Typography>)}
+
         </AccordionDetails>
     </Accordion>
 }
