@@ -25,7 +25,7 @@ function installing_inji-web() {
   ESIGNET_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-esignet-host})
   INJI_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-injiweb-host})
   echo Installing INJIWEB
-  helm -n $NS install injiweb /home/abhi/devdsd/DSD-5029/inji-web/helm/inji-web \
+  helm -n $NS install injiweb mosip/inji-web \
   -f values.yaml \
   --set esignet_redirect_url=$ESIGNET_HOST \
   --set istio.hosts\[0\]=$INJI_HOST \
