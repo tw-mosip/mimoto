@@ -7,7 +7,7 @@ if [ $# -ge 1 ] ; then
 fi
 
 function Restarting_oidc-ui() {
-  NS=esignet
+  NS=injiweb
   kubectl -n $NS rollout restart deploy oidc-ui
 
   kubectl -n $NS  get deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status

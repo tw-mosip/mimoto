@@ -249,7 +249,6 @@ extraEnvVarsCM:
   - config-server-share
   - artifactory-share
   - softhsm-esignet-share
-  - oidc-ui
 
 ## Secret with extra environment variables
 ##
@@ -433,5 +432,5 @@ istio:
       portName: http
       port: 80
   hosts:
-    - inji.sandbox.xyz.net
+    - injiweb.sandbox.xyz.net
   prefix: /
