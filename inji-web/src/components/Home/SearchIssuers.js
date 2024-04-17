@@ -183,7 +183,7 @@ function SearchIssuers() {
 
                                     <TextField
                                         {...params}
-                                        placeholder="Search issuers"
+                                        placeholder="Search Issuers by name"
                                         variant="standard"
                                         InputProps={{
                                             ...params.InputProps,

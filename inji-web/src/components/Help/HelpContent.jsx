@@ -34,12 +34,17 @@ const data = [
     {
         panelId: "panel6",
         panelHeading: "What details are present in the PDF credential?",
-        panelContents: ["Details collected as part of the registration process will be presented in the PDF. At present, for Insurance use case, one can find Policy details like Name, DoB, "]
+        panelContents: ["Details collected as part of the registration process will be presented in the PDF. At present, for Insurance use case, one can find Policy details like Name, DoB"]
     },
     {
         panelId: "panel7",
         panelHeading: "Why I am not finding the list of issuers?",
-        panelContents: ["We’re sorry you stumbled upon an error. However, please check if the issuers' end point is available. If the end point health check is good, please check if the issuers list is configured in the mimoto-issuers config.json."]
+        panelContents: [
+            "Possible reasons for this issue include:",
+            "1. Technical errors may render the service temporarily unavailable, preventing you from accessing the list of issuers. (OR)",
+            "2. No issuers have been configured.",
+            "In either case, please contact your technical team to address the issue."
+        ]
     }
 ]
 
