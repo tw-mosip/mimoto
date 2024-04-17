@@ -54,11 +54,11 @@ function Header({issuerDisplayName, loading, credentialsList, updateCredentialsL
                 </Grid>
                 <Grid item xs={6}>
                     <Autocomplete
-                        options={getCertificatesAutoCompleteOptions(defaultOptions)}
+                        options={[]}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Search Credentials"
+                                label="Search Credentials Type"
                                 InputProps={{
                                     ...params.InputProps,
                                     type: 'search',

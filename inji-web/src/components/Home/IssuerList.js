@@ -55,7 +55,7 @@ function IssuersList({issuersList}) {
                 List of Issuers
             </Title>
             {(issuersList.length === 0) ? <PaperStyled >
-                <CenteredTypography>{"No issuers found. Please refresh your browser window or try again later"}</CenteredTypography>
+                <CenteredTypography>{"No issuers found. Please try again later."}</CenteredTypography>
             </PaperStyled> :<GridComponent cards={cards}/> }
 
         </IssuersBox>
