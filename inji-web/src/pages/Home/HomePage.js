@@ -25,7 +25,7 @@ export default function Home(props) {
             setLoading(false);
         })
         .catch(error => {
-            toast.error("No issuers found. Please try again later.", {
+            toast.error("The service is currently unavailable now. Please try again later.", {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: true,
