@@ -12,6 +12,18 @@ CHART_VERSION=0.0.1-develop
 echo Create $NS namespace
 kubectl create ns $NS
 
+function ensure_injiweb_host() {
+  # Check if mosip-injiweb-host is present in global config map of config-server
+  if ! kubectl get cm config-server -n $NS -o jsonpath='{.data}' | grep -q 'mosip-injiweb-host'; then
+    echo "Adding mosip-injiweb-host to config-server global config map"
+    kubectl patch configmap config-server -n $NS --type json -p '[{"op": "add", "path": "/data/mosip-injiweb-host", "value": "injiweb.sandbox.xyz.net"}]'
+    # Restart config-server
+    kubectl rollout restart deployment config-server -n $NS
+  else
+    echo "mosip-injiweb-host already present in config-server global config map"
+  fi
+}
+
 function installing_inji-web() {
   echo Istio label
   kubectl label ns $NS istio-injection=enabled --overwrite
