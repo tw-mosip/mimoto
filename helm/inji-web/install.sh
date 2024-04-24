@@ -14,7 +14,7 @@ kubectl create ns $NS
 
 function ensure_injiweb_host() {
   # Check if mosip-injiweb-host is present in global config map of config-server
-  if ! kubectl get cm config-server -n $NS -o jsonpath='{.data}' | grep -q 'mosip-injiweb-host'; then
+  if ! kubectl get cm config-server -n $NS -o jsonpath='{.data.mosip-esignet-host}' | grep -q 'mosip-injiweb-host'; then
     echo "Adding mosip-injiweb-host to config-server global config map"
     kubectl patch configmap config-server -n $NS --type json -p '[{"op": "add", "path": "/data/mosip-injiweb-host", "value": "injiweb.sandbox.xyz.net"}]'
     # Restart config-server
