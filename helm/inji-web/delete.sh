@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstalls injiweb-ui helm charts
+# Uninstalls injiweb helm charts
 ## Usage: ./delete.sh [kubeconfig]
 
 if [ $# -ge 1 ] ; then
@@ -7,12 +7,12 @@ if [ $# -ge 1 ] ; then
 fi
 
 function Deleting_injiweb-ui() {
-  NS=esignet
+  NS=injiweb
   while true; do
       read -p "Are you sure you want to delete all esignet helm charts?(Y/n) " yn
       if [ $yn = "Y" ]
         then
-          helm -n $NS delete injiweb-ui
+          helm -n $NS delete injiweb
           break
         else
           break
