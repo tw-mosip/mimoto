@@ -9,6 +9,29 @@ fi
 NS=injiweb
 CHART_VERSION=0.0.1-develop
 
+
+read -p "Please provide injiwebhost (eg: injiweb.sandbox.xyz.net ) : " MOSIP_INIEB_HOST
+
+if [ -z "MOSIP_INIEB_HOST" ]; then
+  echo "INJIWEB Host not provided; EXITING;"
+  exit 0;
+fi
+
+function ensure_injiweb_host() {
+  # Check if mosip-injiweb-host is present in global config map of config-server
+  if ! kubectl get cm config-server --from configmap/global -o jsonpath='{.data.mosip-injiweb-host}' | grep -q "$MOSIP_INIEB_HOST"; then
+    echo "Adding $MOSIP_INIEB_HOST to config-server global config map"
+    kubectl patch configmap config-server -n $NS --type json -p "[{\"op\": \"add\", \"path\": \"/data/mosip-injiweb-host\", \"value\": \"$MOSIP_INIEB_HOST\"}]"
+    kubectl -n config-server set env --keys=mosip-injiweb-host --from configmap/global deployment/config-server --prefix=SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_SOFTHSM_MOCK_IDENTITY_SYSTEM_
+    # Restart config-server
+    kubectl -n config-server  get deploy -o name |  xargs -n1 -t  kubectl -n config-server rollout status
+  else
+    echo "$MOSIP_INIEB_HOST already present in config-server global config map"
+  fi
+}
+
+
+
 echo Create $NS namespace
 kubectl create ns $NS
 
