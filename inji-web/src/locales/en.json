@@ -1,0 +1,79 @@
+{
+  "PageTemplate": {
+    "Header": {
+      "aboutInji": "About Inji",
+      "help": "Help"
+    },
+    "Footer": {
+      "copyRight": "© 2024 Inji. All rights reserved."
+    }
+  },
+  "HomePage": {
+    "Intro": {
+      "title": "Downloading a certificate is one-click away!",
+      "subTitle": "Please search for the issuer and in the next step, select certificate to download.",
+      "searchText": "Search Issuers by name.."
+    },
+    "emptyContainerContent": "No issuers found. Please refresh your browser window or try again later",
+    "containerHeading": "List of Issuers"
+  },
+  "CredentialsPage": {
+    "searchText": "Search Credential Type..",
+    "emptyContainerContent": "No Credentials found. Please refresh your browser window or try again later",
+    "containerHeading": "List of Credential Types"
+  },
+  "RedirectionPage": {
+    "success": {
+      "title": "Download Success",
+      "subTitle": "PDF is generated"
+    },
+    "error": {
+      "invalidSession": {
+        "title": "Invalid Session",
+        "subTitle": "session is not valid or session is completed"
+      },
+      "generic": {
+        "title": "Download Failed",
+        "subTitle": "something went wrong, please try again later"
+      }
+    }
+  },
+  "HelpPage": {
+    "title": "Help"
+  },
+  "Help": {
+    "item1": {
+      "title": "Who are issuers?",
+      "description1": "Issuers are either governmental bodies or entities trusted by the government, responsible for providing verifiable credentials in PDF format to residents upon request."
+    },
+    "item2": {
+      "title": "What are verifiable credentials?",
+      "description1": "Verifiable credentials are digital documents that help users to share information like identity or qualifications to the service provider which can be instantly verified. They're issued by trusted entities and can be cryptographically verified for authenticity. These credentials streamline identity verification processes."
+    },
+    "item3": {
+      "title": "How can I download a credential in Inji Web?",
+      "description1": "Step 1: Search & choose an Issuer from the landing page and select a credential type.",
+      "description2": "Step 2: In the authentication page, provide required details",
+      "description3": "Step 3: PDF format of the verifiable credential will be downloaded into the system."
+    },
+    "item4": {
+      "title": "What details I need to provide to download my credential?",
+      "description1": "The credential issuer would have provided details like UIN/VID in case of MOSIP National ID or Policy number, Name and DoB for an Insurance card. This information has to be fed to the authentication system to enable download."
+    },
+    "item5": {
+      "title": "Where can I find my credential?",
+      "description1": "The verifiable credential will be downloaded into the Downloads folder of your system."
+    },
+    "item6": {
+      "title": "What details are present in the PDF credential?",
+      "description1": "Details collected as part of the registration process will be presented in the PDF. At present, for Insurance use case, one can find Policy details like Name, DoB"
+    },
+    "item7": {
+      "title": "Why I am not finding the list of issuers?",
+      "description1": "Possible reasons for this issue include:",
+      "description2": "1. Technical errors may render the service temporarily unavailable, preventing you from accessing the list of issuers.",
+      "description3": "2. No issuers have been configured.",
+      "description4": "In either case, please contact your technical team to address the issue."
+    }
+  }
+}

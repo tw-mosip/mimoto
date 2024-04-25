@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .bg {
+        background: transparent url('./assets/Background.svg') no-repeat;
+        background-size: 100% 50%;
+        opacity: 1;
+    }
+
+    .root {
+        @apply flex flex-col min-h-screen bg
+    }
+
+    .root-body {
+        @apply fixed top-20 left-0 right-0
+    }
+}
