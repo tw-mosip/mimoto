@@ -18,17 +18,18 @@ if [ -z "MOSIP_INIEB_HOST" ]; then
 fi
 
 # Check if MOSIP_INJIWEB_HOST is present under configmap/global of configserver
-if kubectl get cm global -o jsonpath={.data.mosip-injiweb-host} | grep -q "MOSIP_INJIWEB_HOST"; then
+if kubectl get cm global -n config-server -o jsonpath={.data.mosip-injiweb-host} | grep -q "MOSIP_INJIWEB_HOST"; then
     echo "MOSIP_INJIWEB_HOST is already present in configmap/global of configserver"
 else
     echo "MOSIP_INJIWEB_HOST is not present in configmap/global of configserver"
     # Add injiweb host to global
-    kubectl patch configmap config-server -n configmap/global --type merge -p "{\"data\": {\"mosip-injiweb-host\": \"$MOSIP_INIEB_HOST\"}}"
+    kubectl patch configmap global --type merge -p "{\"data\": {\"mosip-injiweb-host\": \"$MOSIP_INIEB_HOST\"}}"
     # Add the host
     kubectl set env deployment/config-server SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_MOSIP_ESIGNET_INJIWEB_HOST=$MOSIP_INJIWEB_HOST -n config-server
     # Restart the configserver deployment
     kubectl -n config-server get deploy -o name | xargs -n1 -t kubectl -n config-server rollout restart
 fi
+
 
 echo Create $NS namespace
 kubectl create ns $NS
