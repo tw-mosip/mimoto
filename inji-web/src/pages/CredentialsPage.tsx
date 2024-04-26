@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {useParams} from "react-router-dom";
-import {useFetch} from "../hooks/useFetch";
+import {RequestStatus, useFetch} from "../hooks/useFetch";
 import {NavBar} from "../components/Common/NavBar";
 import {CredentialList} from "../components/Credentials/CredentialList";
 import {useDispatch} from "react-redux";
@@ -9,10 +9,11 @@ import {storeCredentials} from "../redux/reducers/credentialsReducer";
 import {api, MethodType} from "../utils/api";
 import {HeaderTile} from "../components/Common/HeaderTile";
 import {useTranslation} from "react-i18next";
+import {toast} from "react-toastify";
 
 export const CredentialsPage: React.FC = () => {
 
-    const {fetchRequest} = useFetch();
+    const {state, fetchRequest} = useFetch();
     const params = useParams<CredentialParamProps>();
     const dispatch = useDispatch();
     const {t} = useTranslation("CredentialsPage");
@@ -28,12 +29,15 @@ export const CredentialsPage: React.FC = () => {
         fetchCall();
     }, [])
 
+    if (state === RequestStatus.ERROR) {
+        toast.error(t("errorContent"));
+    }
 
     return <React.Fragment>
         <div className="bg-white min-h-screen" data-testid="Credentials-Page-Container">
-            <NavBar title={params.issuerId} search={true}/>
+            <NavBar title={params.issuerId} search={true} fetchRequest={fetchRequest}/>
             <HeaderTile content={t("containerHeading")}/>
-            <CredentialList/>
+            <CredentialList state={state}/>
         </div>
     </React.Fragment>
 }

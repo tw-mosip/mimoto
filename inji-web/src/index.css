@@ -9,11 +9,15 @@
         opacity: 1;
     }
 
+    .rootContainer {
+        font-family: Inter, serif;
+    }
+
     .root {
         @apply flex flex-col min-h-screen bg
     }
 
     .root-body {
-        @apply fixed top-20 left-0 right-0
+        @apply fixed top-20 left-0 right-0 h-5/6
     }
 }

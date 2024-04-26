@@ -26,6 +26,7 @@ export const LanguageSelector: React.FC = () => {
             <select
                 defaultValue={currentLanguage}
                 id="language"
+                className={"cursor-pointer"}
                 data-testid="Language-Selector-Options"
                 onChange={(event) => handleChange(event.target.value)}>
                 <option value={"en"}>English</option>

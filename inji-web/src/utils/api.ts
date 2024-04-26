@@ -8,7 +8,7 @@ export enum MethodType {
 
 export class api {
 
-    //static mimotoHost = "/v1/mimoto";
+    // static mimotoHost = "http://localhost:3010";
     static mimotoHost = window.location.origin + "/v1/mimoto";
 
     static authorizationRedirectionUrl = window.location.origin + "/redirect";
@@ -27,7 +27,7 @@ export class api {
             `code_challenge=${code_challenge.codeChallenge}&` +
             `code_challenge_method=S256`;
     }
-    static fetchToken = (issuer: string) => `/get-token/${issuer}`;
+    static fetchToken = (issuer: string): string => `/get-token/${issuer}`;
     static vcDownload = (issuerId: string, credentialId: string) => `${api.mimotoHost}/${issuerId}/credentials/${credentialId}/download`;
     static fetchRequest = async (uri: string, method: MethodType, body?: any) => {
         let responseJson: (ResponseTypeObject) = {};

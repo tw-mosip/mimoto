@@ -15,12 +15,14 @@
       "searchText": "Search Issuers by name.."
     },
     "emptyContainerContent": "No issuers found. Please refresh your browser window or try again later",
-    "containerHeading": "List of Issuers"
+    "containerHeading": "List of Issuers",
+    "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "CredentialsPage": {
     "searchText": "Search Credential Type..",
     "emptyContainerContent": "No Credentials found. Please refresh your browser window or try again later",
-    "containerHeading": "List of Credential Types"
+    "containerHeading": "List of Credential Types",
+    "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "RedirectionPage": {
     "success": {

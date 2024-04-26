@@ -1,4 +1,4 @@
-import {CredentialWellknownObject, IssuerObject} from "./data";
+import {CredentialWellknownObject, IssuerObject, ResponseTypeObject} from "./data";
 import React from "react";
 
 export type ItemBoxProps = {
@@ -11,6 +11,7 @@ export type ItemBoxProps = {
 export type NavBarProps = {
     title: string;
     search: boolean;
+    fetchRequest: () => ResponseTypeObject;
 }
 export type CredentialProps = {
     credential: CredentialWellknownObject;
@@ -39,4 +40,7 @@ export type EmptyListContainerProps = {
 
 export type HeaderTileProps = {
     content: string;
+}
+export type SearchIssuerProps = {
+    fetchRequest: () => ResponseTypeObject
 }

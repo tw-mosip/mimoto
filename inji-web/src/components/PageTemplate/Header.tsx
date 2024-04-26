@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
             <div className="container mx-auto flex justify-between items-center px-4">
                 <div onClick={() => navigate("/")}>
                     <img src={require("../../assets/InjiWebLogo.png")}
-                         className={"h-13 w-28"}
+                         className={"h-13 w-28 cursor-pointer"}
                          data-testid="Header-InjiWeb-Logo"
                          alt="Inji Web Logo"/>
                 </div>
@@ -21,13 +21,14 @@ export const Header: React.FC = () => {
                     <ul className="flex space-x-4 items-center">
                         <li data-testid="Header-Menu-Help">
                             <div onClick={() => navigate("/help")}
-                                 className="text-black font-bold">{t("Header.help")}</div>
+                                 className="text-black font-bold cursor-pointer">{t("Header.help")}</div>
                         </li>
                         <li data-testid="Header-Menu-AboutInji"><a href="https://docs.mosip.io/inji" target="_blank"
                                                                    rel="noreferrer"
                                                                    className="text-black font-bold">{t("Header.aboutInji")}</a>
                         </li>
-                        <li data-testid="Header-Menu-LanguageSelector"><LanguageSelector/></li>
+                        <li data-testid="Header-Menu-LanguageSelector"><LanguageSelector/>
+                        </li>
                     </ul>
                 </nav>
             </div>

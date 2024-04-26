@@ -41,7 +41,7 @@ export const RedirectionPage: React.FC = () => {
                 }
                 const requestBody = new URLSearchParams(bodyJson);
 
-                const response = await fetchRequest(api.fetchToken(issuerId) + `?code=${code}&clientId=${clientId}&codeVerifier=${codeVerifier}`, MethodType.POST, requestBody);
+                const response = await fetchRequest(api.fetchToken(issuerId), MethodType.POST, requestBody);
                 await api.invokeDownloadCredential(issuerId, certificateId, response?.access_token)
                 if (urlState != null) {
                     removeActiveSession(urlState);

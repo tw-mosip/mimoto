@@ -5,13 +5,19 @@ import {CredentialWellknownObject} from "../../types/data";
 import {RootState} from "../../types/redux";
 import {EmptyListContainer} from "../Common/EmptyListContainer";
 import {useTranslation} from "react-i18next";
+import {RequestStatus} from "../../hooks/useFetch";
+import {SpinningLoader} from "../Common/SpinningLoader";
 
-export const CredentialList: React.FC = () => {
+export const CredentialList: React.FC<CredentialListProps> = ({state}) => {
 
     const credentials = useSelector((state: RootState) => state.credentials);
     const {t} = useTranslation("CredentialsPage");
 
-    if (!credentials?.credentials) {
+    if (state === RequestStatus.LOADING) {
+        return <SpinningLoader/>
+    }
+
+    if (state === RequestStatus.ERROR || !credentials?.credentials || (credentials?.credentials && credentials?.credentials.length === 0)) {
         return <EmptyListContainer content={t("emptyContainerContent")}/>
     }
 
@@ -26,3 +32,7 @@ export const CredentialList: React.FC = () => {
     </React.Fragment>
 }
 
+
+type CredentialListProps = {
+    state: RequestStatus;
+}

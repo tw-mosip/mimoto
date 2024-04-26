@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {useFetch} from "../hooks/useFetch";
+import {RequestStatus, useFetch} from "../hooks/useFetch";
 import {IntroBox} from "../components/Common/IntroBox";
 import {SearchIssuer} from "../components/Issuers/SearchIssuer";
 import {IssuersList} from "../components/Issuers/IssuersList";
@@ -9,10 +9,11 @@ import {api, MethodType} from "../utils/api";
 import {IssuerObject} from "../types/data";
 import {HeaderTile} from "../components/Common/HeaderTile";
 import {useTranslation} from "react-i18next";
+import {toast} from "react-toastify";
 
 export const HomePage: React.FC = () => {
 
-    const {fetchRequest} = useFetch();
+    const {state, fetchRequest} = useFetch();
     const dispatch = useDispatch();
     const {t} = useTranslation("HomePage");
 
@@ -25,13 +26,17 @@ export const HomePage: React.FC = () => {
         fetchCall();
     }, [])
 
+    if (state === RequestStatus.ERROR) {
+        toast.error(t("errorContent"));
+    }
+
     return <div data-testid="Home-Page-Container">
         <div className="container mx-auto mt-8 px-4 flex-1 flex flex-col">
             <IntroBox/>
-            <SearchIssuer/>
+            <SearchIssuer state={state} fetchRequest={fetchRequest}/>
         </div>
         <HeaderTile content={t("containerHeading")}/>
-        <IssuersList/>
+        <IssuersList state={state}/>
     </div>
 
 }
