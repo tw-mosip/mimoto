@@ -14,7 +14,7 @@
     }
 
     .root {
-        @apply flex flex-col min-h-screen bg
+        @apply flex flex-col min-h-screen bg bg-light-background dark:bg-dark-background
     }
 
     .root-body {

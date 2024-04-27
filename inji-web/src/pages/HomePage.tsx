@@ -5,8 +5,8 @@ import {SearchIssuer} from "../components/Issuers/SearchIssuer";
 import {IssuersList} from "../components/Issuers/IssuersList";
 import {useDispatch} from "react-redux";
 import {storeIssuers} from "../redux/reducers/issuersReducer";
-import {api, MethodType} from "../utils/api";
-import {IssuerObject} from "../types/data";
+import {api} from "../utils/api";
+import {ApiRequest, IssuerObject} from "../types/data";
 import {HeaderTile} from "../components/Common/HeaderTile";
 import {useTranslation} from "react-i18next";
 import {toast} from "react-toastify";
@@ -19,7 +19,12 @@ export const HomePage: React.FC = () => {
 
     useEffect(() => {
         const fetchCall = async () => {
-            const response = await fetchRequest(api.fetchIssuers(), MethodType.GET, null);
+            const apiRequest: ApiRequest = api.fetchIssuers;
+            const response = await fetchRequest(
+                apiRequest.url(),
+                apiRequest.methodType,
+                apiRequest.headers()
+            );
             const issuers = response?.response?.issuers.filter((issuer: IssuerObject) => issuer.credential_issuer === "Sunbird")
             dispatch(storeIssuers(issuers));
         }

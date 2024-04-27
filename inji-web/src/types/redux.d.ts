@@ -6,7 +6,8 @@ export type CredentialsReducerActionType = {
     STORE_CREDENTIAL: string
 }
 export type CommonReducerActionType = {
-    STORE_LANGUAGE: string
+    STORE_LANGUAGE: string;
+    STORE_THEME: string;
 }
 export type IssuersReducerActionType = {
     STORE_SELECTED_ISSUER: string;

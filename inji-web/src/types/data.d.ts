@@ -1,3 +1,5 @@
+import {MethodType} from "../utils/api";
+
 export type DisplayArrayObject = {
     name: string;
     language: string;
@@ -60,4 +62,13 @@ export type SessionObject = {
     codeVerifier: string;
     state: string;
     clientId: string;
+}
+export type ApiRequest = {
+    url: (...args: string[]) => string;
+    methodType: MethodType;
+    headers: (...args: string[]) => any;
+}
+export type LanguageObject = {
+    label: string;
+    value: string;
 }

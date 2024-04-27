@@ -6,7 +6,8 @@ export const EmptyListContainer: React.FC<EmptyListContainerProps> = ({content})
         <div data-testid="EmptyList-Outer-Container"
              className="flex justify-center items-center w-full mx-auto flex-col h-full">
             <div data-testid="EmptyList-Inner-Container" className="container mx-auto mt-8 px-4 flex-1 flex flex-col">
-                <p data-testid="EmptyList-Text" className="text-center">{content}</p>
+                <p data-testid="EmptyList-Text"
+                   className="text-center text-light-title dark:text-dark-title">{content}</p>
             </div>
         </div>
     </React.Fragment>

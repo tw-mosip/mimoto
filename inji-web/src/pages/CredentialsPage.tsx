@@ -6,10 +6,12 @@ import {CredentialList} from "../components/Credentials/CredentialList";
 import {useDispatch} from "react-redux";
 import {storeSelectedIssuer} from "../redux/reducers/issuersReducer";
 import {storeCredentials} from "../redux/reducers/credentialsReducer";
-import {api, MethodType} from "../utils/api";
+import {api} from "../utils/api";
 import {HeaderTile} from "../components/Common/HeaderTile";
 import {useTranslation} from "react-i18next";
 import {toast} from "react-toastify";
+
+import {ApiRequest} from "../types/data";
 
 export const CredentialsPage: React.FC = () => {
 
@@ -20,10 +22,20 @@ export const CredentialsPage: React.FC = () => {
 
     useEffect(() => {
         const fetchCall = async () => {
-            let response = await fetchRequest(api.fetchSpecificIssuer(params.issuerId), MethodType.GET, null);
+            let apiRequest: ApiRequest = api.fetchSpecificIssuer;
+            let response = await fetchRequest(
+                apiRequest.url(params.issuerId),
+                apiRequest.methodType,
+                apiRequest.headers()
+            );
             dispatch(storeSelectedIssuer(response?.response));
 
-            response = await fetchRequest(api.fetchCredentialTypes(params.issuerId), MethodType.GET, null);
+            apiRequest = api.fetchCredentialTypes;
+            response = await fetchRequest(
+                apiRequest.url(params.issuerId),
+                apiRequest.methodType,
+                apiRequest.headers()
+            );
             dispatch(storeCredentials(response?.response?.supportedCredentials));
         }
         fetchCall();
@@ -34,10 +46,12 @@ export const CredentialsPage: React.FC = () => {
     }
 
     return <React.Fragment>
-        <div className="bg-white min-h-screen" data-testid="Credentials-Page-Container">
+        <div className="bg-light-background dark:bg-dark-background  min-h-screen"
+             data-testid="Credentials-Page-Container">
             <NavBar title={params.issuerId} search={true} fetchRequest={fetchRequest}/>
             <HeaderTile content={t("containerHeading")}/>
             <CredentialList state={state}/>
         </div>
     </React.Fragment>
 }
+

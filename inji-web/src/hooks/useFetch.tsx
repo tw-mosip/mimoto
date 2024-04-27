@@ -12,19 +12,17 @@ export const useFetch = () => {
     const [state, setState] = useState<RequestStatus>(RequestStatus.LOADING);
     const [error, setError] = useState<string>("");
 
-    const fetchRequest = async (uri: string, method: MethodType, body?: any) => {
+    const fetchRequest = async (uri: string, method: MethodType, header: any, body?: any) => {
         try {
             setState(RequestStatus.LOADING);
             let responseJson: (ResponseTypeObject) = {};
             const response = await fetch(`${api.mimotoHost}${uri}`, {
                 method: MethodType[method],
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: body && JSON.stringify(body),
+                headers: header,
+                body: body,
             });
-
-            if (response.ok) {
+            responseJson = response;
+            if (response.ok && uri.indexOf("download") === -1) {
                 responseJson = await response.json();
                 setState(RequestStatus.DONE);
             }
