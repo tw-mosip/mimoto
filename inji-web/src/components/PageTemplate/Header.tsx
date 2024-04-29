@@ -25,7 +25,8 @@ export const Header: React.FC = () => {
                             <div onClick={() => navigate("/help")}
                                  className="text-light-title dark:text-dark-title font-bold cursor-pointer">{t("Header.help")}</div>
                         </li>
-                        <li data-testid="Header-Menu-AboutInji"><a href="https://docs.mosip.io/inji" target="_blank"
+                        <li data-testid="Header-Menu-AboutInji"><a href="https://docs.mosip.io/inji/inji-web/overview"
+                                                                   target="_blank"
                                                                    rel="noreferrer"
                                                                    className="text-light-title dark:text-dark-title font-bold">{t("Header.aboutInji")}</a>
                         </li>

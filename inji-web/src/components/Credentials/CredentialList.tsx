@@ -7,6 +7,7 @@ import {EmptyListContainer} from "../Common/EmptyListContainer";
 import {useTranslation} from "react-i18next";
 import {RequestStatus} from "../../hooks/useFetch";
 import {SpinningLoader} from "../Common/SpinningLoader";
+import {CredentialListProps} from "../../types/components";
 
 export const CredentialList: React.FC<CredentialListProps> = ({state}) => {
 
@@ -33,6 +34,3 @@ export const CredentialList: React.FC<CredentialListProps> = ({state}) => {
 }
 
 
-type CredentialListProps = {
-    state: RequestStatus;
-}

@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next";
 import {EmptyListContainer} from "../Common/EmptyListContainer";
 import {RequestStatus} from "../../hooks/useFetch";
 import {SpinningLoader} from "../Common/SpinningLoader";
+import {IssuersListProps} from "../../types/components";
 
 export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
     const issuers = useSelector((state: RootState) => state.issuers);
@@ -31,6 +32,3 @@ export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
     </React.Fragment>
 }
 
-type IssuersListProps = {
-    state: RequestStatus;
-}

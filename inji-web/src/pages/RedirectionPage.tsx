@@ -42,7 +42,7 @@ export const RedirectionPage: React.FC = () => {
 
                 let apiRequest: ApiRequest = api.fetchToken;
                 let response = await fetchRequest(
-                    apiRequest.url(issuerId) + `?code=${code}&clientId=${clientId}&codeVerifier=${codeVerifier}`,
+                    apiRequest.url(issuerId),
                     apiRequest.methodType,
                     apiRequest.headers(),
                     requestBody
@@ -50,12 +50,11 @@ export const RedirectionPage: React.FC = () => {
 
                 apiRequest = api.downloadVc;
                 response = await fetchRequest(
-                    apiRequest.url(issuerId, certificateId) + `?token=${response?.access_token}`,
+                    apiRequest.url(issuerId, certificateId),
                     apiRequest.methodType,
                     apiRequest.headers(response?.access_token)
                 );
-                await downloadCredentialPDF(response, certificateId);
-                if (state === RequestStatus.DONE) {
+                if (state !== RequestStatus.ERROR) {
                     await downloadCredentialPDF(response, certificateId);
                 }
                 if (urlState != null) {
@@ -74,7 +73,16 @@ export const RedirectionPage: React.FC = () => {
             <NavBar title={activeSessionInfo?.issuerId} search={false}/>
             <DownloadResult title={t("error.invalidSession.title")}
                             subTitle={t("error.invalidSession.subTitle")}
-                            success={false}/>
+                            state={RequestStatus.ERROR}/>
+        </div>
+    }
+
+    if (state === RequestStatus.LOADING) {
+        return <div data-testid="Redirection-Page-Container">
+            <NavBar title={activeSessionInfo?.issuerId} search={false}/>
+            <DownloadResult title={t("loading.title")}
+                            subTitle={t("loading.subTitle")}
+                            state={RequestStatus.LOADING}/>
         </div>
     }
 
@@ -83,7 +91,7 @@ export const RedirectionPage: React.FC = () => {
             <NavBar title={activeSessionInfo?.issuerId} search={false}/>
             <DownloadResult title={t("error.generic.title")}
                             subTitle={t("error.generic.subTitle")}
-                            success={false}/>
+                            state={RequestStatus.ERROR}/>
         </div>
     }
 
@@ -91,6 +99,6 @@ export const RedirectionPage: React.FC = () => {
         <NavBar title={activeSessionInfo?.issuerId} search={false}/>
         <DownloadResult title={t("success.title")}
                         subTitle={t("success.subTitle")}
-                        success={true}/>
+                        state={RequestStatus.DONE}/>
     </div>
 }

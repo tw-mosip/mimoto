@@ -1,5 +1,6 @@
 import {CredentialWellknownObject, IssuerObject, ResponseTypeObject} from "./data";
 import React from "react";
+import {RequestStatus} from "../hooks/useFetch";
 
 export type ItemBoxProps = {
     index: number;
@@ -29,7 +30,7 @@ export type IssuerProps = {
     issuer: IssuerObject;
 }
 export type DownloadResultProps = {
-    success: boolean;
+    state: RequestStatus;
     title: string;
     subTitle: string;
 }
@@ -43,4 +44,10 @@ export type HeaderTileProps = {
 }
 export type SearchIssuerProps = {
     fetchRequest: (...arg: any) => ResponseTypeObject
+}
+export type IssuersListProps = {
+    state: RequestStatus;
+}
+export type CredentialListProps = {
+    state: RequestStatus;
 }

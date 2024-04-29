@@ -5,7 +5,7 @@ export const ItemBox: React.FC<ItemBoxProps> = (props) => {
     return <React.Fragment>
         <div key={props.index}
              data-testid="ItemBox-Outer-Container"
-             className="bg-light-background dark:bg-dark-background shadow flex flex-row shadow-light-shadow dark:shadow-dark-shadow p-4 rounded-md cursor-pointer items-center"
+             className="bg-light-tileBackground dark:bg-dark-tileBackground shadow flex flex-row shadow-light-shadow dark:shadow-dark-shadow p-4 rounded-md cursor-pointer items-center"
              onClick={props.onClick}>
             <img data-testid="ItemBox-Logo" src={props.url} alt="Issuer Logo"
                  className="w-30 h-10 justify-center mr-4"/>

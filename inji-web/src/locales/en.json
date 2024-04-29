@@ -25,6 +25,10 @@
     "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "RedirectionPage": {
+    "loading": {
+      "title": "Download InProgress...",
+      "subTitle": "please wait while your pdf gets downloaded."
+    },
     "success": {
       "title": "Download Success",
       "subTitle": "PDF is generated"

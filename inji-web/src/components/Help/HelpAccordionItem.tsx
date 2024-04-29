@@ -10,7 +10,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
              data-testid="Help-Item-Container">
             <button
                 data-testid="Help-Item-Title-Button"
-                className="w-full p-4 text-left font-bold hover:bg-light-subTitle hover:dark:bg-dark-subTitle focus:outline-none"
+                className="w-full p-5 text-left font-bold hover:bg-light-helpAccordionHover hover:dark:bg-dark-helpAccordionHover focus:outline-none"
                 onClick={() => props.setOpen(props.id)}
             >
                 <div className={"flex flex-row text-light-title dark:text-dark-title"}
@@ -25,7 +25,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
                 </div>
             </button>
             {(props.id === props.open) && (
-                <div className="p-4 bg-light-background dark:bg-dark-background border-t-2"
+                <div className="p-5 bg-light-background dark:bg-dark-background border-t-2"
                      data-testid="Help-Item-Content-Text">
                     {props.content.map(content => <p className={"text-light-title dark:text-dark-title"}>{content}</p>)}
 
