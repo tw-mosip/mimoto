@@ -22,7 +22,7 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
         setSearchText(searchText)
         const apiRequest: ApiRequest = api.searchCredentialType;
         const response = await props.fetchRequest(
-            apiRequest.url(params.issuerId, searchText),
+            apiRequest.url(params.issuerId ?? "", searchText),
             apiRequest.methodType,
             apiRequest.headers()
         );

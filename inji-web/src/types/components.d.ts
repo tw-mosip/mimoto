@@ -12,7 +12,7 @@ export type ItemBoxProps = {
 export type NavBarProps = {
     title: string;
     search: boolean;
-    fetchRequest?: (...arg: any) => ResponseTypeObject;
+    fetchRequest?: any;
 }
 export type CredentialProps = {
     credential: CredentialWellknownObject;
@@ -43,7 +43,8 @@ export type HeaderTileProps = {
     content: string;
 }
 export type SearchIssuerProps = {
-    fetchRequest: (...arg: any) => ResponseTypeObject
+    state: RequestStatus;
+    fetchRequest: any
 }
 export type IssuersListProps = {
     state: RequestStatus;

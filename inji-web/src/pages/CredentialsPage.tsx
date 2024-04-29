@@ -24,7 +24,7 @@ export const CredentialsPage: React.FC = () => {
         const fetchCall = async () => {
             let apiRequest: ApiRequest = api.fetchSpecificIssuer;
             let response = await fetchRequest(
-                apiRequest.url(params.issuerId),
+                apiRequest.url(params.issuerId ?? ""),
                 apiRequest.methodType,
                 apiRequest.headers()
             );
@@ -32,7 +32,7 @@ export const CredentialsPage: React.FC = () => {
 
             apiRequest = api.fetchCredentialTypes;
             response = await fetchRequest(
-                apiRequest.url(params.issuerId),
+                apiRequest.url(params.issuerId ?? ""),
                 apiRequest.methodType,
                 apiRequest.headers()
             );
@@ -48,7 +48,7 @@ export const CredentialsPage: React.FC = () => {
     return <React.Fragment>
         <div className="bg-light-background dark:bg-dark-background  min-h-screen"
              data-testid="Credentials-Page-Container">
-            <NavBar title={params.issuerId} search={true} fetchRequest={fetchRequest}/>
+            <NavBar title={params.issuerId ?? ""} search={true} fetchRequest={fetchRequest}/>
             <HeaderTile content={t("containerHeading")}/>
             <CredentialList state={state}/>
         </div>

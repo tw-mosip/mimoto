@@ -1,4 +1,0 @@
-.project
-.idea
-helm/inji-web/charts
-helm/inji-web/Chart.lock
