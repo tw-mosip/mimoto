@@ -25,7 +25,7 @@ export const HomePage: React.FC = () => {
                 apiRequest.methodType,
                 apiRequest.headers()
             );
-            const issuers = response?.response?.issuers.filter((issuer: IssuerObject) => issuer.credential_issuer === "Sunbird")
+            const issuers = response?.response?.issuers.filter((issuer: IssuerObject) => issuer.protocol !== "OTP")
             dispatch(storeIssuers(issuers));
         }
         fetchCall();

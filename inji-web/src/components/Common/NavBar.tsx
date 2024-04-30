@@ -43,10 +43,10 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
 
                 {props.search &&
                     <div className="flex py-1 items-center" data-testid="NavBar-Search-Container">
-                        <div className="relative w-96 mx-auto flex justify-center items-center">
+                        <div className="w-96 mx-auto flex justify-center items-center">
                             <FaSearch
                                 data-testid="NavBar-Search-Icon"
-                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light-searchIcon dark:text-dark-searchIcon ml-2"
+                                className="relative left-10 top-3 transform -translate-y-1/2 text-light-searchIcon dark:text-dark-searchIcon ml-2"
                                 size={20}/>
                             <input
                                 data-testid="NavBar-Search-Input"

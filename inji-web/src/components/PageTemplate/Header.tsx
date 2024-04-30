@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {useNavigate} from "react-router-dom";
 import {LanguageSelector} from "../Common/LanguageSelector";
 import {ThemeMode} from "../Common/ThemeMode";
+import {NavBar} from "../Common/NavBar";
 
 export const Header: React.FC = () => {
 
@@ -30,10 +31,7 @@ export const Header: React.FC = () => {
                                                                    rel="noreferrer"
                                                                    className="text-light-title dark:text-dark-title font-bold">{t("Header.aboutInji")}</a>
                         </li>
-                        <li data-testid="Header-Menu-LanguageSelector"><LanguageSelector/>
-                        </li>
-                        <li data-testid="Header-Menu-ThemeMode"><ThemeMode/>
-                        </li>
+                        <li data-testid="Header-Menu-LanguageSelector"><LanguageSelector/></li>
                     </ul>
                 </nav>
             </div>

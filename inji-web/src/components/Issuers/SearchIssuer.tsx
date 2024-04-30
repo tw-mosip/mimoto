@@ -21,7 +21,7 @@ export const SearchIssuer: React.FC<SearchIssuerProps> = (props) => {
             apiRequest.methodType,
             apiRequest.headers()
         );
-        dispatch(storeIssuers(response?.response?.issuers.filter((issuer: IssuerObject) => issuer.credential_issuer === 'Sunbird')))
+        dispatch(storeIssuers(response?.response?.issuers.filter((issuer: IssuerObject) => issuer.protocol !== 'OTP')))
     }
 
     return <React.Fragment>

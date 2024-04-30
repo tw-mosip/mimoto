@@ -34,6 +34,7 @@ export type CodeChallengeObject = {
 export type IssuerObject = {
     name: string;
     desc: string;
+    protocol: 'OTP' | 'OpenId4VCI';
     credential_issuer: string,
     authorization_endpoint: string;
     credentials_endpoint: string;

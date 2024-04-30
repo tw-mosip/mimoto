@@ -36,7 +36,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --testPathPattern=__tests__",
+    "test": "react-scripts test --silent --testPathPattern=__tests__",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
