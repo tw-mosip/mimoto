@@ -22,11 +22,10 @@ export const Credential: React.FC<CredentialProps> = (props) => {
                         const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
                         window.open(api.authorization(selectedIssuer.selected_issuer, state, code_challenge), '_self', 'noopener');
                         addNewSession({
-                            issuerId: selectedIssuer.selected_issuer.credential_issuer,
+                            selectedIssuer: selectedIssuer.selected_issuer,
                             certificateId: props.credential.id,
                             codeVerifier: state,
                             state: state,
-                            clientId: selectedIssuer.selected_issuer.client_id
                         });
                     }}
     />

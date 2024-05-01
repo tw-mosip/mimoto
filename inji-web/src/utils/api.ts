@@ -1,4 +1,5 @@
 import {ApiRequest, CodeChallengeObject, IssuerObject} from "../types/data";
+import i18n from "i18next";
 
 export enum MethodType {
     GET,
@@ -88,7 +89,8 @@ export class api {
             `redirect_uri=${api.authorizationRedirectionUrl}&` +
             `state=${state}&` +
             `code_challenge=${code_challenge.codeChallenge}&` +
-            `code_challenge_method=S256`;
+            `code_challenge_method=S256&`+
+            `ui_locales=${i18n.language}`;
     }
 }
 

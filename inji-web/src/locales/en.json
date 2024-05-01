@@ -25,6 +25,7 @@
     "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "RedirectionPage": {
+    "navigateButton": "Go To Home",
     "loading": {
       "title": "Download InProgress...",
       "subTitle": "please wait while your pdf gets downloaded."

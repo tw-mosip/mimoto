@@ -1,28 +1,34 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
-import {BsShieldFillCheck, BsShieldFillExclamation, BsShieldFillX} from "react-icons/bs";
+import {BsShieldFillCheck, BsShieldFillX} from "react-icons/bs";
 import {DownloadResultProps} from "../../types/components";
 import {RequestStatus} from "../../hooks/useFetch";
+import {useTranslation} from "react-i18next";
+import {SpinningLoader} from "../Common/SpinningLoader";
 
 
 export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
+    const {t} = useTranslation("RedirectionPage")
     const navigate = useNavigate();
     return <React.Fragment>
         <div data-testid="DownloadResult-Outer-Container" className="flex flex-col justify-center items-center pt-32">
-            <div className="rounded-full p-2 shadow">
-                {props.state === RequestStatus.DONE &&
-                    <div className="rounded-full p-8 bg-light-shieldSuccessShadow dark:bg-dark-shieldSuccessShadow ">
+            {props.state === RequestStatus.DONE &&
+                <div className="rounded-full p-2 shadow">
+                    <div className="rounded-full p-8 bg-iw-shieldSuccessShadow ">
                         <BsShieldFillCheck
-                            data-testid="DownloadResult-Success-SheildIcon" size={40} color={"green"}/></div>}
-                {props.state === RequestStatus.ERROR &&
-                    <div className="rounded-full p-8 bg-light-shieldErrorShadow dark:bg-dark-shieldErrorShadow">
+                            data-testid="DownloadResult-Success-SheildIcon" size={40} color={'var(--iw-color-shieldSuccessIcon)'}/>
+                    </div>
+                </div>
+            }
+            {props.state === RequestStatus.ERROR &&
+                <div className="rounded-full p-2 shadow">
+                    <div className="rounded-full p-8 bg-iw-shieldErrorShadow">
                         <BsShieldFillX
-                            data-testid="DownloadResult-Error-SheildIcon" size={40} color={"red"}/></div>}
-                {props.state === RequestStatus.LOADING &&
-                    <div className="rounded-full p-8 bg-light-shieldLoadingShadow dark:bg-dark-shieldLoadingShadow">
-                        <BsShieldFillExclamation
-                            data-testid="DownloadResult-Loading-SheildIcon" size={40} color={"#ef9105"}/></div>}
-            </div>
+                            data-testid="DownloadResult-Error-SheildIcon" size={40} color={'var(--iw-color-shieldErrorIcon)'}/>
+                    </div>
+                </div>
+            }
+            {props.state === RequestStatus.LOADING && <SpinningLoader />}
             <div className="mt-4 ">
                 <p className="font-bold" data-testid="DownloadResult-Title">{props.title}</p>
             </div>
@@ -33,8 +39,8 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
                 <button
                     data-testid="DownloadResult-Home-Button"
                     onClick={() => navigate("/")}
-                    className="text-light-primary dark:text-dark-primary font-bold py-2 px-4 rounded-lg border-2 border-light-primary dark:border-dark-primary">
-                    Go to Home
+                    className="text-iw-primary font-bold py-2 px-4 rounded-lg border-2 border-iw-primary">
+                    {t("navigateButton")}
                 </button>
             </div>
         </div>

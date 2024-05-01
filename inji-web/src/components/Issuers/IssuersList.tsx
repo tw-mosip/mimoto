@@ -17,7 +17,7 @@ export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
         return <SpinningLoader/>
     }
 
-    if (state === RequestStatus.ERROR || !issuers?.issuers || (issuers?.issuers && issuers?.issuers?.length === 0)) {
+    if(state === RequestStatus.ERROR || !issuers?.issuers || (issuers?.issuers && issuers?.issuers?.length === 0)) {
         return <EmptyListContainer content={t("emptyContainerContent")}/>
     }
 

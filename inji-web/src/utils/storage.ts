@@ -2,7 +2,6 @@ export class storage {
 
     static SESSION_INFO = "download_session"
     static SELECTED_LANGUAGE = "selected_language"
-    static SELECTED_THEME = "selected_theme"
     static setItem = (key: string, value: string) => {
         if (value) {
             localStorage.setItem(key, JSON.stringify(value));

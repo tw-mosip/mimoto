@@ -23,6 +23,10 @@ export const generateRandomString = (length = 43) => {
     return randomString;
 };
 
+export const isObjectEmpty = (object: any) => {
+    return object === null || object === undefined || Object.keys(object).length === 0;
+}
+
 export const getFileName = (contentDispositionHeader: any) => {
     if (!contentDispositionHeader) return null;
     const filenameMatch = contentDispositionHeader.match(/filename=(.*?)(;|$)/);

@@ -1,9 +1,9 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {RequestStatus, useFetch} from "../hooks/useFetch";
 import {NavBar} from "../components/Common/NavBar";
 import {CredentialList} from "../components/Credentials/CredentialList";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {storeSelectedIssuer} from "../redux/reducers/issuersReducer";
 import {storeCredentials} from "../redux/reducers/credentialsReducer";
 import {api} from "../utils/api";
@@ -11,7 +11,10 @@ import {HeaderTile} from "../components/Common/HeaderTile";
 import {useTranslation} from "react-i18next";
 import {toast} from "react-toastify";
 
-import {ApiRequest} from "../types/data";
+import {ApiRequest, DisplayArrayObject, IssuerObject} from "../types/data";
+import {getObjectForCurrentLanguage} from "../utils/i18n";
+import {RootState} from "../types/redux";
+import {isObjectEmpty} from "../utils/misc";
 
 export const CredentialsPage: React.FC = () => {
 
@@ -19,6 +22,12 @@ export const CredentialsPage: React.FC = () => {
     const params = useParams<CredentialParamProps>();
     const dispatch = useDispatch();
     const {t} = useTranslation("CredentialsPage");
+    const language = useSelector((state: RootState) => state.common.language);
+    let displayObject= {} as DisplayArrayObject;
+    let [selectedIssuer, setSelectedIssuer] = useState({} as IssuerObject)
+    if(!isObjectEmpty(selectedIssuer)){
+        displayObject = getObjectForCurrentLanguage(selectedIssuer.display, language);
+    }
 
     useEffect(() => {
         const fetchCall = async () => {
@@ -29,6 +38,7 @@ export const CredentialsPage: React.FC = () => {
                 apiRequest.headers()
             );
             dispatch(storeSelectedIssuer(response?.response));
+            setSelectedIssuer(response?.response);
 
             apiRequest = api.fetchCredentialTypes;
             response = await fetchRequest(
@@ -45,10 +55,11 @@ export const CredentialsPage: React.FC = () => {
         toast.error(t("errorContent"));
     }
 
+
     return <React.Fragment>
-        <div className="bg-light-background dark:bg-dark-background  min-h-screen"
+        <div className="bg-iw-background min-h-screen"
              data-testid="Credentials-Page-Container">
-            <NavBar title={params.issuerId ?? ""} search={true} fetchRequest={fetchRequest}/>
+            <NavBar title={displayObject?.name} search={true} fetchRequest={fetchRequest} link={"/"}/>
             <HeaderTile content={t("containerHeading")}/>
             <CredentialList state={state}/>
         </div>

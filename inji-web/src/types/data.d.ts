@@ -57,12 +57,10 @@ export type ResponseTypeObject = {
 }
 
 export type SessionObject = {
-    issuerId?: string;
-    issuerDisplayName?: string;
+    selectedIssuer?: IssuerObject;
     certificateId: string;
     codeVerifier: string;
     state: string;
-    clientId: string;
 }
 export type ApiRequest = {
     url: (...args: string[]) => string;

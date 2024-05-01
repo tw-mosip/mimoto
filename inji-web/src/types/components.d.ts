@@ -11,6 +11,7 @@ export type ItemBoxProps = {
 }
 export type NavBarProps = {
     title: string;
+    link: string;
     search: boolean;
     fetchRequest?: any;
 }

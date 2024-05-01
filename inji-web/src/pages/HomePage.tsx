@@ -36,7 +36,7 @@ export const HomePage: React.FC = () => {
     }
 
     return <div data-testid="Home-Page-Container">
-        <div className="container mx-auto mt-8 px-4 flex-1 flex flex-col">
+        <div className="container mx-auto mt-8 px-4 flex flex-col">
             <IntroBox/>
             <SearchIssuer state={state} fetchRequest={fetchRequest}/>
         </div>

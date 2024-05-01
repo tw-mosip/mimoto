@@ -6,17 +6,14 @@ import {Footer} from "./components/PageTemplate/Footer";
 import {HelpPage} from "./pages/HelpPage";
 import {CredentialsPage} from "./pages/CredentialsPage";
 import {RedirectionPage} from "./pages/RedirectionPage";
-import {useSelector} from "react-redux";
-import {RootState} from "./types/redux";
 
 export const AppRouter = () => {
-
-    const theme = useSelector((state: RootState) => state.common.theme);
+    const app_theme = ""; //can be "purple_theme" or "" ( for default )
     const wrapElement = (element: JSX.Element) => {
         return <React.Fragment>
-            <div className={`root ${theme}`}>
+            <div className={`min-h-screen bg bg-iw-background font-base ${app_theme}`}>
                 <Header/>
-                <div className={"root-body"}>
+                <div className={"top-20 h-5/6 mt-20 flex-grow"}>
                     {element}
                 </div>
                 <Footer/>

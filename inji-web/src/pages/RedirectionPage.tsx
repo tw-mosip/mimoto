@@ -5,9 +5,10 @@ import {NavBar} from "../components/Common/NavBar";
 import {RequestStatus, useFetch} from "../hooks/useFetch";
 import {DownloadResult} from "../components/Redirection/DownloadResult";
 import {api} from "../utils/api";
-import {ApiRequest, SessionObject} from "../types/data";
+import {ApiRequest, DisplayArrayObject, SessionObject} from "../types/data";
 import {useTranslation} from "react-i18next";
 import {downloadCredentialPDF} from "../utils/misc";
+import {getObjectForCurrentLanguage} from "../utils/i18n";
 
 export const RedirectionPage: React.FC = () => {
 
@@ -18,15 +19,16 @@ export const RedirectionPage: React.FC = () => {
     const activeSessionInfo: any = getActiveSession(redirectedSessionId);
     const {t} = useTranslation("RedirectionPage");
     const [session, setSession] = useState<SessionObject | null>(activeSessionInfo);
+    const displayObject = getObjectForCurrentLanguage(session?.selectedIssuer?.display ?? []);
 
     useEffect(() => {
         const fetchToken = async () => {
             if (Object.keys(activeSessionInfo).length > 0) {
                 const code = searchParams.get("code") ?? "";
                 const urlState = searchParams.get("state") ?? "";
-                const clientId = activeSessionInfo?.clientId;
+                const clientId = activeSessionInfo?.selectedIssuer.client_id;
                 const codeVerifier = activeSessionInfo?.codeVerifier;
-                const issuerId = activeSessionInfo?.issuerId ?? "";
+                const issuerId = activeSessionInfo?.selectedIssuer.issuerId ?? "";
                 const certificateId = activeSessionInfo?.certificateId;
 
                 const bodyJson = {
@@ -68,37 +70,29 @@ export const RedirectionPage: React.FC = () => {
 
     }, [])
 
-    if (!session) {
-        return <div data-testid="Redirection-Page-Container">
-            <NavBar title={activeSessionInfo?.issuerId ?? ""} search={false}/>
-            <DownloadResult title={t("error.invalidSession.title")}
-                            subTitle={t("error.invalidSession.subTitle")}
-                            state={RequestStatus.ERROR}/>
-        </div>
-    }
-
-    if (state === RequestStatus.LOADING) {
-        return <div data-testid="Redirection-Page-Container">
-            <NavBar title={activeSessionInfo?.issuerId ?? ""} search={false}/>
-            <DownloadResult title={t("loading.title")}
+    const loadStatusOfRedirection = () => {
+        if (!session) {
+            return <DownloadResult title={t("error.invalidSession.title")}
+                                   subTitle={t("error.invalidSession.subTitle")}
+                                   state={RequestStatus.ERROR}/>
+        }
+        if (state === RequestStatus.LOADING) {
+            return <DownloadResult title={t("loading.title")}
                             subTitle={t("loading.subTitle")}
                             state={RequestStatus.LOADING}/>
-        </div>
-    }
-
-    if (state === RequestStatus.ERROR && error) {
-        return <div data-testid="Redirection-Page-Container">
-            <NavBar title={activeSessionInfo?.issuerId ?? ""} search={false}/>
-            <DownloadResult title={t("error.generic.title")}
-                            subTitle={t("error.generic.subTitle")}
-                            state={RequestStatus.ERROR}/>
-        </div>
+        }
+        if (state === RequestStatus.ERROR && error) {
+            return <DownloadResult title={t("error.generic.title")}
+                                   subTitle={t("error.generic.subTitle")}
+                                   state={RequestStatus.ERROR}/>
+        }
+        return <DownloadResult title={t("success.title")}
+                               subTitle={t("success.subTitle")}
+                               state={RequestStatus.DONE}/>
     }
 
     return <div data-testid="Redirection-Page-Container">
-        <NavBar title={activeSessionInfo?.issuerId ?? ""} search={false}/>
-        <DownloadResult title={t("success.title")}
-                        subTitle={t("success.subTitle")}
-                        state={RequestStatus.DONE}/>
+        <NavBar title={displayObject?.name ?? ""} search={false} link={`/issuers/${activeSessionInfo?.selectedIssuer?.credential_issuer}`}/>
+        {loadStatusOfRedirection()}
     </div>
 }

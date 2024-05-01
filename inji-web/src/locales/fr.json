@@ -10,19 +10,26 @@
   },
   "HomePage": {
     "Intro": {
-      "title": "Le téléchargement d'un certificat se fait en un clic !",
+      "title": "Le téléchargement d'un certificat se fait en un seul clic !",
       "subTitle": "Veuillez rechercher l'émetteur et, à l'étape suivante, sélectionnez le certificat à télécharger.",
       "searchText": "Rechercher les émetteurs par nom."
     },
     "emptyContainerContent": "Aucun émetteur trouvé. ",
-    "containerHeading": "Liste des émetteurs"
+    "containerHeading": "Liste des émetteurs",
+    "errorContent": "Le service est actuellement indisponible. "
   },
   "CredentialsPage": {
     "searchText": "Rechercher le type d’informations d’identification.",
     "emptyContainerContent": "Aucune information d'identification trouvée. ",
-    "containerHeading": "Liste des types d'informations d'identification"
+    "containerHeading": "Liste des types d'informations d'identification",
+    "errorContent": "Le service est actuellement indisponible. "
   },
   "RedirectionPage": {
+    "navigateButton": "Aller à la maison",
+    "loading": {
+      "title": "Téléchargement en cours...",
+      "subTitle": "veuillez patienter pendant que votre pdf est téléchargé."
+    },
     "success": {
       "title": "Succès du téléchargement",
       "subTitle": "Le PDF est généré"
@@ -52,7 +59,7 @@
     },
     "item3": {
       "title": "Comment puis-je télécharger un identifiant dans Inji Web ?",
-      "description1": "Étape 1 : Rechercher",
+      "description1": "Étape 1 : Recherchez et choisissez un émetteur sur la page de destination et sélectionnez un type d'informations d'identification.",
       "description2": "Étape 2 : Sur la page d'authentification, fournissez les détails requis",
       "description3": "Étape 3 : Le format PDF des informations d'identification vérifiables sera téléchargé dans le système."
     },

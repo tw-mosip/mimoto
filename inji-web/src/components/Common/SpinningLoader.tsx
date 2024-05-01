@@ -8,8 +8,8 @@ export const SpinningLoader: React.FC = () => {
                 visible={true}
                 height="80"
                 width="80"
-                color="#EB6F2D"
-                secondaryColor="#E6E6E6"
+                color={'var(--iw-color-spinningLoaderPrimary)'}
+                secondaryColor={'var(--iw-color-spinningLoaderSecondary)'}
                 ariaLabel="oval-loading"
                 wrapperStyle={{}}
                 wrapperClass=""
