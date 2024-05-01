@@ -28,7 +28,7 @@ export const RedirectionPage: React.FC = () => {
                 const urlState = searchParams.get("state") ?? "";
                 const clientId = activeSessionInfo?.selectedIssuer.client_id;
                 const codeVerifier = activeSessionInfo?.codeVerifier;
-                const issuerId = activeSessionInfo?.selectedIssuer.issuerId ?? "";
+                const issuerId = activeSessionInfo?.selectedIssuer.credential_issuer ?? "";
                 const certificateId = activeSessionInfo?.certificateId;
 
                 const bodyJson = {
