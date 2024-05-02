@@ -6,14 +6,18 @@ import {Footer} from "./components/PageTemplate/Footer";
 import {HelpPage} from "./pages/HelpPage";
 import {CredentialsPage} from "./pages/CredentialsPage";
 import {RedirectionPage} from "./pages/RedirectionPage";
+import {useSelector} from "react-redux";
+import {RootState} from "./types/redux";
+import {getDirCurrentLanguage} from "./utils/i18n";
 
 export const AppRouter = () => {
+    const language = useSelector((state: RootState) => state.common.language);
     const app_theme = ""; //can be "purple_theme" or "" ( for default )
     const wrapElement = (element: JSX.Element) => {
         return <React.Fragment>
-            <div className={`min-h-screen bg bg-iw-background font-base ${app_theme}`}>
+            <div className={`h-screen min-h-72 bg bg-iw-background font-base ${app_theme}`} dir={getDirCurrentLanguage(language)}>
                 <Header/>
-                <div className={"top-20 h-5/6 mt-20 flex-grow"}>
+                <div className={"top-20 h-full mt-20 my-auto flex-grow"}>
                     {element}
                 </div>
                 <Footer/>

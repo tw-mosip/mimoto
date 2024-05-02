@@ -8,6 +8,7 @@ import {useTranslation} from "react-i18next";
 import {RequestStatus} from "../../hooks/useFetch";
 import {SpinningLoader} from "../Common/SpinningLoader";
 import {CredentialListProps} from "../../types/components";
+import {HeaderTile} from "../Common/HeaderTile";
 
 export const CredentialList: React.FC<CredentialListProps> = ({state}) => {
 
@@ -15,21 +16,23 @@ export const CredentialList: React.FC<CredentialListProps> = ({state}) => {
     const {t} = useTranslation("CredentialsPage");
 
     if (state === RequestStatus.LOADING) {
-        return <SpinningLoader/>
+        return <SpinningLoader />
     }
 
     if (state === RequestStatus.ERROR || !credentials?.credentials || (credentials?.credentials && credentials?.credentials.length === 0)) {
-        return <EmptyListContainer content={t("emptyContainerContent")}/>
+        return <div>
+                <HeaderTile content={t("containerHeading")}/>
+                <EmptyListContainer content={t("emptyContainerContent")}/>
+            </div>
     }
 
     return <React.Fragment>
-        <div data-testid="Credential-List-Container" className="container mx-auto mt-8">
+            <HeaderTile content={t("containerHeading")}/>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {credentials?.credentials && credentials?.credentials.map((credential: CredentialWellknownObject, index: number) => (
                     <Credential credential={credential} index={index}/>
                 ))}
             </div>
-        </div>
     </React.Fragment>
 }
 

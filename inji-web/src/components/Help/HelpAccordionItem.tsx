@@ -16,7 +16,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
                 <div className={"flex flex-row text-iw-title"}
                      data-testid="Help-Item-Title-Text">
                     {props.title}
-                    <div className={"flex items-center ml-auto"}>
+                    <div className={"flex items-center ms-auto"}>
                         {
                             (props.id === props.open) ? <IoIosArrowUp size={20} data-testid="Help-Item-UpArrow"/> :
                                 <IoIosArrowDown size={20} data-testid="Help-Item-DownArrow"/>

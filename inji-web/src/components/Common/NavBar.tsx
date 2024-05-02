@@ -38,7 +38,7 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
                         <IoArrowBack data-testid="NavBar-Back-Arrow" size={24} onClick={() => navigate(props.link)}/>
                     </div>
                     <span data-testid="NavBar-Text"
-                          className="text-2xl font-semibold pl-2">{props.title}</span>
+                          className="text-2xl font-semibold ps-2">{props.title}</span>
                 </div>
 
                 {props.search &&
@@ -46,7 +46,7 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
                         <div className="w-96 mx-auto flex justify-center items-center">
                             <FaSearch
                                 data-testid="NavBar-Search-Icon"
-                                className="relative left-10 top-3 transform -translate-y-1/2 text-iw-searchIcon ml-2"
+                                className="relative start-10 top-3 transform -translate-y-1/2 text-iw-searchIcon ms-2"
                                 size={20}/>
                             <input
                                 data-testid="NavBar-Search-Input"
@@ -54,10 +54,10 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
                                 value={searchText}
                                 placeholder={t("searchText")}
                                 onChange={event => filterCredential(event.target.value)}
-                                className="py-6 pl-16 pr-4 rounded-md w-full shadow-xl text-iw-searchTitle focus:outline-none" // Adjusted padding to accommodate the icon
+                                className="py-6 ps-16 pe-4 rounded-md w-full shadow-xl text-iw-searchTitle focus:outline-none" // Adjusted padding to accommodate the icon
                             />
                             {searchText.length > 0 && <IoCloseCircleSharp data-testid="Search-Issuer-Clear-Icon"
-                                                                          className="absolute right-5 top-1/2 transform -translate-y-1/2 text-iw-closeIcon ml-2 cursor-pointer"
+                                                                          className="absolute end-28 top-40 transform -translate-y-1/2 text-iw-closeIcon cursor-pointer"
                                                                           onClick={() => filterCredential("")}
                                                                           size={20}/>}
                         </div>

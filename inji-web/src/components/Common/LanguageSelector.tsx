@@ -29,7 +29,7 @@ export const LanguageSelector: React.FC = () => {
         <VscGlobe
             data-testid="Language-Selector-Icon"
             size={30} color={'var(--iw-color-languageGlobeIcon)'}/>
-        <div className="relative inline-block ml-1">
+        <div className="relative inline-block ms-1">
             <button
                 type="button"
                 className="inline-flex items-center"

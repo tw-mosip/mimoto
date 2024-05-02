@@ -28,7 +28,7 @@ export const SearchIssuer: React.FC<SearchIssuerProps> = (props) => {
         <div data-testid="Search-Issuer-Container" className="mb-8 w-full flex pb-14">
             <div className="relative w-3/5 mx-auto flex justify-center items-center">
                 <FaSearch data-testid="Search-Issuer-Search-Icon"
-                          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-iw-searchIcon ml-2"
+                          className="absolute start-3 top-1/2 transform -translate-y-1/2 text-iw-searchIcon ms-2"
                           color={'var(--iw-color-searchIcon)'}
                           size={20}/>
                 <input
@@ -37,10 +37,10 @@ export const SearchIssuer: React.FC<SearchIssuerProps> = (props) => {
                     value={searchText}
                     placeholder={t("Intro.searchText")}
                     onChange={event => filterIssuers(event.target.value)}
-                    className="py-6 pl-16 pr-4 rounded-md w-full shadow-md text-iw-searchTitle focus:outline-none"
+                    className="py-6 ps-16 pe-4 rounded-md w-full shadow-md text-iw-searchTitle focus:outline-none"
                 />
                 {searchText.length > 0 && <IoCloseCircleSharp data-testid="Search-Issuer-Clear-Icon"
-                                                              className="absolute right-5 top-1/2 transform -translate-y-1/2 text-iw-closeIcon ml-2 cursor-pointer"
+                                                              className="absolute end-5 top-1/2 transform -translate-y-1/2 text-iw-closeIcon ms-2 cursor-pointer"
                                                               onClick={() => filterIssuers("")}
                                                               color={'var(--iw-color-closeIcon)'}
                                                               size={20}/>}

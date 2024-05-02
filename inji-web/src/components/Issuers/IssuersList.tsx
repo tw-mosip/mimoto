@@ -8,6 +8,7 @@ import {EmptyListContainer} from "../Common/EmptyListContainer";
 import {RequestStatus} from "../../hooks/useFetch";
 import {SpinningLoader} from "../Common/SpinningLoader";
 import {IssuersListProps} from "../../types/components";
+import {HeaderTile} from "../Common/HeaderTile";
 
 export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
     const issuers = useSelector((state: RootState) => state.issuers);
@@ -18,13 +19,16 @@ export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
     }
 
     if(state === RequestStatus.ERROR || !issuers?.issuers || (issuers?.issuers && issuers?.issuers?.length === 0)) {
-        return <EmptyListContainer content={t("emptyContainerContent")}/>
+        return <div data-testid="Issuers-List-Container">
+            <HeaderTile content={t("containerHeading")}/>
+            <EmptyListContainer content={t("emptyContainerContent")}/>
+        </div>
     }
 
     return <React.Fragment>
-        <div data-testid="Issuers-List-Container"
-             className="container mx-auto my-auto mt-8 px-4 flex-1 flex flex-col">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div data-testid="Issuers-List-Container">
+            <HeaderTile content={t("containerHeading")}/>
+            <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-5">
                 {issuers.issuers.map((issuer: IssuerObject, index: number) =>
                     <Issuer issuer={issuer} index={index}/>)}
             </div>

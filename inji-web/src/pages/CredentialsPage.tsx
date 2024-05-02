@@ -60,8 +60,9 @@ export const CredentialsPage: React.FC = () => {
         <div className="bg-iw-background min-h-screen"
              data-testid="Credentials-Page-Container">
             <NavBar title={displayObject?.name} search={true} fetchRequest={fetchRequest} link={"/"}/>
-            <HeaderTile content={t("containerHeading")}/>
-            <CredentialList state={state}/>
+            <div data-testid="Credential-List-Container" className="container mx-auto mt-8">
+                <CredentialList state={state}/>
+            </div>
         </div>
     </React.Fragment>
 }

@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
         <header data-testid="Header-Container"
                 className="fixed top-0 left-0 right-0 bg-iw-background py-4 shadow-sm">
             <div className="container mx-auto flex justify-between items-center px-4">
-                <div onClick={() => navigate("/")}>
+                <div onClick={() => navigate("/")} data-testid="Header-InjiWeb-Logo-Container">
                     <img src={require("../../assets/InjiWebLogo.png")}
                          className={"h-13 w-28 cursor-pointer"}
                          data-testid="Header-InjiWeb-Logo"
