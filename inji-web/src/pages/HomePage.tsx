@@ -39,9 +39,9 @@ export const HomePage: React.FC = () => {
         <div className="container mx-auto mt-8 px-4 flex flex-col">
             <IntroBox/>
             <SearchIssuer state={state} fetchRequest={fetchRequest}/>
+            <IssuersList state={state}/>
         </div>
-        <HeaderTile content={t("containerHeading")}/>
-        <IssuersList state={state}/>
+
     </div>
 
 }
