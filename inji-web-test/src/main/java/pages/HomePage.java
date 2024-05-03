@@ -18,5 +18,7 @@ public class HomePage extends BasePage {
 		return isElementIsVisible("//img[@src='/static/media/inji-logo.3eee14d8592e46b14318.png']"); 
 	}
 	
-
+	public Boolean isTextWordIsDisplayed() {
+		return isElementIsVisible("//a[text()='Help']");
+	}
 }

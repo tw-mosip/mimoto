@@ -38,22 +38,18 @@ public class StepDef{
 	@Then("Verify that inji web logo is displayed")
 	public void verifyInjiWebLogoIsDisplayed() throws InterruptedException {
 		Thread.sleep(3000);
-		
-//		Boolean logoDisplayed = page.locator("//img[@src='/static/media/inji-logo.3eee14d8592e46b14318.png']")
-//				.isVisible();
 		Assert.assertEquals(homePage.isLogoDisplayed(), true);
 	}
 
 	@When("User clicks on the help button")
 	public void clicksOnHelpButton() {
 		homePage.clickOnHelp();
-		//page.locator("//a[text()='Help']").click();
 	}
 
 	@Then("Verify that text help is displayed on page")
 	public void verifiyTextHelpIsDisplayedOnPage() throws InterruptedException {
 		Thread.sleep(3000);
-		Assert.assertEquals(page.locator("//a[text()='Help']").isVisible(), true);
+		Assert.assertEquals(homePage.isTextWordIsDisplayed(), true);
 	}
 
 }
