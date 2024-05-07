@@ -15,7 +15,7 @@ export const AppRouter = () => {
     const app_theme = ""; //can be "purple_theme" or "" ( for default )
     const wrapElement = (element: JSX.Element) => {
         return <React.Fragment>
-            <div className={`h-screen min-h-72 bg bg-iw-background font-base ${app_theme}`} dir={getDirCurrentLanguage(language)}>
+            <div className={`h-screen min-h-72 bg bg-iw-background font-base`} dir={getDirCurrentLanguage(language)}>
                 <Header/>
                 <div className={"top-20 h-full mt-20 my-auto flex-grow"}>
                     {element}

@@ -10,7 +10,7 @@ import {RiArrowDownSFill, RiArrowUpSFill} from "react-icons/ri";
 export const LanguageSelector: React.FC = () => {
     const dispatch = useDispatch();
     let language = useSelector((state: RootState) => state.common.language);
-    language = language ?? 'en';
+    language = language ?? window._env_.DEFAULT_LANG;
     const [isOpen, setIsOpen] = useState(false);
 
 
