@@ -8,3 +8,5 @@ awk -F '=' '{ print $1 ": \"" (ENVIRON[$1] ? ENVIRON[$1] : $2) "\"," }' ${workin
 echo "}" >> ${workingDir}/env-config.js
 
 echo "generation of env-config file completed!"
+
+exec "$@"
