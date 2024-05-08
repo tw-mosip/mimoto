@@ -1,0 +1,86 @@
+{
+  "PageTemplate": {
+    "Header": {
+      "aboutInji": "À propos de Inji",
+      "help": "Aide"
+    },
+    "Footer": {
+      "copyRight": "© 2024 Inji. "
+    }
+  },
+  "HomePage": {
+    "Intro": {
+      "title": "Le téléchargement d'un certificat se fait en un seul clic !",
+      "subTitle": "Veuillez rechercher l'émetteur et, à l'étape suivante, sélectionnez le certificat à télécharger.",
+      "searchText": "Rechercher les émetteurs par nom."
+    },
+    "emptyContainerContent": "Aucun émetteur trouvé. ",
+    "containerHeading": "Liste des émetteurs",
+    "errorContent": "Le service est actuellement indisponible. "
+  },
+  "CredentialsPage": {
+    "searchText": "Rechercher le type d’informations d’identification.",
+    "emptyContainerContent": "Aucune information d'identification trouvée. ",
+    "containerHeading": "Liste des types d'informations d'identification",
+    "errorContent": "Le service est actuellement indisponible. "
+  },
+  "RedirectionPage": {
+    "navigateButton": "Aller à la maison",
+    "loading": {
+      "title": "Téléchargement en cours...",
+      "subTitle": "veuillez patienter pendant que votre pdf est téléchargé."
+    },
+    "success": {
+      "title": "Succès du téléchargement",
+      "subTitle": "Le PDF est généré"
+    },
+    "error": {
+      "invalidSession": {
+        "title": "Session invalide",
+        "subTitle": "la session n'est pas valide ou la session est terminée"
+      },
+      "generic": {
+        "title": "Échec du téléchargement",
+        "subTitle": "Quelque chose c'est mal passé. Merci d'essayer plus tard"
+      }
+    }
+  },
+  "HelpPage": {
+    "title": "Aide"
+  },
+  "Help": {
+    "item1": {
+      "title": "Qui sont les émetteurs ?",
+      "description1": "Les émetteurs sont soit des organismes gouvernementaux, soit des entités de confiance du gouvernement, chargés de fournir des informations d'identification vérifiables au format PDF aux résidents sur demande."
+    },
+    "item2": {
+      "title": "Que sont les informations d’identification vérifiables ?",
+      "description1": "Les informations d'identification vérifiables sont des documents numériques qui aident les utilisateurs à partager des informations telles que l'identité ou les qualifications avec le fournisseur de services, qui peuvent être instantanément vérifiées. "
+    },
+    "item3": {
+      "title": "Comment puis-je télécharger un identifiant dans Inji Web ?",
+      "description1": "Étape 1 : Recherchez et choisissez un émetteur sur la page de destination et sélectionnez un type d'informations d'identification.",
+      "description2": "Étape 2 : Sur la page d'authentification, fournissez les détails requis",
+      "description3": "Étape 3 : Le format PDF des informations d'identification vérifiables sera téléchargé dans le système."
+    },
+    "item4": {
+      "title": "Quelles informations dois-je fournir pour télécharger mon identifiant ?",
+      "description1": "L'émetteur des titres de compétences aurait fourni des détails tels que UIN/VID en cas d'identification nationale MOSIP ou de numéro de police, nom et date de naissance pour une carte d'assurance. "
+    },
+    "item5": {
+      "title": "Où puis-je trouver mon identifiant ?",
+      "description1": "Les informations d'identification vérifiables seront téléchargées dans le dossier Téléchargements de votre système."
+    },
+    "item6": {
+      "title": "Quels détails sont présents dans les informations d'identification PDF ?",
+      "description1": "Les détails recueillis dans le cadre du processus d’inscription seront présentés dans le PDF. "
+    },
+    "item7": {
+      "title": "Pourquoi je ne trouve pas la liste des émetteurs ?",
+      "description1": "Les raisons possibles de ce problème incluent :",
+      "description2": "1. Des erreurs techniques peuvent rendre le service temporairement indisponible, vous empêchant d'accéder à la liste des émetteurs.",
+      "description3": "2. Aucun émetteur n'a été configuré.",
+      "description4": "Dans les deux cas, veuillez contacter votre équipe technique pour résoudre le problème."
+    }
+  }
+}
