@@ -248,6 +248,7 @@ extraEnvVarsCM:
   - global
   - config-server-share
   - artifactory-share
+  - injiweb-ui
   #- softhsm-esignet-share
 
 ## Secret with extra environment variables
@@ -419,7 +420,14 @@ metrics:
 inji_web:
   inji_web_port: '3004'
   inji_web_service_host: 'mimoto.mimoto'
+  configmaps:
+    injiweb-ui:
+      DEFAULT_THEME: ''
+      DEFAULT_LANG: 'en'
+      DEFAULT_FEVICON: 'favicon.ico'
+      DEFAULT_TITLE: 'Inji Web'
 esignet_redirect_url: 'esignet.sandbox.xyz.net'
+
 ## injiweb UI swagger should have only internal access. Hence linked to internal gateway
 ## We create a gateway for esignet specific URL(s) listed under `hosts`
 istio:
