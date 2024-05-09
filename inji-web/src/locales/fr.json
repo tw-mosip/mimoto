@@ -10,8 +10,8 @@
   },
   "HomePage": {
     "Intro": {
-      "title": "Le téléchargement d'un certificat se fait en un seul clic !",
-      "subTitle": "Veuillez rechercher l'émetteur et, à l'étape suivante, sélectionnez le certificat à télécharger.",
+      "title": "Le téléchargement d'un identifiant se fait en un seul clic !",
+      "subTitle": "Veuillez rechercher l'émetteur et, à l'étape suivante, sélectionnez les informations d'identification à télécharger.",
       "searchText": "Rechercher les émetteurs par nom."
     },
     "emptyContainerContent": "Aucun émetteur trouvé. ",
@@ -28,11 +28,11 @@
     "navigateButton": "Aller à la maison",
     "loading": {
       "title": "Téléchargement en cours...",
-      "subTitle": "veuillez patienter pendant que votre pdf est téléchargé."
+      "subTitle": "Patientez s'il-vous-plait! "
     },
     "success": {
-      "title": "Succès du téléchargement",
-      "subTitle": "Le PDF est généré"
+      "title": "Succès!",
+      "subTitle": "Vérifiez votre dossier de téléchargements !"
     },
     "error": {
       "invalidSession": {

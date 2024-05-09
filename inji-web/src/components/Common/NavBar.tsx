@@ -42,26 +42,29 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
                 </div>
 
                 {props.search &&
-                    <div className="flex py-1 items-center" data-testid="NavBar-Search-Container">
-                        <div className="w-96 mx-auto flex justify-center items-center">
-                            <FaSearch
-                                data-testid="NavBar-Search-Icon"
-                                className="relative start-10 top-3 transform -translate-y-1/2 text-iw-searchIcon ms-2"
-                                size={20}/>
-                            <input
-                                data-testid="NavBar-Search-Input"
-                                type="text"
-                                value={searchText}
-                                placeholder={t("searchText")}
-                                onChange={event => filterCredential(event.target.value)}
-                                className="py-6 ps-16 pe-4 rounded-md w-full shadow-xl text-iw-searchTitle focus:outline-none" // Adjusted padding to accommodate the icon
-                            />
-                            {searchText.length > 0 && <IoCloseCircleSharp data-testid="Search-Issuer-Clear-Icon"
-                                                                          className="absolute end-28 top-40 transform -translate-y-1/2 text-iw-closeIcon cursor-pointer"
-                                                                          onClick={() => filterCredential("")}
-                                                                          size={20}/>}
+                    <>
+                        <div className={"flex items-center w-full justify-end"} data-testid="NavBar-Search-Container">
+                            <div data-testid="Search-Issuer-Container" className="w-96 flex justify-center items-center bg-iw-background shadow-md shadow-iw-shadow">
+                                <FaSearch data-testid="NavBar-Search-Icon"
+                                          color={'var(--iw-color-searchIcon)'}
+                                          className={"ms-6"}
+                                          size={20}/>
+                                <input
+                                    data-testid="NavBar-Search-Input"
+                                    type="text"
+                                    value={searchText}
+                                    placeholder={t("searchText")}
+                                    onChange={event => filterCredential(event.target.value)}
+                                    className="py-6 ps-10 pe-4 w-11/12 flex text-iw-searchTitle focus:outline-none"
+                                />
+                                {searchText.length > 0 && <IoCloseCircleSharp data-testid="NavBar-Search-Clear-Icon"
+                                                                              onClick={() => filterCredential("")}
+                                                                              color={'var(--iw-color-closeIcon)'}
+                                                                              className={"me-6"}
+                                                                              size={20}/>}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 }
             </nav>
         </div>

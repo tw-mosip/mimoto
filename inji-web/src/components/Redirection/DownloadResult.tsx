@@ -35,7 +35,8 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
             <div className="mb-6" data-testid="DownloadResult-SubTitle">
                 <p>{props.subTitle}</p>
             </div>
-            <div>
+            {(props.state === RequestStatus.DONE || props.state === RequestStatus.ERROR ) &&
+                <div>
                 <button
                     data-testid="DownloadResult-Home-Button"
                     onClick={() => navigate("/")}
@@ -43,6 +44,7 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
                     {t("navigateButton")}
                 </button>
             </div>
+            }
         </div>
     </React.Fragment>
 }

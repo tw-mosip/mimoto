@@ -37,8 +37,10 @@ export const HomePage: React.FC = () => {
 
     return <div data-testid="Home-Page-Container">
         <div className="container mx-auto mt-8 px-4 flex flex-col">
-            <IntroBox/>
-            <SearchIssuer state={state} fetchRequest={fetchRequest}/>
+            <div className={"my-20"}>
+                <IntroBox/>
+                <SearchIssuer state={state} fetchRequest={fetchRequest}/>
+            </div>
             <IssuersList state={state}/>
         </div>
 
