@@ -10,8 +10,8 @@
   },
   "HomePage": {
     "Intro": {
-      "title": "Downloading a certificate is one-click away!",
-      "subTitle": "Please search for the issuer and in the next step, select certificate to download.",
+      "title": "Downloading a Credential is one-click away!",
+      "subTitle": "Please search for the issuer and in the next step, select credential to download.",
       "searchText": "Search Issuers by name.."
     },
     "emptyContainerContent": "No issuers found. Please refresh your browser window or try again later",
@@ -27,12 +27,12 @@
   "RedirectionPage": {
     "navigateButton": "Go To Home",
     "loading": {
-      "title": "Download InProgress...",
-      "subTitle": "please wait while your pdf gets downloaded."
+      "title": "Download in progress...",
+      "subTitle": "Please wait a moment! We're converting your verifiable credentials to PDF"
     },
     "success": {
-      "title": "Download Success",
-      "subTitle": "PDF is generated"
+      "title": "Success!",
+      "subTitle": "Check your downloads folder!"
     },
     "error": {
       "invalidSession": {
