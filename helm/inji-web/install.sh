@@ -31,7 +31,8 @@ fi
 
 echo "MOSIP_INJIWEB_HOST is not present in configmap/global of configserver"
     # Add injiweb host to global
-    kubectl patch configmap global -n config-server --type merge -p "{\"data\": {\"mosip-injiweb-host\": \"$MOSIP_INIEB_HOST\"}}"
+    kubectl patch configmap global -n config-server --type merge -p "{\"data\": {\"mosip-injiweb-host\": \"$MOSIP_INJIWEBB_HOST\"}}"
+    kubectl patch configmap global -n default --type merge -p "{\"data\": {\"mosip-injiweb-host\": \"$MOSIP_INJIWEBB_HOST\"}}"
     # Add the host
     kubectl set env deployment/config-server SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_MOSIP_ESIGNET_INJIWEB_HOST=$MOSIP_INJIWEB_HOST -n config-server
     # Restart the configserver deployment
@@ -54,7 +55,7 @@ function installing_inji-web() {
 
   INJI_HOST=$(kubectl get cm global -o jsonpath={.data.mosip-injiweb-host})
   echo Installing INJIWEB
-  helm -n $NS install injiweb mosip/inji-web \
+  helm -n $NS install injiweb mosip/injiweb \
   -f values.yaml \
   --set istio.hosts\[0\]=$INJI_HOST \
   --version $CHART_VERSION
