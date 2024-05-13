@@ -36,7 +36,7 @@ echo "MOSIP_INJIWEB_HOST is not present in configmap/global of configserver"
     # Add the host
     kubectl set env deployment/config-server SPRING_CLOUD_CONFIG_SERVER_OVERRIDES_MOSIP_ESIGNET_INJIWEB_HOST=$MOSIP_INJIWEB_HOST -n config-server
     # Restart the configserver deployment
-    kubectl -n config-server get deploy -o name | xargs -n1 -t kubectl -n config-server rollout restart 
+    kubectl -n config-server get deploy -o name | xargs -n1 -t kubectl -n config-server rollout status 
 
 sleep 400s
 
