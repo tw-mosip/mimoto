@@ -45,5 +45,9 @@ export const getObjectForCurrentLanguage = (displayArray: DisplayArrayObject[], 
 }
 
 export const getDirCurrentLanguage = (language: string) => {
-    return language === 'ar' ? 'rtl' : 'ltr';
+    return isRTL(language) ? 'rtl' : 'ltr';
+}
+
+export const isRTL = (language:string) => {
+    return language === 'ar';
 }

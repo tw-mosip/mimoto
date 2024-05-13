@@ -22,22 +22,23 @@ const getCredentialObject = (): CredentialWellknownObject => {
         }
     }
 }
-describe("Test Credentials Item Layout",() => {
-    test.skip('check the presence of the container', () => {
+
+describe.skip("Test Credentials Item Layout",() => {
+    test('check the presence of the container', () => {
         const clickHandler = jest.fn();
         const credential:CredentialWellknownObject = getCredentialObject();
-        render(
-            <Provider store={{credentials: credential}}>
-            <Credential credential={credential} index={1} />
-            </Provider>
-        );
+        // render(
+        //     <Provider store={{credentials: credential}}>
+        //         <Credential credential={credential} index={1} />
+        //     </Provider>
+        // );
         const itemBoxElement = screen.getByTestId("ItemBox-Outer-Container");
         expect(itemBoxElement).toBeInTheDocument();
     });
-    test.skip('check if content is rendered properly', () => {
+    test('check if content is rendered properly', () => {
         const clickHandler = jest.fn();
         const credential:CredentialWellknownObject = getCredentialObject();
-        render(<Credential credential={credential} index={1} />);
+        // render(<Credential credential={credential} index={1} />);
         const itemBoxElement = screen.getByTestId("ItemBox-Outer-Container");
         expect(itemBoxElement).toHaveTextContent("TitleOfItemBox")
     });

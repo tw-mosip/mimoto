@@ -16,7 +16,7 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
                 <div className="rounded-full p-2 shadow">
                     <div className="rounded-full p-8 bg-iw-shieldSuccessShadow ">
                         <BsShieldFillCheck
-                            data-testid="DownloadResult-Success-SheildIcon" size={40} color={'var(--iw-color-shieldSuccessIcon)'}/>
+                            data-testid="DownloadResult-Success-ShieldIcon" size={40} color={'var(--iw-color-shieldSuccessIcon)'}/>
                     </div>
                 </div>
             }
@@ -24,7 +24,7 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
                 <div className="rounded-full p-2 shadow">
                     <div className="rounded-full p-8 bg-iw-shieldErrorShadow">
                         <BsShieldFillX
-                            data-testid="DownloadResult-Error-SheildIcon" size={40} color={'var(--iw-color-shieldErrorIcon)'}/>
+                            data-testid="DownloadResult-Error-ShieldIcon" size={40} color={'var(--iw-color-shieldErrorIcon)'}/>
                     </div>
                 </div>
             }
