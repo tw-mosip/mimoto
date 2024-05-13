@@ -8,7 +8,7 @@ export const HelpPage: React.FC = () => {
     return <React.Fragment>
         <div className={"bg-iw-background"} data-testid="Help-Page-Container">
             <NavBar title={t("title")} search={false} link={"/"}/>
-            <div className="container mx-auto mt-8 ">
+            <div className="container mx-auto mt-8 px-10 sm:px-0">
                 <HelpAccordion/>
             </div>
         </div>

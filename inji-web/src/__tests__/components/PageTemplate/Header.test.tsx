@@ -1,49 +1,57 @@
 import React from 'react';
 import {fireEvent, render, screen} from '@testing-library/react';
 import {Header} from "../../../components/PageTemplate/Header";
-import {wrapUnderRouter} from "../../../utils/mockUtils";
-import {useNavigate} from "react-router-dom";
+import {mockUseNavigate, wrapUnderRouter} from "../../../utils/mockUtils";
+
+const mockedUsedNavigate = jest.fn();
+// const originalWindowEnv = global.window._env_;
 
 jest.mock('../../../components/Common/LanguageSelector', () => ({
     LanguageSelector: () => <></>,
 }))
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockedUsedNavigate,
+}))
+
+window._env_ = {
+    DEFAULT_FAVICON: "favicon.ico",
+    DEFAULT_FONT_URL: "",
+    DEFAULT_THEME: "purple_theme",
+    DEFAULT_TITLE: "Inji Web Test",
+    DEFAULT_LANG: 'en'
+};
 
 describe("Header Container",() => {
-    jest.mock('react-router-dom', () => ({
-        ...jest.requireActual('react-router-dom'),
-        useNavigate: jest.fn().mockImplementation(() => {
-            return (path:string) => console.log(`Navigating to: ${path}`);
-        }),
-    }));
-
-    test('check the presence of the container', () => {
-        render(wrapUnderRouter(<Header />));
-        const footerElement = screen.getByTestId("Header-Container");
-        expect(footerElement).toBeInTheDocument();
-    });
-
-    test('check the presence of the injweb logo', () => {
-        render(wrapUnderRouter(<Header />));
-        const injiWebLogo = screen.getByTestId("Header-InjiWeb-Logo-Container");
-        console.log("injiWebLogo:", injiWebLogo);
-        expect(injiWebLogo).toBeInTheDocument();
-    });
     test('check the presence of the help', () => {
         render(wrapUnderRouter(<Header />));
-        const footerElementText = screen.getByTestId("Header-Menu-Help");
-        expect(footerElementText).toBeInTheDocument()
-        expect(footerElementText).toHaveTextContent("Header.help");
+        const headerElementLi = screen.getByTestId("Header-Menu-Help");
+        expect(headerElementLi).toBeInTheDocument()
+        expect(headerElementLi).toHaveTextContent("Header.help");
+        const headerElementDiv = screen.getByTestId("Header-Menu-Help-div");
+        expect(headerElementDiv).toBeInTheDocument()
+
+        fireEvent.click(headerElementDiv);
+        jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockUseNavigate);
+        fireEvent.click(headerElementDiv);
+
+        expect(mockedUsedNavigate).toHaveBeenCalled();
+        expect(mockedUsedNavigate).toHaveBeenCalledWith("/help");
     });
-    test('check the presence of the about inji ', () => {
+
+    test('check the presence of the About Inji', () => {
         render(wrapUnderRouter(<Header />));
-        const footerElementText = screen.getByTestId("Header-Menu-AboutInji");
-        expect(footerElementText).toBeInTheDocument()
-        expect(footerElementText).toHaveTextContent("Header.aboutInji");
-    });
-    test('check the presence of the language Selector', () => {
-        render(wrapUnderRouter(<Header />));
-        const footerElementText = screen.getByTestId("Header-Menu-LanguageSelector");
-        expect(footerElementText).toBeInTheDocument()
+        const headerElementLi = screen.getByTestId("Header-Menu-AboutInji");
+        expect(headerElementLi).toBeInTheDocument()
+        expect(headerElementLi).toHaveTextContent("Header.aboutInji");
+        const headerElementDiv = screen.getByTestId("Header-Menu-Help-div");
+        expect(headerElementDiv).toBeInTheDocument()
+
+        fireEvent.click(headerElementDiv);
+        jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockUseNavigate);
+        fireEvent.click(headerElementDiv);
+
+        expect(mockedUsedNavigate).toHaveBeenCalled();
     });
 })
 

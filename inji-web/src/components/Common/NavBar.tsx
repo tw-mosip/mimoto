@@ -32,8 +32,10 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
     return <React.Fragment>
         <div data-testid="NavBar-Outer-Container"
              className="bg-iw-navigationBar text-iw-title p-4 py-10">
-            <nav data-testid="NavBar-Inner-Container" className="flex justify-between mx-auto container items-center">
-                <div className="flex items-center">
+            <nav data-testid="NavBar-Inner-Container"
+                 className=" mx-auto flex flex-col justify-start container items-start
+                             sm:flex-row sm:justify-start sm:items-center">
+                <div className="flex items-center my-5 sm:my-0">
                     <div className={"cursor-pointer"}>
                         <IoArrowBack data-testid="NavBar-Back-Arrow" size={24} onClick={() => navigate(props.link)}/>
                     </div>
@@ -42,29 +44,27 @@ export const NavBar: React.FC<NavBarProps> = (props) => {
                 </div>
 
                 {props.search &&
-                    <>
-                        <div className={"flex items-center w-full justify-end"} data-testid="NavBar-Search-Container">
-                            <div data-testid="Search-Issuer-Container" className="w-96 flex justify-center items-center bg-iw-background shadow-md shadow-iw-shadow">
-                                <FaSearch data-testid="NavBar-Search-Icon"
-                                          color={'var(--iw-color-searchIcon)'}
-                                          className={"ms-6"}
-                                          size={20}/>
-                                <input
-                                    data-testid="NavBar-Search-Input"
-                                    type="text"
-                                    value={searchText}
-                                    placeholder={t("searchText")}
-                                    onChange={event => filterCredential(event.target.value)}
-                                    className="py-6 ps-10 pe-4 w-11/12 flex text-iw-searchTitle focus:outline-none"
-                                />
-                                {searchText.length > 0 && <IoCloseCircleSharp data-testid="NavBar-Search-Clear-Icon"
-                                                                              onClick={() => filterCredential("")}
-                                                                              color={'var(--iw-color-closeIcon)'}
-                                                                              className={"me-6"}
-                                                                              size={20}/>}
-                            </div>
+                    <div className={"flex items-center w-full justify-start sm:justify-end my-5 sm:my-0"} data-testid="NavBar-Search-Container">
+                        <div data-testid="Search-Issuer-Container" className="w-full sm:w-96 flex justify-center items-center bg-iw-background shadow-md shadow-iw-shadow">
+                            <FaSearch data-testid="NavBar-Search-Icon"
+                                      color={'var(--iw-color-searchIcon)'}
+                                      className={"m-5"}
+                                      size={20}/>
+                            <input
+                                data-testid="NavBar-Search-Input"
+                                type="text"
+                                value={searchText}
+                                placeholder={t("searchText")}
+                                onChange={event => filterCredential(event.target.value)}
+                                className="py-6 w-11/12 flex text-iw-searchTitle focus:outline-none"
+                            />
+                            {searchText.length > 0 && <IoCloseCircleSharp data-testid="NavBar-Search-Clear-Icon"
+                                                                          onClick={() => filterCredential("")}
+                                                                          color={'var(--iw-color-closeIcon)'}
+                                                                          className={"m-5"}
+                                                                          size={20}/>}
                         </div>
-                    </>
+                    </div>
                 }
             </nav>
         </div>
