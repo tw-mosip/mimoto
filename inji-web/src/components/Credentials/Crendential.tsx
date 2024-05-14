@@ -20,7 +20,7 @@ export const Credential: React.FC<CredentialProps> = (props) => {
                     onClick={() => {
                         const state = generateRandomString();
                         const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
-                        window.open(api.authorization(selectedIssuer.selected_issuer, state, code_challenge), '_self', 'noopener');
+                        window.open(api.authorization(selectedIssuer.selected_issuer, props.credential, state, code_challenge), '_self', 'noopener');
                         addNewSession({
                             selectedIssuer: selectedIssuer.selected_issuer,
                             certificateId: props.credential.id,

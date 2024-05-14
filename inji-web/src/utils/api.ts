@@ -1,4 +1,4 @@
-import {ApiRequest, CodeChallengeObject, IssuerObject} from "../types/data";
+import {ApiRequest, CodeChallengeObject, CredentialWellknownObject, IssuerObject} from "../types/data";
 import i18n from "i18next";
 
 export enum MethodType {
@@ -81,11 +81,11 @@ export class api {
         }
     }
 
-    static authorization = (currentIssuer: IssuerObject, state: string, code_challenge: CodeChallengeObject) => {
+    static authorization = (currentIssuer: IssuerObject, credentialWellknown: CredentialWellknownObject, state: string, code_challenge: CodeChallengeObject) => {
         return `${currentIssuer.authorization_endpoint}` +
             `?response_type=code&` +
             `client_id=${currentIssuer.client_id}&` +
-            `scope=${currentIssuer.scopes_supported[0]}&` +
+            `scope=${credentialWellknown.scope}&` +
             `redirect_uri=${api.authorizationRedirectionUrl}&` +
             `state=${state}&` +
             `code_challenge=${code_challenge.codeChallenge}&` +
