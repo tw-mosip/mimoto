@@ -29,10 +29,10 @@ export const DownloadResult: React.FC<DownloadResultProps> = (props) => {
                 </div>
             }
             {props.state === RequestStatus.LOADING && <SpinningLoader />}
-            <div className="mt-4 ">
+            <div className="my-4 ">
                 <p className="font-bold" data-testid="DownloadResult-Title">{props.title}</p>
             </div>
-            <div className="mb-6" data-testid="DownloadResult-SubTitle">
+            <div className="mb-6 px-10 text-center" data-testid="DownloadResult-SubTitle">
                 <p>{props.subTitle}</p>
             </div>
             {(props.state === RequestStatus.DONE || props.state === RequestStatus.ERROR ) &&
