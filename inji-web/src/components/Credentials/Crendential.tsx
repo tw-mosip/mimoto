@@ -16,7 +16,6 @@ export const Credential: React.FC<CredentialProps> = (props) => {
     return <ItemBox index={props.index}
                     url={credentialObject.logo.url}
                     title={credentialObject.name}
-                    description={credentialObject.name}
                     onClick={() => {
                         const state = generateRandomString();
                         const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
