@@ -12,7 +12,6 @@ import {getDirCurrentLanguage} from "./utils/i18n";
 
 export const AppRouter = () => {
     const language = useSelector((state: RootState) => state.common.language);
-    const app_theme = ""; //can be "purple_theme" or "" ( for default )
     const wrapElement = (element: JSX.Element) => {
         return <React.Fragment>
             <div className={`h-screen min-h-72 bg bg-iw-background font-base`} dir={getDirCurrentLanguage(language)}>
