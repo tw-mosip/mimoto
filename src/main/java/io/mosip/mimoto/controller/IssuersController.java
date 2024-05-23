@@ -1,5 +1,6 @@
 package io.mosip.mimoto.controller;
 
+import com.google.gson.Gson;
 import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.DisplayDTO;
 import io.mosip.mimoto.dto.ErrorDTO;
@@ -13,6 +14,7 @@ import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
 import io.mosip.mimoto.util.RestApiClient;
+import io.mosip.mimoto.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class IssuersController {
 
     @Autowired
     private RestApiClient restApiClient;
+
+    @Autowired
+    Utilities utilities;
 
     private static final String defaultLanguageConstant = "en";
 
@@ -130,7 +135,9 @@ public class IssuersController {
             IssuerDTO issuerConfig = issuersService.getIssuerConfig(issuerId);
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = restApiClient.getApi(issuerConfig.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
             if (credentialIssuerWellKnownResponse == null) {
-                throw new ApiNotAccessibleException();
+                String credentialIssuerWellKnownResponseStr = utilities.getCredentialsSupportedConfigJsonValue();
+                credentialIssuerWellKnownResponse = new Gson().fromJson(credentialIssuerWellKnownResponseStr, CredentialIssuerWellKnownResponse.class);
+
             }
             Optional<CredentialsSupportedResponse> credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialsSupported().stream()
                     .filter(credentialsSupported -> credentialsSupported.getId().equals(credentialType))

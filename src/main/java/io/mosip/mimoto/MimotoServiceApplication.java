@@ -31,6 +31,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 })
 @EnableScheduling
 @EnableAsync
+
 public class MimotoServiceApplication {
 
     private static Logger logger = LoggerUtil.getLogger(MimotoServiceApplication.class);
