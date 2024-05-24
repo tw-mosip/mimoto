@@ -18,7 +18,7 @@ ARG active_profile
 # can be passed during Docker build as build time environment for config server URL
 ARG spring_config_url
 
-# can be passed during Docker build as build time environment for glowroot 
+# can be passed during Docker build as build time environment for glowroot
 ARG is_glowroot
 
 # can be passed during Docker build as build time environment for artifactory URL
@@ -54,11 +54,11 @@ ARG container_user_uid=1001
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG container_user_gid=1001
 
-# install packages and create user
+# Install packages and create user
 RUN apt-get -y update \
-&& apt-get install -y unzip \
-&& groupadd -g ${container_user_gid} ${container_user_group} \
-&& useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user}
+    && apt-get install -y unzip nginx \
+    && groupadd -g ${container_user_gid} ${container_user_group} \
+    && useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user}
 
 # set working directory for the user
 WORKDIR /home/${container_user}
@@ -71,7 +71,16 @@ RUN mkdir -p ${loader_path} ${work_dir}/data
 
 ENV loader_path_env=${loader_path}
 
-# change volume to whichever storage directory you want to use for this container.
+# Create directory for nginx to serve files from
+RUN mkdir -p /usr/share/nginx/html
+
+# Copy the mimoto-issuers-config.json file to the nginx html directory
+COPY ./docker-compose/config/mimoto-issuers-config.json /usr/share/nginx/html/mimoto-issuers-config.json
+
+# Copy nginx configuration
+COPY ./docker-compose/nginx.conf /etc/nginx/nginx.conf
+
+# Change volume to whichever storage directory you want to use for this container.
 VOLUME ${work_dir}/logs ${work_dir}/Glowroot
 
 ADD ./target/mimoto-*.jar ./mimoto.jar
@@ -83,7 +92,7 @@ RUN chown -R ${container_user}:${container_user} /home/${container_user}
 # select container user for all tasks
 USER ${container_user_uid}:${container_user_gid}
 
-EXPOSE 8099
+EXPOSE 8099 80
 
 CMD if [ "$is_glowroot_env" = "present" ]; then \
     wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/glowroot.zip ; \
@@ -91,10 +100,10 @@ CMD if [ "$is_glowroot_env" = "present" ]; then \
     rm -rf glowroot.zip ; \
     sed -i 's/<service_name>/mimoto/g' glowroot/glowroot.properties ; \
     wget -q --show-progress "${iam_adapter_url_env}" -O "${loader_path_env}"/kernel-auth-adapter.jar; \
-    java -jar -javaagent:glowroot/glowroot.jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mimoto.jar ; \
+    service nginx start && java -jar -javaagent:glowroot/glowroot.jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mimoto.jar ; \
     else \
     wget -q --show-progress "${iam_adapter_url_env}" -O "${loader_path_env}"/kernel-auth-adapter.jar; \
-    java -jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mimoto.jar ; \
+    service nginx start && java -jar -Dloader.path="${loader_path_env}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" mimoto.jar ; \
     fi
 
 #CMD ["java","-Dspring.cloud.config.label=${spring_config_label_env}","-Dspring.profiles.active=${active_profile_env}","-Dspring.cloud.config.uri=${spring_config_url_env}","-jar","-javaagent:/home/Glowroot/glowroot.jar","mimoto.jar"]

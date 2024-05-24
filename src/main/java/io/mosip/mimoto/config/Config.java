@@ -27,7 +27,7 @@ import java.util.Map;
 public class Config extends WebSecurityConfigurerAdapter {
     private Logger logger = LoggerUtil.getLogger(Config.class);
 
-    @Value("${mosipbox.public.url}")
+    @Value("${mosip.api.public.url}")
     private String baseUrl;
 
     @Value("${mosip.security.csrf-enable:false}")

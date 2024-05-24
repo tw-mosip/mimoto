@@ -75,7 +75,7 @@ public class RestApiClient {
     @Value("${mosip.iam.adapter.appid}")
     private String appId;
 
-    @Value("${mosip.iam.adapter.disable-self-token-rest-template:true}")
+    @Value("${mosip.iam.adapter.disable-self-token-rest-template:false}")
     private boolean disableSelfTokenRestTemplate;
 
     @Autowired

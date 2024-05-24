@@ -7,8 +7,8 @@ services:
     user: root
     ports:
       - 8088:8088
-    expose:
-      - 8088
+      - 8099:8099
+      - 8089:80  # Map port 80 in the container to 8089 on the host
     environment:
       - artifactory_url_env=http://artifactory-server:8080/
       - container_user=mosip
@@ -17,7 +17,7 @@ services:
       - SPRING_CONFIG_LOCATION=/home/mosip/
     volumes:
       - ./docker-compose/config/mimoto-default.properties:/home/mosip/mimoto-default.properties
+      - ./docker-compose/config/mimoto-issuers-config.json:/home/mosip/mimoto-issuers-config.json
       - ./docker-compose/config/oidckeystore.p12:/home/mosip/certs/oidckeystore.p12
       - ./docker-compose/loader_path/:/home/mosip/additional_jars/
-    restart: always
 
