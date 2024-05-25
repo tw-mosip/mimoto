@@ -11,7 +11,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
             <button
                 data-testid="Help-Item-Title-Button"
                 className="w-full p-5 text-left font-bold hover:bg-iw-helpAccordionHover focus:outline-none"
-                onClick={() => props.setOpen(props.id)}
+                onClick={() => props.setOpen(props.id === props.open ? -1 : props.id)}
             >
                 <div className={"flex flex-row text-iw-title"}
                      data-testid="Help-Item-Title-Text">

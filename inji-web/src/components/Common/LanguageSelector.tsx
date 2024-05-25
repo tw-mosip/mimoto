@@ -25,7 +25,7 @@ export const LanguageSelector: React.FC = () => {
         dispatch(storeLanguage(item.value));
     }
 
-    return <div className={"flex flex-row justify-center items-center"}>
+    return <div className={"flex flex-row justify-center items-center"} data-testid={"LanguageSelector-Outer-Div"}>
         <VscGlobe
             data-testid="Language-Selector-Icon"
             size={30} color={'var(--iw-color-languageGlobeIcon)'}/>
