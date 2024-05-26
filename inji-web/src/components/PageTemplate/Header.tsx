@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
                          alt="Inji Web Logo"/>
                 </div>
                 <nav>
-                    <ul className="flex space-x-4 items-center font-semibold">
+                    <ul className="flex space-x-4 items-center font-semibold" data-testid="Header-Menu-Elements">
                         <li data-testid="Header-Menu-AboutInji"><a href="https://docs.mosip.io/inji/inji-web/overview"
                                                                    target="_blank"
                                                                    rel="noreferrer"
