@@ -440,7 +440,14 @@
                     <skipTests>${skipTests}</skipTests>
                     <skip>false</skip>
                     <argLine>
-                        ${argLine} --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED --illegal-access=permit
+                        ${argLine}
+                        --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED --illegal-access=permit
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/sun.security.jca=ALL-UNNAMED
+                        --add-opens java.base/sun.security.util=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.util=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.time=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
