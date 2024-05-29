@@ -21,7 +21,7 @@ on:
       - develop*
       - MOSIP*
       - qa-develop
-      - inji-606*
+      - develop-java21-test
 
 jobs:
   build-mimoto:
