@@ -33,8 +33,9 @@ export const LanguageSelector: React.FC = () => {
             <button
                 type="button"
                 className="inline-flex items-center"
+                data-testid={"Language-Selector-Button"}
                 onMouseDown={() => setIsOpen(open => !isOpen)}>
-                <p>{LanguagesSupported.find(lang => lang.value === language)?.label}</p>
+                <p data-testid={`Language-Selector-Selected-DropDown-${language}`}>{LanguagesSupported.find(lang => lang.value === language)?.label}</p>
                 {isOpen ? <RiArrowUpSFill size={20} color={'var(--iw-color-languageArrowIcon)'} /> : <RiArrowDownSFill size={20} color={'var(--iw-color-languageArrowIcon)'}/> }
             </button>
 
@@ -44,6 +45,7 @@ export const LanguageSelector: React.FC = () => {
                     <ul className="py-1 divide-y divide-gray-200">
                         {LanguagesSupported.map((item) => (
                             <li key={item.value}
+                                data-testid={`Language-Selector-DropDown-Item-${item.value}`}
                                 className={language === item.value ? "text-iw-primary" : ""}>
                                 <button
                                     type="button"
