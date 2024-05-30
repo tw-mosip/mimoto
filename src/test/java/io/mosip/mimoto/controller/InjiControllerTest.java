@@ -240,7 +240,7 @@ public class InjiControllerTest {
                         List.of(getCredentialSupportedResponse("CredentialType1"))));
 
 
-        Mockito.when(issuersService.generatePdfForVerifiableCredentials("accessToken",
+        Mockito.when(issuersService.generatePdfForVerifiableCredentials(new VCCredentialResponse(),
                         getIssuerDTO("Issuer1"), getCredentialSupportedResponse("CredentialType1"),
                         "credential_endpoint"))
                 .thenReturn(new ByteArrayInputStream("Mock Pdf".getBytes()))
