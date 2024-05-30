@@ -134,21 +134,21 @@ jobs:
       GPG_SECRET: ${{ secrets.GPG_SECRET }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
- publish_to_nexus_apitest:
-  if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' && github.event_name != 'release' && github.event_name != 'prerelease' && github.event_name != 'publish' }}"
-  needs: build-maven-apitest-mimoto
-  uses: mosip/kattu/.github/workflows/maven-publish-to-nexus.yml@master-java21
-  with:
-    SERVICE_LOCATION: ./apitest
-  secrets:
-    OSSRH_USER: ${{ secrets.OSSRH_USER }}
-    OSSRH_SECRET: ${{ secrets.OSSRH_SECRET }}
-    OSSRH_URL: ${{ secrets.OSSRH_SNAPSHOT_URL }}
-    OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-    GPG_SECRET: ${{ secrets.GPG_SECRET }}
-    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+  publish_to_nexus_apitest:
+    if: "${{ !contains(github.ref, 'master') && github.event_name != 'pull_request' && github.event_name != 'release' && github.event_name != 'prerelease' && github.event_name != 'publish' }}"
+    needs: build-maven-apitest-mimoto
+    uses: mosip/kattu/.github/workflows/maven-publish-to-nexus.yml@master-java21
+    with:
+      SERVICE_LOCATION: ./apitest
+    secrets:
+      OSSRH_USER: ${{ secrets.OSSRH_USER }}
+      OSSRH_SECRET: ${{ secrets.OSSRH_SECRET }}
+      OSSRH_URL: ${{ secrets.OSSRH_SNAPSHOT_URL }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+      GPG_SECRET: ${{ secrets.GPG_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
- build-apitest-mimoto-local:
+  build-apitest-mimoto-local:
     needs: build-maven-apitest-mimoto
     runs-on: ubuntu-latest
     env:
@@ -197,7 +197,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
         if: failure() # Pick up events even if the job fails or is canceled.
 
- build-dockers_apitest_mimoto:
+  build-dockers_apitest_mimoto:
    needs: build-apitest-mimoto-local
    strategy:
      matrix:
@@ -220,7 +220,7 @@ jobs:
      RELEASE_DOCKER_HUB: ${{ secrets.RELEASE_DOCKER_HUB }}
      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
- sonar_analysis_apitest_mimoto:
+  sonar_analysis_apitest_mimoto:
    needs: build-maven-apitest-mimoto
    if: "${{  github.event_name != 'pull_request' }}"
    uses: mosip/kattu/.github/workflows/maven-sonar-analysis.yml@master-java21
