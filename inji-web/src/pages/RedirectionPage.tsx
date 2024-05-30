@@ -80,7 +80,7 @@ export const RedirectionPage: React.FC = () => {
                     apiRequest.url(issuerId, certificateId),
                     apiRequest.methodType,
                     apiRequest.headers(response?.access_token),
-                    credentialRequestBody
+                    JSON.stringify(credentialRequestBody)
                 );
                 if (state !== RequestStatus.ERROR) {
                     await downloadCredentialPDF(response, certificateId);

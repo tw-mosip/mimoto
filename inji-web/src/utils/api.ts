@@ -41,7 +41,7 @@ export class api {
             }
         }
     }
-    static fetchCredentialTypes2 = {
+    static fetchCredentialTypes2:ApiRequest = {
         url: (issuerId: string) => api.mimotoHost + `/issuers/${issuerId}/credentialTypes`,
         methodType: MethodType.GET,
         headers: () => {
@@ -60,9 +60,9 @@ export class api {
             }
         }
     };
-    static downloadVc = {
+    static downloadVc:ApiRequest = {
         url: (issuerId: string, credentialId: string) => api.mimotoHost + `/issuers/${issuerId}/credentials/${credentialId}/download`,
-        methodType: MethodType.GET,
+        methodType: MethodType.POST,
         headers: (token: string) => {
             return {
                 'Authorization': `Bearer ${token}`,
