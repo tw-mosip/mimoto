@@ -36,7 +36,7 @@ export const SearchCredential:React.FC = () => {
               value={searchText}
               placeholder={t("searchText")}
               onChange={event => filterCredential(event.target.value)}
-              className="py-6 w-11/12 flex text-iw-searchTitle focus:outline-none"
+              className="py-6 w-11/12 flex text-iw-searchTitle overflow-ellipsis focus:outline-none mr-10"
           />
           {searchText.length > 0 && <IoCloseCircleSharp data-testid="NavBar-Search-Clear-Icon"
                                         onClick={() => filterCredential("")}

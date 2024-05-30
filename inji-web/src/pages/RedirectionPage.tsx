@@ -7,14 +7,18 @@ import {DownloadResult} from "../components/Redirection/DownloadResult";
 import {api} from "../utils/api";
 import {ApiRequest, DisplayArrayObject, SessionObject} from "../types/data";
 import {useTranslation} from "react-i18next";
-import {downloadCredentialPDF} from "../utils/misc";
+import {downloadCredentialPDF, getBody} from "../utils/misc";
 import {getObjectForCurrentLanguage} from "../utils/i18n";
+import {storeSelectedIssuer} from "../redux/reducers/issuersReducer";
+import {useDispatch} from "react-redux";
+import {storeCredentials, storeFilteredCredentials} from "../redux/reducers/credentialsReducer";
 
 export const RedirectionPage: React.FC = () => {
 
     const {error, state, fetchRequest} = useFetch();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
+    const dispatch = useDispatch();
     const redirectedSessionId = searchParams.get("state");
     const activeSessionInfo: any = getActiveSession(redirectedSessionId);
     const {t} = useTranslation("RedirectionPage");
@@ -40,21 +44,43 @@ export const RedirectionPage: React.FC = () => {
                     'redirect_uri': api.authorizationRedirectionUrl,
                     'code_verifier': codeVerifier
                 }
-                const requestBody = new URLSearchParams(bodyJson);
 
-                let apiRequest: ApiRequest = api.fetchToken;
+                let apiRequest: ApiRequest = api.fetchSpecificIssuer;
+                let issuerConfig = await fetchRequest(
+                    apiRequest.url(issuerId ?? ""),
+                    apiRequest.methodType,
+                    apiRequest.headers()
+                );
+                dispatch(storeSelectedIssuer(issuerConfig?.response));
+
+
+                apiRequest = api.fetchCredentialTypes2;
                 let response = await fetchRequest(
+                    apiRequest.url(issuerId ?? ""),
+                    apiRequest.methodType,
+                    apiRequest.headers()
+                );
+                dispatch(storeFilteredCredentials(response?.response?.supportedCredentials));
+                dispatch(storeCredentials(response?.response?.supportedCredentials));
+
+
+                const requestBody = new URLSearchParams(bodyJson);
+                apiRequest = api.fetchToken;
+                response = await fetchRequest(
                     apiRequest.url(issuerId),
                     apiRequest.methodType,
                     apiRequest.headers(),
                     requestBody
                 );
 
+                const credentialRequestBody = await getBody(response?.access_token, clientId, issuerConfig.response.credential_audience, certificateId);
+
                 apiRequest = api.downloadVc;
                 response = await fetchRequest(
                     apiRequest.url(issuerId, certificateId),
                     apiRequest.methodType,
-                    apiRequest.headers(response?.access_token)
+                    apiRequest.headers(response?.access_token),
+                    credentialRequestBody
                 );
                 if (state !== RequestStatus.ERROR) {
                     await downloadCredentialPDF(response, certificateId);

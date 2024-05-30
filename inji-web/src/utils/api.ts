@@ -65,7 +65,7 @@ export class api {
         methodType: MethodType.GET,
         headers: (token: string) => {
             return {
-                'Bearer': token,
+                'Authorization': `Bearer ${token}`,
                 'Cache-Control': 'no-cache, no-store, must-revalidate'
             }
         }
