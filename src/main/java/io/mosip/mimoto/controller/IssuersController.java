@@ -113,7 +113,7 @@ public class IssuersController {
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
-    @GetMapping("/{issuer-id}/credentials/{credentialType}/download")
+    @PostMapping("/{issuer-id}/credentials/{credentialType}/download")
     public ResponseEntity<?> downloadCredentialAsPDF(
             @RequestHeader("Authorization") String token,
             @PathVariable("issuer-id") String issuerId,
