@@ -38,7 +38,7 @@ export const SearchIssuer: React.FC<SearchIssuerProps> = (props) => {
                     value={searchText}
                     placeholder={t("Intro.searchText")}
                     onChange={event => filterIssuers(event.target.value)}
-                    className="py-6 w-11/12 text-iw-searchTitle focus:outline-none"
+                    className="py-6 w-11/12 text-iw-searchTitle focus:outline-none overflow-ellipsis mr-10"
                 />
                 {searchText.length > 0 && <IoCloseCircleSharp data-testid="Search-Issuer-Clear-Icon"
                                                               onClick={() => filterIssuers("")}
