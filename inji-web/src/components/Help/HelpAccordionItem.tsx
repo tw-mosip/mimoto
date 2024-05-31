@@ -27,7 +27,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
             {(props.id === props.open) && (
                 <div className="p-5 bg-iw-background border-t-2"
                      data-testid="Help-Item-Content-Text">
-                    {props.content.map(content => <p className={"text-iw-title"}>{content}</p>)}
+                    {props.content.map((content, index) => <p key={index} className={"text-iw-title"}>{content}</p>)}
 
                 </div>
             )}
