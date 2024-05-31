@@ -66,6 +66,7 @@ export class api {
         headers: (token: string) => {
             return {
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache, no-store, must-revalidate'
             }
         }
