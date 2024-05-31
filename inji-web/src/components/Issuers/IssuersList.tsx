@@ -30,7 +30,7 @@ export const IssuersList: React.FC<IssuersListProps> = ({state}) => {
             <HeaderTile content={t("containerHeading")}/>
             <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-5">
                 {issuers.filtered_issuers.map((issuer: IssuerObject, index: number) =>
-                    <Issuer issuer={issuer} index={index}/>)}
+                    <Issuer issuer={issuer} key={index} index={index}/>)}
             </div>
         </div>
     </React.Fragment>
