@@ -149,8 +149,8 @@ public class IssuersServiceImpl implements IssuersService {
                 .findFirst();
         if (issuerConfigResp.isPresent()) {
             IssuerDTO issuerDto = issuerConfigResp.get();
-            CredentialIssuerWellKnownResponse response = restApiClient.getApi(issuerDto.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
-            if (response == null) {
+            credentialIssuerWellKnownResponse = restApiClient.getApi(issuerDto.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
+            if (credentialIssuerWellKnownResponse == null) {
                 throw new ApiNotAccessibleException();
             }
         }
