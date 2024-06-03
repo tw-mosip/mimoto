@@ -127,10 +127,12 @@ public class IssuersController {
 
         try{
             IssuerDTO issuerConfig = issuersService.getIssuerConfig(issuerId);
+            logger.info("issuerConfig => " +  issuerConfig);
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getCredentialIssuerWellknown(issuerId, credentialType);
+            logger.info("Wellknown => " +  credentialIssuerWellKnownResponse);
             CredentialsSupportedResponse credentialsSupportedResponse = issuersService.getCredentialSupported(credentialIssuerWellKnownResponse, credentialType);
             VCCredentialResponse vcCredentialResponse = issuersService.downloadCredential(credentialIssuerWellKnownResponse.getCredentialEndPoint(), vcCredentialRequest, token);
-
+            logger.info("vcCredentialResponse" + vcCredentialResponse);
             ByteArrayInputStream inputStream =  issuersService.generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, credentialIssuerWellKnownResponse.getCredentialEndPoint());
             return ResponseEntity
                     .ok()
