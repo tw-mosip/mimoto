@@ -88,17 +88,16 @@ export const RedirectionPage: React.FC = () => {
     }, [])
 
     const loadStatusOfRedirection = () => {
+        if (!session) {
+            return <DownloadResult title={t("error.invalidSession.title")}
+                                   subTitle={t("error.invalidSession.subTitle")}
+                                   state={RequestStatus.ERROR}/>
+        }
         if(!completedDownload){
             return <DownloadResult title={t("loading.title")}
                                    subTitle={t("loading.subTitle")}
                                    state={RequestStatus.LOADING}/>
         } else {
-            if (!session) {
-                return <DownloadResult title={t("error.invalidSession.title")}
-                                       subTitle={t("error.invalidSession.subTitle")}
-                                       state={RequestStatus.ERROR}/>
-            }
-
             if (state === RequestStatus.ERROR && error) {
                 return <DownloadResult title={t("error.generic.title")}
                                        subTitle={t("error.generic.subTitle")}
