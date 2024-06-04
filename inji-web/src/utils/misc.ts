@@ -140,5 +140,5 @@ export const downloadCredentialPDF = async (response: any, certificateId: string
 }
 
 export const filterCredentialTypeFromWellknown = (credentialWellknown: IssuerWellknownObject, credentialId: string) => {
-    return credentialWellknown.credentials_supported.find(credentialType => credentialType.id === credentialId);
+    return credentialWellknown.supportedCredentials.find(credentialType => credentialType.id === credentialId);
 }

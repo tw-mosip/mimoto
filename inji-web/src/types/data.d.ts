@@ -16,7 +16,7 @@ type LogoObject = {
 export type IssuerWellknownObject = {
     credential_issuer: string;
     credential_endpoint: string;
-    credentials_supported: CredentialWellknownObject[];
+    supportedCredentials: CredentialWellknownObject[];
 }
 
 export type CredentialWellknownObject = {
