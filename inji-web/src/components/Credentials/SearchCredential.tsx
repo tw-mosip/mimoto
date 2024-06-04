@@ -29,20 +29,20 @@ export const SearchCredential:React.FC = () => {
           <FaSearch data-testid="NavBar-Search-Icon"
                     color={'var(--iw-color-searchIcon)'}
                     className={"m-5"}
-                    size={20}/>
+                    size={22}/>
           <input
               data-testid="NavBar-Search-Input"
               type="text"
               value={searchText}
               placeholder={t("searchText")}
               onChange={event => filterCredential(event.target.value)}
-              className="py-6 w-11/12 flex text-iw-searchTitle overflow-ellipsis focus:outline-none mr-10"
+              className="py-6 w-11/12 flex text-iw-searchTitle focus:outline-none overflow-ellipsis mr-10"
           />
           {searchText.length > 0 && <IoCloseCircleSharp data-testid="NavBar-Search-Clear-Icon"
                                         onClick={() => filterCredential("")}
                                         color={'var(--iw-color-closeIcon)'}
                                         className={"m-5"}
-                                        size={20}/>}
+                                        size={26}/>}
       </div>
   </div>
 }
