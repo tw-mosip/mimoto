@@ -12,6 +12,13 @@ type LogoObject = {
     url: string;
     alt_text: string;
 }
+
+export type IssuerWellknownObject = {
+    credential_issuer: string;
+    credential_endpoint: string;
+    credentials_supported: CredentialWellknownObject[];
+}
+
 export type CredentialWellknownObject = {
     format: string;
     "id": string;

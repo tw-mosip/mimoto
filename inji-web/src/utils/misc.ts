@@ -1,8 +1,10 @@
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import forge, {jsbn} from 'node-forge';
+import forge from 'node-forge';
 import {jwtDecode} from "jwt-decode";
 import * as jose from 'node-jose';
+import {api} from "./api";
+import {IssuerWellknownObject} from "../types/data";
 
 export const generateCodeChallenge = (verifier = generateRandomString()) => {
     const hashedVerifier = sha256(verifier);
@@ -30,15 +32,6 @@ export const isObjectEmpty = (object: any) => {
     return object === null || object === undefined || Object.keys(object).length === 0;
 }
 
-export const getFileName = (contentDispositionHeader: any) => {
-    if (!contentDispositionHeader) return null;
-    const filenameMatch = contentDispositionHeader.match(/filename=(.*?)(;|$)/);
-    if (filenameMatch && filenameMatch.length > 1) {
-        return filenameMatch[1];
-    }
-    return null;
-};
-
 export const generateKeys = async() => {
     const keys = await forge.pki.rsa.generateKeyPair({ bits: 2048, workers: 2 });
     const privateKeyPem = forge.pki.privateKeyToPem(keys.privateKey);
@@ -46,22 +39,28 @@ export const generateKeys = async() => {
     return {publicKey: publicKeyPem, privateKey: privateKeyPem};
 }
 
-const toBase64Url = (bigInteger: jsbn.BigInteger) => {
-    let hex = bigInteger.toString();
-    if (hex.length % 2) {
-        hex = '0' + hex;
-    }
-    const bytes = forge.util.hexToBytes(hex);
-    const base64 = forge.util.encode64(bytes);
-    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-};
-
 export const pem2jwk = async(pem: string) => {
     const jwk = await jose.JWK.asKey(pem, 'pem');
     return jwk.toJSON(true);
 }
 
-export const getBody = async(accessToken: string, clientId: string, credentialAudience:string, credentialType: string) => {
+export const getTokenRequestBody = (code: string, clientId: string, codeVerifier: string) => {
+    return {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'client_id': clientId,
+        'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+        'client_assertion': '',
+        'redirect_uri': api.authorizationRedirectionUrl,
+        'code_verifier': codeVerifier
+    }
+}
+
+export const getCredentialRequestBody = async(accessToken: string,
+                                              clientId: string,
+                                              credentialAudience:string,
+                                              issuerWellknown: IssuerWellknownObject,
+                                              credentialId: string) => {
     const { publicKey, privateKey } = await generateKeys();
     const header = {
         alg: 'RS256',
@@ -78,11 +77,12 @@ export const getBody = async(accessToken: string, clientId: string, credentialAu
     };
 
     const proofJWT = await getJWT(privateKey, header, payload);
+    const credentialTypeWellknown = filterCredentialTypeFromWellknown(issuerWellknown, credentialId);
     return {
         format: 'ldp_vc',
         credential_definition: {
             '@context': ['https://www.w3.org/2018/credentials/v1'],
-            type: ["VerifiableCredential", credentialType],
+            type: credentialTypeWellknown ? credentialTypeWellknown.credential_definition.type : ["VerifiableCredential", "MosipVerifiableCredential"] ,
         },
         proof: {
             proof_type: 'jwt',
@@ -137,4 +137,8 @@ export const downloadCredentialPDF = async (response: any, certificateId: string
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+}
+
+export const filterCredentialTypeFromWellknown = (credentialWellknown: IssuerWellknownObject, credentialId: string) => {
+    return credentialWellknown.credentials_supported.find(credentialType => credentialType.id === credentialId);
 }
