@@ -2,6 +2,7 @@ import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 import forge, {jsbn} from 'node-forge';
 import {jwtDecode} from "jwt-decode";
+import * as jose from 'node-jose';
 
 export const generateCodeChallenge = (verifier = generateRandomString()) => {
     const hashedVerifier = sha256(verifier);
@@ -55,18 +56,9 @@ const toBase64Url = (bigInteger: jsbn.BigInteger) => {
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
-export const pem2jwk = (pem: string) => {
-    const rsa = forge.pki.publicKeyFromPem(pem);
-    const modulus = toBase64Url(rsa.n);
-    const exponent = toBase64Url(rsa.e);
-    const jwk = {
-        kty: 'RSA',
-        n: modulus,
-        e: exponent,
-        alg: 'RS256',
-        use: 'sig',
-    };
-    return jwk;
+export const pem2jwk = async(pem: string) => {
+    const jwk = await jose.JWK.asKey(pem, 'pem');
+    return jwk.toJSON(true);
 }
 
 export const getBody = async(accessToken: string, clientId: string, credentialAudience:string, credentialType: string) => {
