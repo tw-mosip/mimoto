@@ -65,7 +65,7 @@ export const getBody = async(accessToken: string, clientId: string, credentialAu
     const { publicKey, privateKey } = await generateKeys();
     const header = {
         alg: 'RS256',
-        jwk: pem2jwk(publicKey),
+        jwk: await pem2jwk(publicKey),
         typ: 'openid4vci-proof+jwt',
     };
     const decodedToken:any = jwtDecode(accessToken);
