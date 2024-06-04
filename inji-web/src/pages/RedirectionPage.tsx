@@ -63,7 +63,7 @@ export const RedirectionPage: React.FC = () => {
                     requestBody
                 );
 
-                const credentialRequestBody = await getCredentialRequestBody(tokenResponse?.access_token, clientId, issuerConfig.response.credential_audience, credentialTypesResponse as IssuerWellknownObject, certificateId);
+                const credentialRequestBody = await getCredentialRequestBody(tokenResponse?.access_token, clientId, issuerConfig.response.credential_audience, credentialTypesResponse?.response, certificateId);
 
                 apiRequest = api.downloadVc;
                 let credentialDownloadResponse = await fetchRequest(
