@@ -23,6 +23,15 @@ ARG container_user_gid=1001
 
 ARG KUBECTL_VERSION=1.22.9
 
+# install packages and create user
+RUN apt-get -y update \
+&& apt-get install -y unzip jq curl \
+&& groupadd -g ${container_user_gid} ${container_user_group} \
+&& useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/bash -m ${container_user} \
+&& curl -LO "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+&& chmod +x kubectl \
+&& mv kubectl /usr/local/bin/
+
 # set working directory for the user
 WORKDIR /home/${container_user}
 
@@ -32,17 +41,12 @@ ADD ./apitest/target/ $work_dir
 
 ADD entrypoint.sh $work_dir/entrypoint.sh
 
-# install packages and create user
-RUN apt-get -y update \
-&& apt-get install -y unzip jq \
-&& groupadd -g ${container_user_gid} ${container_user_group} \
-&& useradd -u ${container_user_uid} -g ${container_user_group} -s /bin/sh -m ${container_user} \
-&& curl -LO "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
-&& chmod +x kubectl \
-&& mv kubectl /usr/local/bin/ \
-&& chmod +x $work_dir/entrypoint.sh \
-&& chown -R ${container_user}:${container_user} /home/${container_user} /usr/local/openjdk-21/lib/security/cacerts \
-&& chmod 644 /usr/local/openjdk-21/lib/security/cacerts
+RUN chmod +x $work_dir/entrypoint.sh
+# change permissions of file inside working dir
+
+RUN chown -R ${container_user}:${container_user} /home/${container_user} /etc/ssl/certs/java/cacerts
+
+RUN chmod 644 /etc/ssl/certs/java/cacerts
 
 # select container user for all tasks
 USER ${container_user_uid}:${container_user_gid}
