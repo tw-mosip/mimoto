@@ -31,6 +31,12 @@ Once the config file is updated run following commands to save the updates:
   * **inji-web:** contains the source code and Dockerfile
 
 ---
+# Updating Mimoto Host
+
+In the api.ts file, modify the **mimotoHost** to url pointing to the mimoto service running  
+
+---
+
 
 # Running Inji Web:
 
