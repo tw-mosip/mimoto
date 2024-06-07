@@ -47,6 +47,7 @@ public class IssuerDTO {
     @NotBlank
     String authorization_audience;
     @JsonInclude(NON_NULL)
+    @NotBlank
     String token_endpoint;
     @JsonInclude(NON_NULL)
     @NotBlank
@@ -76,6 +77,8 @@ public class IssuerDTO {
 class SupportedCredential {
     @NotEmpty
     String format;
+    @NotEmpty
+    String id;
     Map<String, Object> credential_definition;
     String scope;
     @JsonInclude(NON_NULL)
