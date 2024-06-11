@@ -152,7 +152,7 @@
         "MOSIPVerifiableCredential"
       ],
       "credential_audience": "https://${mosip.esignet.host}/v1/esignet",
-      "enabled": "true"
+      "enabled": "false"
     },
     {
       "credential_issuer": "Sunbird",
@@ -239,7 +239,7 @@
         "InsuranceCredential"
       ],
       "credential_audience": "https://${mosip.esignet.mock.host}/v1/esignet",
-      "enabled": "true"
+      "enabled": "false"
     },
     {
       "credential_issuer": "HealthCoverageZ",
