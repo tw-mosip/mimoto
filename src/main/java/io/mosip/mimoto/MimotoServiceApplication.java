@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -23,6 +22,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication(scanBasePackages = {
         "io.mosip.mimoto.*",
+        "io.mosip.kernel.websub.*",
         "${mosip.auth.adapter.impl.basepackage}"
 }, exclude = {
         SecurityAutoConfiguration.class,
@@ -32,10 +32,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 })
 @EnableScheduling
 @EnableAsync
-@Import({io.mosip.kernel.websub.api.config.WebSubClientConfig.class,
-        io.mosip.kernel.websub.api.config.publisher.WebSubPublisherClientConfig.class,
-        io.mosip.kernel.websub.api.config.publisher.RestTemplateHelper.class
-})
 public class MimotoServiceApplication {
 
     private static Logger logger = LoggerUtil.getLogger(MimotoServiceApplication.class);
