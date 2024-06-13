@@ -37,15 +37,6 @@ import java.security.cert.X509Certificate;
         Config.class, OpenApiProperties.class, SwaggerConfig.class}))
 public class MimotoConfig {
 
-   /* @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http = http.csrf().disable();
-        http.authorizeRequests().antMatchers("*").authenticated().anyRequest().permitAll().and().exceptionHandling();
-        http.headers().cacheControl();
-        http.headers().frameOptions().sameOrigin();
-
-    }*/
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
@@ -116,11 +107,4 @@ public class MimotoConfig {
         return restTemplate;
 
     }
-
-/*
-
-    @Bean
-    public Map<String, String> injiConfig() {
-        return new HashMap<>();
-    }*/
 }

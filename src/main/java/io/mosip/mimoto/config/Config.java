@@ -7,8 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -55,11 +53,8 @@ public class Config {
             http.csrf(AbstractHttpConfigurer::disable);
         }
 
-        //TODO: exceptionHandling left
         http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("*")
-                .authenticated()
-                .anyRequest()
+                .requestMatchers("**")
                 .permitAll()
         );
         http.exceptionHandling(exceptionConfigurer  -> new ExceptionHandlingConfigurer());

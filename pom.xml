@@ -208,7 +208,7 @@
         <dependency>
             <groupId>io.mosip.kernel</groupId>
             <artifactId>kernel-websubclient-api</artifactId>
-            <version>${mosip.kernel.core.version}</version>
+            <version>1.2.1-java21-SNAPSHOT</version>
         </dependency>
 
         <dependency>
