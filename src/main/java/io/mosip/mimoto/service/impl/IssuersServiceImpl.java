@@ -13,9 +13,7 @@ import io.mosip.mimoto.dto.mimoto.CredentialDisplayResponseDto;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
 import io.mosip.mimoto.dto.mimoto.IssuerSupportedCredentialsResponse;
-import io.mosip.mimoto.dto.mimoto.VCCredentialDefinition;
 import io.mosip.mimoto.dto.mimoto.VCCredentialRequest;
-import io.mosip.mimoto.dto.mimoto.VCCredentialRequestProof;
 import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
@@ -25,10 +23,10 @@ import io.mosip.mimoto.util.LoggerUtil;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.auth.InvalidCredentialsException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -36,41 +34,20 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.PublicKey;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Collectors;
+
+import static io.mosip.mimoto.exception.PlatformErrorMessages.INVALID_CREDENTIAL_TYPE_EXCEPTION;
 
 @Service
 public class IssuersServiceImpl implements IssuersService {
     private final Logger logger = LoggerUtil.getLogger(IssuersServiceImpl.class);
-
-    private static final String context = "https://www.w3.org/2018/credentials/v1";
 
     @Autowired
     private Utilities utilities;
 
     @Autowired
     private RestApiClient restApiClient;
-
-    @Autowired
-    private JoseUtil joseUtil;
-
-    @Value("${mosip.oidc.p12.filename}")
-    private String fileName;
-
-    @Value("${mosip.oidc.p12.password}")
-    private String cyptoPassword;
-
-    @Value("${mosip.oidc.p12.path}")
-    String keyStorePath;
 
     @Override
     public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException, IOException {
@@ -143,7 +120,6 @@ public class IssuersServiceImpl implements IssuersService {
         if (issuerConfigResp.isPresent()) {
             IssuerDTO issuerDto = issuerConfigResp.get();
 
-            // Get credential supported types from well known endpoint
             CredentialIssuerWellKnownResponse response = restApiClient.getApi(issuerDto.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
             if (response == null) {
                 throw new ApiNotAccessibleException();
@@ -152,7 +128,6 @@ public class IssuersServiceImpl implements IssuersService {
             credentialTypesWithAuthorizationEndpoint.setAuthorizationEndPoint(issuerDto.getAuthorization_endpoint());
             credentialTypesWithAuthorizationEndpoint.setSupportedCredentials(issuerCredentialsSupported);
 
-            // Filter Credential supported types with search string
             if (!StringUtils.isEmpty(search)){
                 credentialTypesWithAuthorizationEndpoint.setSupportedCredentials(issuerCredentialsSupported
                         .stream()
@@ -166,72 +141,96 @@ public class IssuersServiceImpl implements IssuersService {
     }
 
     @Override
-    public ByteArrayInputStream generatePdfForVerifiableCredentials(String accessToken, IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String credentialEndPoint) throws Exception {
-        LinkedHashMap<String, String> vcPropertiesFromWellKnown = new LinkedHashMap<>();
-        Map<String, CredentialDisplayResponseDto> credentialSubject = credentialsSupportedResponse.getCredentialDefinition().getCredentialSubject();
-        //populating display properties from credential Types json for pdf
-        credentialSubject.keySet().forEach(VCProperty -> vcPropertiesFromWellKnown.put(VCProperty, credentialSubject.get(VCProperty).getDisplay().get(0).getName()));
-        String backgroundColor = credentialsSupportedResponse.getDisplay().get(0).getBackgroundColor();
-        String textColor = credentialsSupportedResponse.getDisplay().get(0).getTextColor();
-        VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerDTO, credentialsSupportedResponse, accessToken);
-        logger.debug("VC Credential Request is -> " + vcCredentialRequest);
-        //Esignet API call for credential issue
-        VCCredentialResponse vcCredentialResponse = restApiClient.postApi(credentialEndPoint, MediaType.APPLICATION_JSON,
-                vcCredentialRequest, VCCredentialResponse.class, accessToken);
+    public CredentialIssuerWellKnownResponse getCredentialIssuerWellknown(String issuerId, String search) throws ApiNotAccessibleException, IOException {
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
+        IssuersDTO issuersDto = getAllIssuersWithAllFields();
+        Optional<IssuerDTO> issuerConfigResp = issuersDto.getIssuers().stream()
+                .filter(issuer -> issuer.getCredential_issuer().equals(issuerId))
+                .findFirst();
+        if (issuerConfigResp.isPresent()) {
+            IssuerDTO issuerDto = issuerConfigResp.get();
+            credentialIssuerWellKnownResponse = restApiClient.getApi(issuerDto.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
+            if (credentialIssuerWellKnownResponse == null) {
+                throw new ApiNotAccessibleException();
+            }
+        }
+        return credentialIssuerWellKnownResponse;
+    }
+    @Override
+    public CredentialsSupportedResponse getCredentialSupported(CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse, String credentialType) throws ApiNotAccessibleException, IOException, InvalidCredentialsException {
+        Optional<CredentialsSupportedResponse> credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialsSupported().stream()
+                .filter(credentialsSupported -> credentialsSupported.getId().equals(credentialType))
+                .findFirst();
+        if (credentialsSupportedResponse.isEmpty()){
+            logger.error("Invalid credential Type passed - {}", credentialType);
+            throw new InvalidCredentialsException(INVALID_CREDENTIAL_TYPE_EXCEPTION.getMessage());
+        }
+        return credentialsSupportedResponse.get();
+    }
+
+    @Override
+    public VCCredentialResponse downloadCredential(String credentialEndpoint, VCCredentialRequest vcCredentialRequest, String accessToken) throws ApiNotAccessibleException, IOException, InvalidCredentialsException {
+        VCCredentialResponse vcCredentialResponse = restApiClient.postApi(credentialEndpoint, MediaType.APPLICATION_JSON,
+                vcCredentialRequest, VCCredentialResponse.class, accessToken.replace("Bearer ", ""));
         logger.debug("VC Credential Response is -> " + vcCredentialResponse);
         if (vcCredentialResponse == null) throw new RuntimeException("VC Credential Issue API not accessible");
-        Map<String, Object> credentialProperties = vcCredentialResponse.getCredential().getCredentialSubject();
+        return vcCredentialResponse;
+    }
+
+    @Override
+    public ByteArrayInputStream generatePdfForVerifiableCredentials(VCCredentialResponse vcCredentialResponse, IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String credentialEndPoint) throws Exception {
+
         LinkedHashMap<String,Object> displayProperties = new LinkedHashMap<>();
-        vcPropertiesFromWellKnown.keySet().forEach(vcProperty -> displayProperties.put(vcPropertiesFromWellKnown.get(vcProperty), credentialProperties.get(vcProperty)));
-        return getPdfResourceFromVcProperties(displayProperties, textColor, backgroundColor,
-                credentialsSupportedResponse.getDisplay().get(0).getName(),
+        Map<String, Object> credentialProperties = vcCredentialResponse.getCredential().getCredentialSubject();
+
+        LinkedHashMap<String, String> vcPropertiesFromWellKnown = new LinkedHashMap<>();
+        Map<String, CredentialDisplayResponseDto> credentialSubject = credentialsSupportedResponse.getCredentialDefinition().getCredentialSubject();
+        credentialSubject.keySet().forEach(VCProperty -> vcPropertiesFromWellKnown.put(VCProperty, credentialSubject.get(VCProperty).getDisplay().get(0).getName()));
+
+        Set<String> orderProperty = credentialsSupportedResponse.getOrder();
+
+        Set<String> fieldProperties = orderProperty == null ? vcPropertiesFromWellKnown.keySet() : orderProperty;
+        fieldProperties.forEach(vcProperty -> {
+            if(credentialProperties.get(vcProperty) != null) {
+                displayProperties.put(vcPropertiesFromWellKnown.get(vcProperty), credentialProperties.get(vcProperty));
+            }
+        });
+        return getPdfResourceFromVcProperties(displayProperties, credentialsSupportedResponse,  vcCredentialResponse,
                 issuerDTO.getDisplay().stream().map(d -> d.getLogo().getUrl()).findFirst().orElse(""));
     }
 
-    private VCCredentialRequest generateVCCredentialRequest(IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String accessToken) throws ParseException {
-        //Getting public key from the p12 file
-        PublicKey publicKeyString = joseUtil.getPublicKeyString(keyStorePath, fileName, issuerDTO.getClient_alias(), cyptoPassword);
-        //Generating proof from the public key with custom header
-        String jwt = joseUtil.generateJwt(publicKeyString, keyStorePath, fileName, issuerDTO.getClient_alias(),
-                cyptoPassword, issuerDTO.getCredential_audience(), issuerDTO.getClient_id(), accessToken);
-        return VCCredentialRequest.builder()
-                .format(credentialsSupportedResponse.getFormat())
-                .proof(VCCredentialRequestProof.builder()
-                        .proofType(credentialsSupportedResponse.getProofTypesSupported().get(0))
-                        .jwt(jwt)
-                        .build())
-                .credentialDefinition(VCCredentialDefinition.builder()
-                        .type(credentialsSupportedResponse.getCredentialDefinition().getType())
-                        .context(List.of(context))
-                        .build())
-                .build();
-    }
 
-    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, String textColor,
-                                                                String backgroundColor,
-                                                                String credentialSupportedType, String issuerLogoUrl) throws IOException {
+    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, String issuerLogoUrl) throws IOException {
         Map<String, Object> data = new HashMap<>();
-        LinkedHashMap<String, Object> headerProperties = new LinkedHashMap<>();
         LinkedHashMap<String, Object> rowProperties = new LinkedHashMap<>();
+        String backgroundColor = credentialsSupportedResponse.getDisplay().get(0).getBackgroundColor();
+        String textColor = credentialsSupportedResponse.getDisplay().get(0).getTextColor();
+        String credentialSupportedType = credentialsSupportedResponse.getDisplay().get(0).getName();
+        String face = vcCredentialResponse.getCredential().getCredentialSubject().get("face") != null ? (String) vcCredentialResponse.getCredential().getCredentialSubject().get("face") : null;
 
-        //Assigning two properties at the top of pdf and the rest dynamically below them
         displayProperties.entrySet().stream()
                 .forEachOrdered(entry -> {
-                    if (headerProperties.size() < 2) {
-                        headerProperties.put(entry.getKey(), entry.getValue());
+                    if(entry.getValue() instanceof Map) {
+                        rowProperties.put(entry.getKey(), ((Map<?, ?>) entry.getValue()).get("value"));
+                    } else if(entry.getValue() instanceof List) {
+                        String value = "";
+                        if( ((List<?>) entry.getValue()).get(0) instanceof String) {
+                            value = ((List<String>) entry.getValue()).stream().reduce((field1, field2) -> field1 + ", " + field2 ).get();
+                        } else {
+                            value = (String) ((Map<?, ?>) ((List<?>) entry.getValue()).get(0)).get("value");
+                        }
+                        rowProperties.put(entry.getKey(), value);
                     } else {
                         rowProperties.put(entry.getKey(), entry.getValue());
                     }
                 });
 
-        int rowPropertiesCount =  rowProperties.size();
         data.put("logoUrl", issuerLogoUrl);
-        data.put("headerProperties", headerProperties);
         data.put("rowProperties", rowProperties);
-        data.put("keyFontColor", textColor);
-        data.put("bgColor", backgroundColor);
-        data.put("rowPropertiesMargin", rowPropertiesCount % 2 == 0 ? (rowPropertiesCount/2 -1)*40 : (rowPropertiesCount/2)*40); //for adjusting the height in pdf for dynamic properties
+        data.put("textColor", textColor);
+        data.put("backgroundColor", backgroundColor);
         data.put("titleName", credentialSupportedType);
+        data.put("face", face);
 
         String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
 

@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 
 @Data
@@ -46,27 +46,39 @@ public class IssuerDTO {
     @NotBlank
     String authorization_audience;
     @JsonInclude(NON_NULL)
-    @NotBlank
     String token_endpoint;
     @JsonInclude(NON_NULL)
     @NotBlank
     String proxy_token_endpoint;
     @JsonInclude(NON_NULL)
-    @NotBlank
     String credential_endpoint;
     @JsonInclude(NON_NULL)
     @NotEmpty
     List<String> credential_type;
     @JsonInclude(NON_NULL)
-    @NotBlank
     String credential_audience;
     @JsonInclude(NON_NULL)
     @NotBlank
     String client_alias;
     @JsonInclude(NON_NULL)
     Map<String, String> additional_headers;
+    @JsonInclude(NON_NULL)
+    List<SupportedCredential> credentials_supported;
     @Expose
     @JsonInclude(NON_NULL)
     @NotBlank
     String enabled;
+}
+
+
+@Data
+class SupportedCredential {
+    @NotEmpty
+    String format;
+    @NotEmpty
+    String id;
+    Map<String, Object> credential_definition;
+    String scope;
+    @JsonInclude(NON_NULL)
+    List<Object> display;
 }
