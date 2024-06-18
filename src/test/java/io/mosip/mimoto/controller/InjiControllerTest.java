@@ -30,7 +30,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,8 +39,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.ResourceUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
@@ -54,7 +57,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestBootApplication.class)
 @AutoConfigureMockMvc
-@PrepareForTest({Files.class})
 public class InjiControllerTest {
 
     @MockBean
@@ -102,15 +104,18 @@ public class InjiControllerTest {
 
     @Test
     public void getAllPropertiesTest() throws Exception {
-        this.mockMvc.perform(get("/allProperties").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.allowedAuthType").value("demo,otp,bio-Finger,bio-Iris,bio-Face"))
-                .andExpect(jsonPath("$.response.allowedEkycAuthType").value("demo,otp,bio-Finger,bio-Iris,bio-Face"))
-                .andExpect(jsonPath("$.response.allowedInternalAuthType").value("otp,bio-Finger,bio-Iris,bio-Face"))
-                .andExpect(jsonPath("$.response.vcDownloadMaxRetry").value("10"))
-                .andExpect(jsonPath("$.response.vcDownloadPoolInterval").value("6000"))
-                .andExpect(jsonPath("$.response.issuer").value("residentapp"))
-                .andExpect(jsonPath("$.response.openId4VCIDownloadVCTimeout").value("30000"));
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/InjiConfig.json");
+        String expectedResponse = new String(Files.readAllBytes(file.toPath()));
+
+        String actualResponse = this.mockMvc.perform(get("/allProperties")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
+
     }
 
     static IssuerDTO getIssuerDTO(String issuerName) {
