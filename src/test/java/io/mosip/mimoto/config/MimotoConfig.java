@@ -40,14 +40,6 @@ public class MimotoConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("*")
-                .authenticated()
-                .anyRequest()
-                .permitAll()
-
-        );
-        http.exceptionHandling(exceptionConfigurer  -> new ExceptionHandlingConfigurer());
         http.headers(headersEntry -> {
             headersEntry.cacheControl(Customizer.withDefaults());
             headersEntry.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin);
