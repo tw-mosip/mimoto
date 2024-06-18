@@ -1,7 +1,13 @@
 package io.mosip.mimoto.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
@@ -9,12 +15,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
-import io.mosip.mimoto.dto.mimoto.CredentialDisplayResponseDto;
-import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
-import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
-import io.mosip.mimoto.dto.mimoto.IssuerSupportedCredentialsResponse;
-import io.mosip.mimoto.dto.mimoto.VCCredentialRequest;
-import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
+import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.IssuersService;
@@ -22,6 +23,7 @@ import io.mosip.mimoto.util.JoseUtil;
 import io.mosip.mimoto.util.LoggerUtil;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
+import io.mosip.pixelpass.PixelPass;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.InvalidCredentialsException;
 import org.apache.velocity.VelocityContext;
@@ -29,11 +31,9 @@ import org.apache.velocity.app.Velocity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +45,9 @@ public class IssuersServiceImpl implements IssuersService {
 
     @Autowired
     private Utilities utilities;
+
+    @Autowired
+    private JoseUtil joseUtil;
 
     @Autowired
     private RestApiClient restApiClient;
@@ -171,10 +174,25 @@ public class IssuersServiceImpl implements IssuersService {
     @Override
     public VCCredentialResponse downloadCredential(String credentialEndpoint, VCCredentialRequest vcCredentialRequest, String accessToken) throws ApiNotAccessibleException, IOException, InvalidCredentialsException {
         VCCredentialResponse vcCredentialResponse = restApiClient.postApi(credentialEndpoint, MediaType.APPLICATION_JSON,
-                vcCredentialRequest, VCCredentialResponse.class, accessToken.replace("Bearer ", ""));
+                vcCredentialRequest, VCCredentialResponse.class, accessToken);
         logger.debug("VC Credential Response is -> " + vcCredentialResponse);
         if (vcCredentialResponse == null) throw new RuntimeException("VC Credential Issue API not accessible");
         return vcCredentialResponse;
+    }
+
+    public VCCredentialRequest generateVCCredentialRequest(IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String accessToken) throws Exception {
+        String jwt = joseUtil.generateJwt(issuerDTO.getCredential_audience(), issuerDTO.getClient_id(), accessToken);
+        return VCCredentialRequest.builder()
+                .format(credentialsSupportedResponse.getFormat())
+                .proof(VCCredentialRequestProof.builder()
+                        .proofType(credentialsSupportedResponse.getProofTypesSupported().get(0))
+                        .jwt(jwt)
+                        .build())
+                .credentialDefinition(VCCredentialDefinition.builder()
+                        .type(credentialsSupportedResponse.getCredentialDefinition().getType())
+                        .context(List.of("https://www.w3.org/2018/credentials/v1"))
+                        .build())
+                .build();
     }
 
     @Override
@@ -200,7 +218,7 @@ public class IssuersServiceImpl implements IssuersService {
     }
 
 
-    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, String issuerLogoUrl) throws IOException {
+    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, String issuerLogoUrl) throws IOException, WriterException {
         Map<String, Object> data = new HashMap<>();
         LinkedHashMap<String, Object> rowProperties = new LinkedHashMap<>();
         String backgroundColor = credentialsSupportedResponse.getDisplay().get(0).getBackgroundColor();
@@ -225,12 +243,21 @@ public class IssuersServiceImpl implements IssuersService {
                     }
                 });
 
+        PixelPass pixelPass = new PixelPass();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String qrData = pixelPass.generateQRData(objectMapper.writeValueAsString(vcCredentialResponse.getCredential()), "");
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 650, 650);
+        BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+        String base64Image = encodeToString(qrImage, "png");
+
         data.put("logoUrl", issuerLogoUrl);
         data.put("rowProperties", rowProperties);
         data.put("textColor", textColor);
         data.put("backgroundColor", backgroundColor);
         data.put("titleName", credentialSupportedType);
         data.put("face", face);
+        data.put("qrCodeImage", base64Image);
 
         String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
 
@@ -254,5 +281,20 @@ public class IssuersServiceImpl implements IssuersService {
         converterProperties.setFontProvider(defaultFont);
         HtmlConverter.convertToPdf(mergedHtml, pdfwriter, converterProperties);
         return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+    public static String encodeToString(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+            Base64.Encoder encoder = Base64.getEncoder();
+            imageString = encoder.encodeToString(imageBytes);
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imageString;
     }
 }
