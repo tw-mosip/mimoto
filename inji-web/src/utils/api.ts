@@ -50,23 +50,13 @@ export class api {
             }
         }
     }
-    static fetchToken: ApiRequest = {
-        url: (issuer: string): string => api.mimotoHost + `/get-token/${issuer}`,
+    static fetchTokenAnddownloadVc: ApiRequest = {
+        url: (issuerId: string, credentialId: string) => api.mimotoHost + `/issuers/${issuerId}/credentials/${credentialId}/download`,
         methodType: MethodType.POST,
         headers: () => {
             return {
                 'accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }
-    };
-    static downloadVc: ApiRequest = {
-        url: (issuerId: string, credentialId: string) => api.mimotoHost + `/issuers/${issuerId}/credentials/${credentialId}/download`,
-        methodType: MethodType.POST,
-        headers: (token: string) => {
-            return {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
                 'Cache-Control': 'no-cache, no-store, must-revalidate'
             }
         }
