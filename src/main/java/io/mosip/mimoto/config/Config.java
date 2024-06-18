@@ -53,12 +53,6 @@ public class Config {
             http.csrf(AbstractHttpConfigurer::disable);
         }
 
-        http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("**")
-                .permitAll()
-        );
-        http.exceptionHandling(exceptionConfigurer  -> new ExceptionHandlingConfigurer());
-
         if (isCORSEnable) {
             http.addFilterBefore(new CorsFilter(origins), AuthFilter.class);
         }
