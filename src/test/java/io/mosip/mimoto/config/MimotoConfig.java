@@ -10,10 +10,8 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.*;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.config.Customizer;
@@ -29,6 +27,8 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Configuration
@@ -106,5 +106,11 @@ public class MimotoConfig {
         restTemplate.setRequestFactory(requestFactory);
         return restTemplate;
 
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "mosip.inji")
+    public Map<String, String> injiConfig() {
+        return new HashMap<>();
     }
 }

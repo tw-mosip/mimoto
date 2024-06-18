@@ -37,7 +37,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.ByteArrayInputStream;
@@ -57,13 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @PrepareForTest({Files.class})
 public class InjiControllerTest {
-
-    private CommonInjiController commonInjiController = new CommonInjiController();
-
-    private CredentialShareController credentialShareController = new CredentialShareController();
-
-    @MockBean
-    private Map<String, String> injiConfig;
 
     @MockBean
     private CbeffUtil cbeffUtil;
@@ -99,19 +91,7 @@ public class InjiControllerTest {
     public CryptoCoreUtil cryptoCoreUtil;
 
     @Before
-    public void setup() throws IOException {
-        //PowerMockito.mockStatic(Files.class);
-        //PowerMockito.doNothing().when(Files.write(Mockito.any(Path.class), Mockito.any(byte[].class)));
-
-        Map<String, String> injiConfig = new HashMap<>();
-        injiConfig.put("datashareUrl", "http://www.mosipdatashare.com");
-
-        ReflectionTestUtils.setField(commonInjiController, "injiConfig", injiConfig);
-        ReflectionTestUtils.setField(credentialShareController, "partnerEncryptionKey", "partnerkey");
-        ReflectionTestUtils.setField(credentialShareController, "partnerId", "partnerId");
-        ReflectionTestUtils.setField(credentialShareController, "topic", "topic");
-
-
+    public void setup() {
         Mockito.when(utilities.getDataPath()).thenReturn("target");
 
         Mockito.when(webSubSubscriptionHelper.subscribeEvent(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new SubscriptionChangeResponse());
@@ -123,7 +103,14 @@ public class InjiControllerTest {
     @Test
     public void getAllPropertiesTest() throws Exception {
         this.mockMvc.perform(get("/allProperties").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response.allowedAuthType").value("demo,otp,bio-Finger,bio-Iris,bio-Face"))
+                .andExpect(jsonPath("$.response.allowedEkycAuthType").value("demo,otp,bio-Finger,bio-Iris,bio-Face"))
+                .andExpect(jsonPath("$.response.allowedInternalAuthType").value("otp,bio-Finger,bio-Iris,bio-Face"))
+                .andExpect(jsonPath("$.response.vcDownloadMaxRetry").value("10"))
+                .andExpect(jsonPath("$.response.vcDownloadPoolInterval").value("6000"))
+                .andExpect(jsonPath("$.response.issuer").value("residentapp"))
+                .andExpect(jsonPath("$.response.openId4VCIDownloadVCTimeout").value("30000"));
     }
 
     static IssuerDTO getIssuerDTO(String issuerName) {
