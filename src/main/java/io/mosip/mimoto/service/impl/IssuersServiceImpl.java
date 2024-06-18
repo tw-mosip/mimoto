@@ -243,13 +243,19 @@ public class IssuersServiceImpl implements IssuersService {
                     }
                 });
 
-        PixelPass pixelPass = new PixelPass();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String qrData = pixelPass.generateQRData(objectMapper.writeValueAsString(vcCredentialResponse.getCredential()), "");
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 650, 650);
-        BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
-        String base64Image = encodeToString(qrImage, "png");
+        if(!credentialsSupportedResponse.getId().equals("MOSIPVerifiableCredential")) {
+            PixelPass pixelPass = new PixelPass();
+            ObjectMapper objectMapper = new ObjectMapper();
+            logger.info("Credential That is converted to PDF" + objectMapper.writeValueAsString(vcCredentialResponse.getCredential()));
+            String qrData = pixelPass.generateQRData(objectMapper.writeValueAsString(vcCredentialResponse.getCredential()), "");
+            logger.info("QR Data => " + qrData);
+
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 650, 650);
+            BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+            String base64Image = encodeToString(qrImage, "png");
+            data.put("qrCodeImage", base64Image);
+        }
 
         data.put("logoUrl", issuerLogoUrl);
         data.put("rowProperties", rowProperties);
@@ -257,7 +263,7 @@ public class IssuersServiceImpl implements IssuersService {
         data.put("backgroundColor", backgroundColor);
         data.put("titleName", credentialSupportedType);
         data.put("face", face);
-        data.put("qrCodeImage", base64Image);
+
 
         String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
 
