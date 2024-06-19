@@ -122,14 +122,14 @@ public class Utilities {
 
     private String credentialTemplateHtmlString = null;
 //    uncomment for running mimoto Locally to populate the issuers json
-    public Utilities(@Value("classpath:/wellKnownIssuer/Insurance.json") Resource credentialsSupportedResource,
-                     @Value("classpath:mimoto-issuers-config.json") Resource resource,
-                     @Value("classpath:/templates/CredentialTemplate.html") Resource credentialTemplateResource) throws IOException{
-
-        issuersConfigJsonString = (Files.readString(resource.getFile().toPath()));
-        credentialsSupportedJsonString = (Files.readString(credentialsSupportedResource.getFile().toPath()));
-        credentialTemplateHtmlString = (Files.readString(credentialTemplateResource.getFile().toPath()));
-    }
+//    public Utilities(@Value("classpath:/wellKnownIssuer/Insurance.json") Resource credentialsSupportedResource,
+//                     @Value("classpath:mimoto-issuers-config.json") Resource resource,
+//                     @Value("classpath:/templates/CredentialTemplate.html") Resource credentialTemplateResource) throws IOException{
+//
+//        issuersConfigJsonString = (Files.readString(resource.getFile().toPath()));
+//        credentialsSupportedJsonString = (Files.readString(credentialsSupportedResource.getFile().toPath()));
+//        credentialTemplateHtmlString = (Files.readString(credentialTemplateResource.getFile().toPath()));
+//    }
 
     public JSONObject getTemplate() throws JsonParseException, JsonMappingException, IOException {
         return objectMapper.readValue(classLoader.getResourceAsStream(defaultTemplate), JSONObject.class);
