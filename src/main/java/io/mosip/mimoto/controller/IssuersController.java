@@ -8,6 +8,7 @@ import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.IdpException;
+import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
@@ -36,6 +37,9 @@ public class IssuersController {
 
     @Autowired
     IdpService idpService;
+
+    @Autowired
+    CredentialService credentialService;
     private static final String ID = "mosip.mimoto.issuers";
 
     private final Logger logger = LoggerFactory.getLogger(IssuersController.class);
@@ -93,7 +97,7 @@ public class IssuersController {
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
         IssuerSupportedCredentialsResponse credentialTypes;
         try {
-            credentialTypes = issuersService.getCredentialsSupported(issuerId, search);
+            credentialTypes = credentialService.getCredentialsSupported(issuerId, search);
         }catch (ApiNotAccessibleException | IOException exception){
             logger.error("Exception occurred while fetching credential types", exception);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
@@ -108,48 +112,6 @@ public class IssuersController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
-    }
-
-    @PostMapping("/{issuer-id}/credentials/{credentialType}/download")
-    public ResponseEntity<?> downloadCredentialAsPDF(
-            @PathVariable("issuer-id") String issuerId,
-            @RequestParam Map<String, String> params,
-            @PathVariable("credentialType") String credentialType) {
-
-        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setId(ID);
-        responseWrapper.setVersion("v1");
-        responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
-        try{
-            logger.info("Initiated Token Call");
-            RestTemplate restTemplate = new RestTemplate();
-            IssuerDTO issuerDTO = issuersService.getIssuerConfig(issuerId);
-            HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO);
-            TokenResponseDTO response = restTemplate.postForObject(idpService.getTokenEndpoint(issuerDTO), request, TokenResponseDTO.class);
-            if(response == null) {
-                throw new IdpException("Exception occurred while performing the authorization");
-            }
-            logger.info("Initiated Download Credential Call");
-            IssuerDTO issuerConfig = issuersService.getIssuerConfig(issuerId);
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getCredentialIssuerWellknown(issuerId, credentialType);
-            CredentialsSupportedResponse credentialsSupportedResponse = issuersService.getCredentialSupported(credentialIssuerWellKnownResponse, credentialType);
-            VCCredentialRequest vcCredentialRequest = issuersService.generateVCCredentialRequest(issuerConfig, credentialsSupportedResponse, response.getAccess_token());
-            VCCredentialResponse vcCredentialResponse = issuersService.downloadCredential(credentialIssuerWellKnownResponse.getCredentialEndPoint(), vcCredentialRequest, response.getAccess_token());
-            ByteArrayInputStream inputStream =  issuersService.generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, credentialIssuerWellKnownResponse.getCredentialEndPoint());
-            return ResponseEntity
-                    .ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition")
-                    .body(new InputStreamResource(inputStream));
-        }catch (ApiNotAccessibleException | IOException exception){
-            logger.error("Exception occurred while fetching credential types ", exception);
-            responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
-        } catch (Exception exception) {
-            logger.error("Exception occurred while generating pdf ", exception);
-            responseWrapper.setErrors(List.of(new ErrorDTO(MIMOTO_PDF_SIGN_EXCEPTION.getCode(), exception.getMessage())));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
-        }
     }
 
 }

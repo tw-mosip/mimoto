@@ -20,6 +20,7 @@ import io.mosip.mimoto.exception.BaseUncheckedException;
 import io.mosip.mimoto.model.Event;
 import io.mosip.mimoto.model.EventModel;
 import io.mosip.mimoto.service.RestClientService;
+import io.mosip.mimoto.service.impl.CredentialServiceImpl;
 import io.mosip.mimoto.service.impl.CredentialShareServiceImpl;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.*;
@@ -79,6 +80,9 @@ public class InjiControllerTest {
 
     @MockBean
     private IssuersServiceImpl issuersService;
+
+    @MockBean
+    private CredentialServiceImpl credentialService;
 
     @MockBean
     public RestApiClient restApiClient;
@@ -196,10 +200,10 @@ public class InjiControllerTest {
         credentialTypesResponse.setSupportedCredentials(List.of(getCredentialSupportedResponse("credentialType1"),
                 getCredentialSupportedResponse("credentialType2")));
         credentialTypesResponse.setAuthorizationEndPoint("authorization-endpoint");
-        Mockito.when(issuersService.getCredentialsSupported("Issuer1", null))
+        Mockito.when(credentialService.getCredentialsSupported("Issuer1", null))
                 .thenReturn(credentialTypesResponse)
                 .thenThrow(new ApiNotAccessibleException());
-        Mockito.when(issuersService.getCredentialsSupported("invalidId", null))
+        Mockito.when(credentialService.getCredentialsSupported("invalidId", null))
                         .thenReturn(new IssuerSupportedCredentialsResponse());
 
         mockMvc.perform(get("/issuers/{issuer-id}/credentialTypes", "Issuer1").accept(MediaType.APPLICATION_JSON))
@@ -241,7 +245,7 @@ public class InjiControllerTest {
                         List.of(getCredentialSupportedResponse("CredentialType1"))));
 
 
-        Mockito.when(issuersService.generatePdfForVerifiableCredentials(new VCCredentialResponse(),
+        Mockito.when(credentialService.generatePdfForVerifiableCredentials(new VCCredentialResponse(),
                         getIssuerDTO("Issuer1"), getCredentialSupportedResponse("CredentialType1"),
                         "credential_endpoint"))
                 .thenReturn(new ByteArrayInputStream("Mock Pdf".getBytes()))
