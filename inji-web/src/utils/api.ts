@@ -51,7 +51,7 @@ export class api {
         }
     }
     static fetchTokenAnddownloadVc: ApiRequest = {
-        url: (issuerId: string, credentialId: string) => api.mimotoHost + `/issuers/${issuerId}/credentials/${credentialId}/download`,
+        url: () => api.mimotoHost + `/credentials/download`,
         methodType: MethodType.POST,
         headers: () => {
             return {

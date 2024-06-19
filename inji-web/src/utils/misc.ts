@@ -36,15 +36,14 @@ export const generateKeys = async() => {
     return {publicKey: publicKeyPem, privateKey: privateKeyPem};
 }
 
-export const getTokenRequestBody = (code: string, clientId: string, codeVerifier: string) => {
+export const getTokenRequestBody = (code: string, codeVerifier: string, issuerId: string, credentialType: string) => {
     return {
         'grant_type': 'authorization_code',
         'code': code,
-        'client_id': clientId,
-        'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-        'client_assertion': '',
         'redirect_uri': api.authorizationRedirectionUrl,
-        'code_verifier': codeVerifier
+        'code_verifier': codeVerifier,
+        'issuer': issuerId,
+        'credential': credentialType
     }
 }
 
