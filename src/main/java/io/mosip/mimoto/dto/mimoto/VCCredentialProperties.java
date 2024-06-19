@@ -2,6 +2,7 @@ package io.mosip.mimoto.dto.mimoto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@JsonPropertyOrder({"@context", "credentialSubject", "expirationDate", "id", "issuanceDate", "issuer", "proof", "type"})
 public class VCCredentialProperties {
     private String issuer;
 
