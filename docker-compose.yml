@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mimoto-service:
     container_name: 'Mimoto-Service'
-    image: 'vijaykumar151096/mimoto:auth'
+    image: 'mosipid/mimoto:latest'
     user: root
     ports:
       - 8088:8088
