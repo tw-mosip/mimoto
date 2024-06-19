@@ -1,5 +1,6 @@
 package io.mosip.mimoto.dto.mimoto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -15,6 +16,9 @@ public class VCCredentialProperties {
     private String id;
 
     private String issuanceDate;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String expirationDate;
 
     private VCCredentialResponseProof proof;
 
