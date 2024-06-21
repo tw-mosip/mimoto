@@ -5,20 +5,16 @@ import {NavBar} from "../components/Common/NavBar";
 import {RequestStatus, useFetch} from "../hooks/useFetch";
 import {DownloadResult} from "../components/Redirection/DownloadResult";
 import {api} from "../utils/api";
-import {ApiRequest, IssuerWellknownObject, SessionObject} from "../types/data";
+import {SessionObject} from "../types/data";
 import {useTranslation} from "react-i18next";
-import {downloadCredentialPDF, getCredentialRequestBody, getTokenRequestBody} from "../utils/misc";
+import {downloadCredentialPDF, getTokenRequestBody} from "../utils/misc";
 import {getObjectForCurrentLanguage} from "../utils/i18n";
-import {storeSelectedIssuer} from "../redux/reducers/issuersReducer";
-import {useDispatch} from "react-redux";
-import {storeCredentials, storeFilteredCredentials} from "../redux/reducers/credentialsReducer";
 
 export const RedirectionPage: React.FC = () => {
 
     const {error, state, fetchRequest} = useFetch();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    const dispatch = useDispatch();
     const redirectedSessionId = searchParams.get("state");
     const activeSessionInfo: any = getActiveSession(redirectedSessionId);
     const {t} = useTranslation("RedirectionPage");
@@ -31,46 +27,17 @@ export const RedirectionPage: React.FC = () => {
             if (Object.keys(activeSessionInfo).length > 0) {
                 const code = searchParams.get("code") ?? "";
                 const urlState = searchParams.get("state") ?? "";
-                const clientId = activeSessionInfo?.selectedIssuer.client_id;
                 const codeVerifier = activeSessionInfo?.codeVerifier;
                 const issuerId = activeSessionInfo?.selectedIssuer.credential_issuer ?? "";
                 const certificateId = activeSessionInfo?.certificateId;
 
-                let apiRequest: ApiRequest = api.fetchSpecificIssuer;
-                let issuerConfig = await fetchRequest(
-                    apiRequest.url(issuerId ?? ""),
-                    apiRequest.methodType,
-                    apiRequest.headers()
-                );
-                dispatch(storeSelectedIssuer(issuerConfig?.response));
-
-
-                apiRequest = api.fetchCredentialTypes;
-                let credentialTypesResponse = await fetchRequest(
-                    apiRequest.url(issuerId ?? ""),
-                    apiRequest.methodType,
-                    apiRequest.headers()
-                );
-                dispatch(storeFilteredCredentials(credentialTypesResponse?.response?.supportedCredentials));
-                dispatch(storeCredentials(credentialTypesResponse?.response?.supportedCredentials));
-
-                const requestBody = new URLSearchParams(getTokenRequestBody(code, clientId, codeVerifier));
-                apiRequest = api.fetchToken;
-                let tokenResponse = await fetchRequest(
-                    apiRequest.url(issuerId),
+                const requestBody = new URLSearchParams(getTokenRequestBody(code, codeVerifier, issuerId, certificateId));
+                const apiRequest = api.fetchTokenAnddownloadVc;
+                let credentialDownloadResponse = await fetchRequest(
+                    apiRequest.url(),
                     apiRequest.methodType,
                     apiRequest.headers(),
                     requestBody
-                );
-
-                const credentialRequestBody = await getCredentialRequestBody(tokenResponse?.access_token, clientId, issuerConfig.response.credential_audience, credentialTypesResponse?.response, certificateId);
-
-                apiRequest = api.downloadVc;
-                let credentialDownloadResponse = await fetchRequest(
-                    apiRequest.url(issuerId, certificateId),
-                    apiRequest.methodType,
-                    apiRequest.headers(tokenResponse?.access_token),
-                    JSON.stringify(credentialRequestBody)
                 );
                 if (state !== RequestStatus.ERROR) {
                     await downloadCredentialPDF(credentialDownloadResponse, certificateId);
