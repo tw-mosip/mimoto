@@ -27,9 +27,9 @@ buildIdentifier: '#${BUILD_NUMBER}' # Supports strings along with either/both ${
 # Platforms object contains all the browser / device combinations you want to test on.
 # Entire list available here -> (https://www.browserstack.com/list-of-browsers-and-platforms/automate)
 platforms:
-  - os: OS X
-    osVersion: Ventura
-    browserName: chrome
+  - os: Windows
+    osVersion: 11
+    browserName: Chrome
     browserVersion: latest
 
 
@@ -53,6 +53,7 @@ source: java:intellij:v1.1.4
 # Set browserStackLocal to true if your website under test is not accessible publicly over the internet
 # Learn more about how BrowserStack Local works here -> https://www.browserstack.com/docs/automate/selenium/local-testing-introduction
 browserstackLocal: true # <boolean> (Default false)
+interactiveDebugging: true
 
 # Options to be passed to BrowserStack local in-case of advanced configurations
 # browserStackLocalOptions:
