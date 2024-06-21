@@ -16,7 +16,8 @@ import io.cucumber.testng.CucumberOptions;
 		monochrome = true,
 		plugin = {"pretty",
 				"html:reports",
-				"summary"}
+				"html:target/cucumber.html", "json:target/cucumber.json",
+				"summary","com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"}
 		//tags = "@smoke"		
 		)
 

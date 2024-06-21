@@ -19,12 +19,13 @@ Feature: download mosip cridentials
     Then User verify Download Success text displayed
     And User verify go back button
 
-    Examples: 
+    Examples:
       | vid              | otp    |
       | 4391082978460254 | 111111 |
 
+
   @smoke @VerifySearchWithInvalidString
-  Scenario Outline: Mosip Natonal Id by e-Signet
+  Scenario: Mosip Natonal Id by e-Signet
     Given Load application url "https://inji.qa-inji.mosip.net/"
     Then User gets the title of the page
     And User search the issuers with "qewqdda"

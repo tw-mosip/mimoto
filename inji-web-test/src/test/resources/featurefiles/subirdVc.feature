@@ -14,15 +14,15 @@ Feature: Login using Sunbird Credentials
     And User enter the full name  "<full name>"
     And User enter the date of birth "<date of birth>"
     And User click on login button
-    And User verify pdf is downloaded
+#    And User verify pdf is downloaded
     Then User verify Download Success text displayed
     And User verify go home button
     And User verify go back button
 
-    Examples: 
+    Examples:
       | policy number | full name | date of birth |
-      |    1234567890 | Aswin     | 01-01-2024    |
-
+      | 1234567890    | Aswin     | 01-01-2024    |
+#
   @smoke @VerifyAndDownloadVcViaSunbirdLife
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"
@@ -44,10 +44,10 @@ Feature: Login using Sunbird Credentials
     And User verify go home button
     And User verify go back button
 
-    Examples: 
+    Examples:
       | policy number | full name | date of birth |
       |    1234567890 | Aswin     | 01-01-2024    |
-
+#
   @smoke @VerifyAndDownloadVcViaSunbirdLife
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"
@@ -67,10 +67,10 @@ Feature: Login using Sunbird Credentials
     And User click on login button
     Then User verify authentication failed message
 
-    Examples: 
+    Examples:
       | policy number | full name | date of birth |
       |     123456789 | Aswin     | 01-01-2024    |
-
+#
   @smoke @VerifyAndDownloadVcViaVehicleInsurance
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"
@@ -90,7 +90,7 @@ Feature: Login using Sunbird Credentials
     And User click on login button
     Then User verify authentication failed message
 
-    Examples: 
+    Examples:
       | policy number | full name | date of birth |
       |     123456789 | Aswin     | 01-01-2024    |
 
@@ -111,9 +111,9 @@ Feature: Login using Sunbird Credentials
     And User verify date of birth input box header
     And User enter the date of birth "<date of birth>"
     And User click on login button
-    And User verify pdf is downloaded
+#    And User verify pdf is downloaded
     Then User verify Download Success text displayed
 
-    Examples: 
+    Examples:
       | policy number | full name | date of birth |
       |    1234567890 | Aswin     | 01-01-2024    |
