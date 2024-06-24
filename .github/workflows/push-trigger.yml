@@ -36,6 +36,7 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
   sonar-analysis-inji-verify:
     if: "${{  github.event_name != 'pull_request' }}"
+    needs: build-dockers-inji-web
     uses: mosip/kattu/.github/workflows/npm-sonar-analysis.yml@master-java21
     with:
       SERVICE_LOCATION: ./inji-web
