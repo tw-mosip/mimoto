@@ -38,7 +38,7 @@ public class Config {
     @Value("${mosip.security.cors-enable:false}")
     private boolean isCORSEnable;
 
-    @Value("${mosip.security.origins:localhost:8080}")
+    @Value("${mosip.security.origins:localhost:8088}")
     private String origins;
 
     @Bean
@@ -49,7 +49,7 @@ public class Config {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        if (isCSRFEnable) {
+        if (!isCSRFEnable) {
             http.csrf(AbstractHttpConfigurer::disable);
         }
 
