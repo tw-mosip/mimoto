@@ -106,7 +106,8 @@ public class IdpController {
     }
 
     @PostMapping(value = {"/get-token/{issuer}"}, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseEntity getToken(@RequestParam Map<String, String> params, @PathVariable(required = false, name= "issuer") String issuer) {
+    public ResponseEntity getToken(@RequestParam Map<String, String> params, @PathVariable(required = true, name= "issuer") String issuer) {
+
         logger.info("Reached the getToken Controller for Issuer " + issuer);
         RestTemplate restTemplate = new RestTemplate();
         try {
