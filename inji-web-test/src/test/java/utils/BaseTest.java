@@ -10,10 +10,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BaseTest {
     public void setDriver(WebDriver driver) {
@@ -24,9 +28,9 @@ public class BaseTest {
 
     public JavascriptExecutor jse;
 
-    public static final String AUTOMATE_USERNAME = "anupnehe_w1PZQx";
-    public static final String AUTOMATE_KEY = "Zenzg8a3RikxvTUmELFm";
-    public static final String URL = "https://" + AUTOMATE_USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+    String accessKey = getKeyValueFromYaml("/browserstack.yml","accessKey");
+    String userName = getKeyValueFromYaml("/browserstack.yml","userName");
+    public  final String URL = "https://" + userName + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
 
     @Before
     public void beforeAll() throws MalformedURLException {
@@ -58,5 +62,24 @@ public class BaseTest {
 
     public JavascriptExecutor getJse() {
         return jse;
+    }
+
+    public static String getKeyValueFromYaml(String filePath, String key) {
+        FileReader reader = null;
+        try {
+            reader = new FileReader(System.getProperty("user.dir")+filePath);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        Yaml yaml = new Yaml();
+        Object data = yaml.load(reader);
+
+        if (data instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, String> map = (Map<String, String>) data;
+            return (String) map.get(key);
+        }  else {
+            throw new RuntimeException("Invalid YAML format, expected a map");
+        }
     }
 }
