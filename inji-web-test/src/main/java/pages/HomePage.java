@@ -67,6 +67,11 @@ public class HomePage extends BasePage {
 
     public void clickOnVerify() {
         clickOnElement(driver, By.xpath("//button[@id='verify_otp']"));
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if (isElementIsVisible(driver, By.xpath("//button[@id='verify_otp']"))) {
             clickOnElement(driver, By.xpath("//button[@id='verify_otp']"));
         }
@@ -95,7 +100,9 @@ public class HomePage extends BasePage {
     //
     public void enterIssuersInSearchBox(String string) {
         enterText(driver, By.xpath("//input[@type='text']"), string);
-//		clickOnElement(driver,By.xpath("//p[@data-testid='IntroBox-SubText']"));
+        if(isElementIsVisible(driver, By.xpath("//p[@data-testid='IntroBox-SubText']"))) {
+            clickOnElement(driver, By.xpath("//p[@data-testid='IntroBox-SubText']"));
+        }
     }
 
     //
@@ -120,7 +127,17 @@ public class HomePage extends BasePage {
 
     //
     public void clickOnLanguageButton() {
-        clickOnElement(driver, By.xpath("//button[@data-testid='Language-Selector-Button']"));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(isElementIsVisible(driver, By.xpath("//div[@data-testid='HeaderTile-Text']"))){
+            clickOnElement(driver, By.xpath("//div[@data-testid='HeaderTile-Text']"));
+        }
+        clickOnElement(driver, By.xpath("//*[@data-testid='Language-Selector-Button']"));
+
     }
 
     public boolean verifyLanguagesInLanguageFilter() {
@@ -203,6 +220,10 @@ public class HomePage extends BasePage {
         if (isElementIsVisible(driver, By.xpath("//div[@data-testid='Header-InjiWeb-Logo-Container']/div"))) {
             clickOnElement(driver, By.xpath("//div[@data-testid='Header-InjiWeb-Logo-Container']/div"));
         }
+    }
+
+    public void verifyInvaildMessage() {
+         isElementIsVisible(driver, By.xpath("//p[text()='Invalid Session']"));
     }
 
 

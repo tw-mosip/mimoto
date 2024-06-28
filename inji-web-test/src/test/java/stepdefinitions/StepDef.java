@@ -4,12 +4,23 @@ package stepdefinitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import pages.HomePage;
 import pages.MosipCredentials;
+import pages.SetNetwork;
 import pages.SunbirdCredentials;
 import utils.BaseTest;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Base64;
+import java.util.Set;
 
 
 public class StepDef {
@@ -19,12 +30,14 @@ public class StepDef {
     private HomePage homePage;
     private MosipCredentials mosipCredentials;
     private SunbirdCredentials sunbirdCredentials;
+    private SetNetwork setNetwork;
 
     public StepDef(BaseTest baseTest) {
         this.baseTest = baseTest;
         this.homePage = new HomePage(baseTest.getDriver());
         this.sunbirdCredentials = new SunbirdCredentials(baseTest.getDriver());
         this.mosipCredentials = new MosipCredentials(baseTest.getDriver());
+        this.setNetwork = new SetNetwork();
     }
 
     @Given("User gets the title of the page")
@@ -241,51 +254,34 @@ public class StepDef {
     }
 
     //
-//	@Then("User verify pdf is downloaded")
-////	public void user_verify_pdf_is_downloaded() {
-////		page.onDownload(download -> {
-////		    String downloadPath = download.path().toString();
-////		    String suggestedFilename = download.suggestedFilename();
-////		    System.out.println("Download path: " + downloadPath);
-////		    System.out.println("Suggested filename: " + suggestedFilename);
-////
-////		    File pdfFile = Paths.get(downloadPath).toFile();
-////		    PDDocument document = null;
-////			try {
-////				document = PDDocument.load(pdfFile);
-////			} catch (IOException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////	        PDFTextStripper stripper = null;
-////			try {
-////				stripper = new PDFTextStripper();
-////			} catch (IOException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////	        try {
-////				String text = stripper.getText(document);
-////				System.out.println(text);
-////
-////				 if(text.contains("Aswin")&& text.contains("8220255752")&& text.contains("2024-01-01")) {
-////
-////				 }
-////
-////			} catch (IOException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////	        try {
-////				document.close();
-////			} catch (IOException e) {
-////				// TODO Auto-generated catch block
-////				e.printStackTrace();
-////			}
-////	        ;
-////
-////		});
-////}
+	@Then("User verify pdf is downloaded")
+	public void user_verify_pdf_is_downloaded() throws IOException {
+        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"fileExists\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
+
+        // Get file properties
+        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileProperties\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
+
+        // Get file content. The content is Base64 encoded
+        String base64EncodedFile = (String) baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileContent\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}");
+
+        // Decode the content to Base64
+        byte[] data = Base64.getDecoder().decode(base64EncodedFile);
+        OutputStream stream = new FileOutputStream("MOSIPVerifiableCredential.pdf");
+        stream.write(data);
+
+        System.out.println(stream);
+        stream.close();
+
+        File pdfFile = new File(System.getProperty("user.dir")+"/MOSIPVerifiableCredential.pdf");
+        PDDocument document = PDDocument.load(pdfFile);
+
+        PDFTextStripper stripper = new PDFTextStripper();
+        String text = stripper.getText(document);
+
+
+
+        System.out.print(text);
+    }
 //
     @Then("User verify policy number input box header")
     public void user_verify_policy_number_input_box_header() {
@@ -464,4 +460,34 @@ public class StepDef {
         sunbirdCredentials.clickOnVehicleInsurance();
     }
 
+    @Then("User open new tab")
+    public void user_open_new_tab() {
+        ((JavascriptExecutor) baseTest.getDriver()).executeScript("window.open('https://inji.qa-inji.mosip.net/')");
+
+        Set<String> allWindowHandles =baseTest.getDriver().getWindowHandles();
+        System.out.println(allWindowHandles);
+        if (allWindowHandles.size() >= 2) {
+            String secondWindowHandle = allWindowHandles.toArray(new String[0])[1];
+            // Switch to the second window
+            baseTest.getDriver().switchTo().window(secondWindowHandle);
+        } else {
+
+        }
+    }
+
+    @Then("user refresh the page")
+    public void user_refresh_the_page() {
+        baseTest.getDriver().navigate().refresh();
+    }
+    @Then("user verify the page after Refresh")
+    public void user_verify_the_page_after_refresh() {
+
+    }
+
+//    @When("User set no network")
+//    public void user_set_no_network() {
+//        baseTest.getDriver().getSessionId();
+//
+//        setNetwork.setNoNetworkProfile();
+//    }
 }
