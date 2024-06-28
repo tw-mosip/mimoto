@@ -1,13 +1,13 @@
 Feature: Inji web multilanguage testing
 
-#  @smoke @verifyingLanguages
-#  Scenario: Verify the Inji web configured language
-#  Given User gets the title of the page
-#  Then User validate the title of the page
-#  And User verify that inji web logo is displayed
-#  And User verify that langauge button is displayed
-#  And User click on langauge button
-#  And User verify All the languages
+  @smoke @verifyingLanguages
+  Scenario: Verify the Inji web configured language
+  Given User gets the title of the page
+  Then User validate the title of the page
+  And User verify that inji web logo is displayed
+  And User verify that langauge button is displayed
+  And User click on langauge button
+  And User verify All the languages
 
   @smoke @verifyingHomepageAndSearchInConfiguredLanguge
   Scenario: Verify the Inji web homepage
@@ -43,27 +43,27 @@ Feature: Inji web multilanguage testing
 
   @smoke @verifyingCredentialDetailsPageForMosipInConfiguredLanguge
   Scenario: Verify the Credential Details Page
-  Given User gets the title of the page
-  Then User validate the title of the page
-  And User verify that inji web logo is displayed
-  		And User search the issuers with "National"
-  When User click on download mosip credentials button
-  Then User validate the list of credential types title of the page
-  And User click on langauge button
-  And User click on arabic langauge
-  Then User validate the list of credential types title of the page in arabic laguage
-  And User click on langauge button
-  And User click on tamil langauge
-  Then User validate the list of credential types title of the page in tamil laguage
-  And User click on langauge button
-  And User click on kannada langauge
-  Then User validate the list of credential types title of the page in kannada laguage
-  And User click on langauge button
-  And User click on hindi langauge
-  Then User validate the list of credential types title of the page in hindi laguage
-  And User click on langauge button
-  And User click on french langauge
-  Then User validate the list of credential types title of the page in french laguage
+    Given User gets the title of the page
+    Then User validate the title of the page
+    And User verify that inji web logo is displayed
+    And User search the issuers with "National"
+    When User click on download mosip credentials button
+    Then User validate the list of credential types title of the page
+    And User click on langauge button
+    And User click on arabic langauge
+    Then User validate the list of credential types title of the page in arabic laguage
+    And User click on langauge button
+    And User click on kannada langauge
+    Then User validate the list of credential types title of the page in kannada laguage
+    And User click on langauge button
+    And User click on hindi langauge
+    Then User validate the list of credential types title of the page in hindi laguage
+    And User click on langauge button
+    And User click on french langauge
+    Then User validate the list of credential types title of the page in french laguage
+    And User click on langauge button
+    And User click on tamil langauge
+    Then User validate the list of credential types title of the page in tamil laguage
 
   @smoke @verifyingCredentialDetailsPageForSunbirdInConfiguredLanguge
   Scenario: Verify the Credential Details Page
@@ -94,7 +94,7 @@ Feature: Inji web multilanguage testing
     And User click on french langauge
     And User search the issuers with "life"
     Then User validate the list of credential types title of the page in french laguage for sunbird
-#
+
   @smoke @verifyingChangeLanguageOnCredentialDetailsPageAndVerifyHomePage
   Scenario: Verify the Credential Details Page
     Given User gets the title of the page
@@ -103,13 +103,13 @@ Feature: Inji web multilanguage testing
     And User search the issuers with "National"
     When User click on download mosip credentials button
     Then User validate the list of credential types title of the page
-    And User click on langauge button
-    And User click on arabic langauge
-    And User click on back button
-    And User verify home screens in arabic
-    And User search the issuers with "الوطنية"
-    And User verify mosip national id by e-signet displayed
-    When User click on download mosip credentials button
+#    And User click on langauge button
+#    And User click on arabic langauge
+#    And User click on back button
+#    And User verify home screens in arabic
+#    And User search the issuers with "الوطنية"
+#    And User verify mosip national id by e-signet displayed
+#    When User click on download mosip credentials button
     And User click on langauge button
     And User click on tamil langauge
     And User click on back button

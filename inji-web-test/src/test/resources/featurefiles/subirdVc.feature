@@ -22,7 +22,7 @@ Feature: Login using Sunbird Credentials
     Examples:
       | policy number | full name | date of birth |
       | 1234567890    | Aswin     | 01-01-2024    |
-#
+
   @smoke @VerifyAndDownloadVcViaSunbirdLife
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"

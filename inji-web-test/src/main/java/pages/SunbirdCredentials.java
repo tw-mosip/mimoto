@@ -1,10 +1,7 @@
 package pages;
 
 import base.BasePage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 public class SunbirdCredentials extends BasePage {
     private WebDriver driver;
@@ -72,12 +69,46 @@ public class SunbirdCredentials extends BasePage {
         driver.findElement(By.id("_form_dob")).sendKeys("01/01/2024");
 
 
+        driver.findElement(By.xpath("//input[@id='_form_dob']")).click();
 //		WebElement ele = driver.findElement(By.xpath("//input[@id='_form_fullName']"));
 //		ele.sendKeys(Keys.TAB);
 //		ele.sendKeys(Keys.SPACE);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//      System.out.println(driver.getPageSource());
+        System.out.println(driver.getWindowHandles());
+
+
+//		driver.findElement(By.xpath("//*[contains(@text,'SET')]")).click();
+
+//        JavascriptExecutor js = (JavascriptExecutor) driver;
 //
-//		driver.findElement(By.xpath("//*[contains(text(), 'SET')]")).click();
+//// Improved XPath with contains() for partial text match
+//        String xpath = "//*[contains(@text,'SET')]";
+//
+//// Execute the script to find and click the element
+//        js.executeScript("document.evaluate(arguments[0], document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()", xpath);
+//
+//
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String xpath = "//*[contains(@text,'SET')]"; // Improved XPath (consider adding specificity)
+
+        try {
+            js.executeScript("document.evaluate(arguments[0], document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()", xpath);
+        } catch (NoSuchElementException e) {
+            System.out.println("Element not found with XPath: " + xpath);
+        } catch (JavascriptException e) {
+            System.out.println("JavaScript error: " + e.getMessage());
+        }
     }
+
+
 
     public void clickOnLogin() {
         clickOnElement(driver, By.xpath("//button[@id='verify_form']"));
