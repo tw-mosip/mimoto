@@ -2,7 +2,7 @@ Feature: download mosip cridentials
 
   @smoke @VerifyAndDownloadVcViaMosipNatinalId
   Scenario Outline: Mosip Natonal Id by e-Signet
-    Given Load application url "https://inji.dev1.mosip.net/"
+    Given Load application url "https://inji.qa-inji.mosip.net/"
     Then User gets the title of the page
     And User search the issuers with "National"
     When User click on download mosip credentials button
