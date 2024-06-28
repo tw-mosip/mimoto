@@ -6,13 +6,13 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-function Restarting_oidc-ui() {
+function Restarting_injiweb() {
   NS=injiweb
-  kubectl -n $NS rollout restart deploy oidc-ui
+  kubectl -n $NS rollout restart deploy injiweb
 
   kubectl -n $NS  get deploy -o name |  xargs -n1 -t  kubectl -n $NS rollout status
 
-  echo Retarted esignet services
+  echo Retarted injiweb services
   return 0
 }
 
