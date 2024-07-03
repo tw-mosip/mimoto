@@ -109,7 +109,6 @@ public class IdpController {
     public ResponseEntity getToken(@RequestParam Map<String, String> params, @PathVariable(required = true, name= "issuer") String issuer) {
 
         logger.info("Reached the getToken Controller for Issuer " + issuer);
-        System.out.println("Reached the getToken Controller for Issuer "+ issuer + " with params " + params);
         RestTemplate restTemplate = new RestTemplate();
         try {
             IssuerDTO issuerDTO = issuersService.getIssuerConfig(issuer);
