@@ -9,10 +9,12 @@ import io.mosip.mimoto.service.PresentationService;
 import io.mosip.mimoto.service.VerifiersService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,6 +23,10 @@ public class PresentationServiceImpl implements PresentationService {
 
     @Autowired
     VerifiersService verifiersService;
+
+    @Value("${mosip.inji.verify.redirect.url}")
+    String injiVerifyRedirectUrl;
+
     @Override
     public String authorizePresentation(PresentationRequestDTO presentationRequestDTO) throws ApiNotAccessibleException, IOException {
 
@@ -38,7 +44,10 @@ public class PresentationServiceImpl implements PresentationService {
         if(presentationDefinitionDTO.getInput_descriptors().get(0).getFormat().getLdpVc().getProofTypes().get(0).equals(vcCredentialProperties.getProof().getType())){
             String vpToken = constructVerifiablePresentationString(vcCredentialProperties);
             String presentationSubmission =constructPresentationSubmission(vpToken);
-            return presentationRequestDTO.getRedirect_uri() + "#vp_token=" + Arrays.toString(Base64.getUrlEncoder().encode(vpToken.getBytes())) + "&presentation_submission=" + presentationSubmission;
+            return String.format(injiVerifyRedirectUrl,
+                    presentationRequestDTO.getRedirect_uri(),
+                    Base64.getUrlEncoder().encodeToString(vpToken.getBytes(StandardCharsets.UTF_8)),
+                    Base64.getUrlEncoder().encodeToString(presentationSubmission.getBytes(StandardCharsets.UTF_8)));
         }
         return null;
     }

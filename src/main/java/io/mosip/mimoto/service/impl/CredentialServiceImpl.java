@@ -176,9 +176,9 @@ public class CredentialServiceImpl implements CredentialService {
                     }
                 });
 
-        String qrCodeImage = "true".equals(issuerDTO.getOvp_qr_enabled()) ?
-                constructQRCodeWithVCData(credentialsSupportedResponse, vcCredentialResponse) :
-                constructQRCodeWithAuthorizeRequest(vcCredentialResponse);
+        String qrCodeImage = !"false".equals(issuerDTO.getOvp_qr_enabled()) ?
+                constructQRCodeWithAuthorizeRequest(vcCredentialResponse) :
+                constructQRCodeWithVCData(credentialsSupportedResponse, vcCredentialResponse) ;
         data.put("qrCodeImage", qrCodeImage);
         data.put("logoUrl", issuerDTO.getDisplay().stream().map(d -> d.getLogo().getUrl()).findFirst().orElse(""));
         data.put("rowProperties", rowProperties);
@@ -235,7 +235,7 @@ public class CredentialServiceImpl implements CredentialService {
         PresentationDefinitionDTO presentationDefinitionDTO = constructPresentationDefinition(vcCredentialResponse);
         ObjectMapper objectMapper = new ObjectMapper();
         String presentationString = objectMapper.writeValueAsString(presentationDefinitionDTO);
-        String qrData = injiWebAuthorizeUrl + URLEncoder.encode("https://raw.githubusercontent.com/tw-mosip/verify-credential-js/main/VC/sunbird_qr.json", StandardCharsets.UTF_8) + "&presentation_definition=" + URLEncoder.encode(presentationString, StandardCharsets.UTF_8);
+        String qrData = String.format(injiWebAuthorizeUrl, URLEncoder.encode("https://raw.githubusercontent.com/tw-mosip/verify-credential-js/main/VC/sunbird_qr.json", StandardCharsets.UTF_8), URLEncoder.encode(presentationString, StandardCharsets.UTF_8));
         return constructQRCode(qrData);
     }
 
