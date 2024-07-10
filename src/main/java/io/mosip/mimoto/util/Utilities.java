@@ -104,6 +104,9 @@ public class Utilities {
     @Value("${mosip.openid.issuers}")
     private String getIssuersConfigJson;
 
+    @Value("${mosip.openid.verifiers}")
+    private String trustedVerifiers;
+
     @Value("${mosip.openid.issuer.credentialSupported}")
     private String getIssuerCredentialSupportedJson;
 
@@ -118,15 +121,19 @@ public class Utilities {
 
     private String issuersConfigJsonString = null;
 
+    private String trustedVerifiersJsonString = null;
+
     private String credentialsSupportedJsonString = null;
 
     private String credentialTemplateHtmlString = null;
 //    uncomment for running mimoto Locally to populate the issuers json
 //    public Utilities(@Value("classpath:/wellKnownIssuer/Insurance.json") Resource credentialsSupportedResource,
 //                     @Value("classpath:mimoto-issuers-config.json") Resource resource,
-//                     @Value("classpath:/templates/CredentialTemplate.html") Resource credentialTemplateResource) throws IOException{
+//                     @Value("classpath:mimoto-trusted-verifiers.json") Resource trustedVerifiersResource,
+//                     @Value("classpath:/templates/credential-template.html") Resource credentialTemplateResource) throws IOException{
 //
 //        issuersConfigJsonString = (Files.readString(resource.getFile().toPath()));
+//        trustedVerifiersJsonString = (Files.readString(trustedVerifiersResource.getFile().toPath()));
 //        credentialsSupportedJsonString = (Files.readString(credentialsSupportedResource.getFile().toPath()));
 //        credentialTemplateHtmlString = (Files.readString(credentialTemplateResource.getFile().toPath()));
 //    }
@@ -297,6 +304,10 @@ public class Utilities {
     public String getIssuersConfigJsonValue() throws IOException {
         return  (issuersConfigJsonString != null && !issuersConfigJsonString.isEmpty()) ?
                 issuersConfigJsonString : getJson(configServerFileStorageURL, getIssuersConfigJson);
+    }
+    public String getTrustedVerifiersJsonValue() throws IOException {
+        return  (trustedVerifiersJsonString != null && !trustedVerifiersJsonString.isEmpty()) ?
+                trustedVerifiersJsonString : getJson(configServerFileStorageURL, trustedVerifiers);
     }
 
     public static ResponseWrapper<Object> handleExceptionWithErrorCode(Exception exception) {
