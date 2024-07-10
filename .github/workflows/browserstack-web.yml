@@ -1,10 +1,6 @@
   name: BrowserStack Web Tests
 
   on:
-   release:
-     types: [published]
-   pull_request:
-     types: [opened, reopened, synchronize]
    workflow_dispatch:
      inputs:
        message:
