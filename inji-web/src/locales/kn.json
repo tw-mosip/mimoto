@@ -45,6 +45,11 @@
       }
     }
   },
+  "PageNotFound": {
+    "navigateButton": "ಮನೆಗೆ ಹೋಗು",
+    "heading": "ಅದು ದೋಷ",
+    "subHeading": "ವಿನಂತಿಸಿದ URL {{pathname}} ಈ ಸರ್ವರ್‌ನಲ್ಲಿ ಕಂಡುಬಂದಿಲ್ಲ."
+  },
   "HelpPage": {
     "title": "ಸಹಾಯ"
   },

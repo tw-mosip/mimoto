@@ -45,6 +45,11 @@
       }
     }
   },
+  "PageNotFound": {
+    "navigateButton": "வீட்டிற்கு போ",
+    "heading": "அது பிழை",
+    "subHeading": "கோரப்பட்ட URL {{pathname}} இந்த சர்வரில் இல்லை."
+  },
   "HelpPage": {
     "title": "உதவி"
   },

@@ -45,6 +45,11 @@
       }
     }
   },
+  "PageNotFound": {
+    "navigateButton": "घर जाओ",
+    "heading": "यह एक त्रुटि है",
+    "subHeading": "अनुरोध की गयी यूआरएल {{pathname}} इस सर्वर पर नहीं मिला था।"
+  },
   "HelpPage": {
     "title": "मदद"
   },
