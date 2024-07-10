@@ -45,6 +45,11 @@
       }
     }
   },
+  "PageNotFound": {
+    "navigateButton": "Go To Home",
+    "heading": "That's an error",
+    "subHeading": "The requested URL {{pathname}} was not found on this server."
+  },
   "HelpPage": {
     "title": "Help"
   },
