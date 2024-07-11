@@ -1,0 +1,164 @@
+{
+  "credential_issuer": "https://injicertify-mosipid.qa-inji.mosip.net",
+  "authorization_servers": [
+    "https://esignet-mosipid.qa-inji.mosip.net"
+  ],
+  "credential_endpoint": "https://injicertify-mosipid.qa-inji.mosip.net/v1/certify/issuance/credential",
+  "display": [
+    {
+      "name": "MOSIP National ID",
+      "locale": "en"
+    }
+  ],
+  "credential_configurations_supported": {
+    "MOSIPVerifiableCredential_ldp": {
+      "format": "ldp_vc",
+      "scope": "mosip_identity_vc_ldp",
+      "cryptographic_binding_methods_supported": [
+        "did:jwk"
+      ],
+      "credential_signing_alg_values_supported": [
+        "RsaSignature2018"
+      ],
+      "proof_types_supported": {
+        "jwt": {
+          "proof_signing_alg_values_supported": [
+            "RS256",
+            "PS256"
+          ]
+        }
+      },
+      "credential_definition": {
+        "type": [
+          "VerifiableCredential",
+          "MOSIPVerifiableCredential"
+        ],
+        "credentialSubject": {
+          "fullName": {
+            "display": [
+              {
+                "name": "Full Name",
+                "locale": "en"
+              }
+            ]
+          },
+          "phone": {
+            "display": [
+              {
+                "name": "Phone Number",
+                "locale": "en"
+              }
+            ]
+          },
+          "dateOfBirth": {
+            "display": [
+              {
+                "name": "DOB",
+                "locale": "en"
+              }
+            ]
+          },
+          "gender": {
+            "display": [
+              {
+                "name": "Gender",
+                "locale": "en"
+              }
+            ]
+          },
+          "residenceStatus": {
+            "display": [
+              {
+                "name": "Residence Status",
+                "locale": "en"
+              }
+            ]
+          },
+          "email": {
+            "display": [
+              {
+                "name": "Email Id",
+                "locale": "en"
+              }
+            ]
+          },
+          "region": {
+            "display": [
+              {
+                "name": "Region",
+                "locale": "en"
+              }
+            ]
+          },
+          "province": {
+            "display": [
+              {
+                "name": "Province",
+                "locale": "en"
+              }
+            ]
+          },
+          "city": {
+            "display": [
+              {
+                "name": "City",
+                "locale": "en"
+              }
+            ]
+          },
+          "UIN": {
+            "display": [
+              {
+                "name": "UIN",
+                "locale": "en"
+              }
+            ]
+          },
+          "VID": {
+            "display": [
+              {
+                "name": "VID",
+                "locale": "en"
+              }
+            ]
+          },
+          "postalCode": {
+            "display": [
+              {
+                "name": "Postal Code",
+                "locale": "en"
+              }
+            ]
+          }
+        }
+      },
+      "display": [
+        {
+          "name": "MOSIP National ID",
+          "locale": "en",
+          "logo": {
+            "url": "https://api.qa-inji.mosip.net/inji/mosip-logo.png",
+            "alt_text": "a square logo of a MOSIP"
+          },
+          "background_color": "#f8efea",
+          "background_image": {
+            "uri": "https://api.qa-inji.mosip.net/inji/mosip-logo.png"
+          },
+          "text_color": "#000000"
+        }
+      ],
+      "order": [
+        "fullName",
+        "phone",
+        "gender",
+        "residenceStatus",
+        "email",
+        "region",
+        "province",
+        "city",
+        "UIN",
+        "postalCode"
+      ]
+    }
+  }
+}

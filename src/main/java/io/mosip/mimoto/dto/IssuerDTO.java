@@ -33,7 +33,7 @@ public class IssuerDTO {
     @SerializedName(".well-known")
     @JsonProperty(".well-known")
     @Expose
-    String wellKnownEndpoint;
+    public String wellKnownEndpoint;
     @JsonInclude(NON_NULL)
     @NotBlank
     String redirect_uri;
