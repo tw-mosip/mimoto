@@ -10,6 +10,9 @@ services:
       - ./config/mimoto-issuers-config.json:/config/server/mimoto-issuers-config.json
       - ./config/CredentialTemplate.html:/config/server/CredentialTemplate.html
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./config/sunbirdFallback.json:/config/server/sunbirdFallback.json
+      - ./config/mosipFallback.json:/config/server/mosipFallback.json
+      - ./config/mockIdaFallback.json:/config/server/mockIdaFallback.json
   mimoto-service:
     container_name: 'Mimoto-Service'
     image: 'mosipid/mimoto:0.12.0'
