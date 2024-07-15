@@ -19,6 +19,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
@@ -43,6 +44,8 @@ public class IssuersController {
     private static final String ID = "mosip.mimoto.issuers";
 
     private final Logger logger = LoggerFactory.getLogger(IssuersController.class);
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping()
     public ResponseEntity<Object> getAllIssuers(@RequestParam(required = false) String search) {
@@ -62,16 +65,16 @@ public class IssuersController {
     }
 
     @GetMapping("/{issuer-id}/wellknown")
-    public ResponseEntity<Object> getIssuerWellknown(@PathVariable("issuer-id") String issuerId) throws ApiNotAccessibleException, IOException {
+    public ResponseEntity<Object> getIssuerWellknown(@PathVariable("issuer-id") String issuerId) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setId(ID);
+        responseWrapper.setVersion("v1");
+        responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
         IssuerDTO issuerConfig;
-        RestTemplate restTemplate = new RestTemplate();
         try {
-            issuerConfig = issuersService.getIssuerConfig(issuerId);
-            String wellknown = issuerConfig.wellKnownEndpoint;
-
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(wellknown, String.class);
-            return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+            ResponseEntity<String> responseEntity=issuersService.getIssuersWellknown(issuerId);
+            responseWrapper.setResponse(responseEntity.getBody());
+            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
         } catch (Exception exception) {
             logger.error("Exception occurred while fetching issuers wellknown ", exception);
             responseWrapper = handleExceptionWithErrorCode(exception);
