@@ -37,10 +37,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,6 +54,9 @@ import java.util.stream.Collectors;
 import static io.mosip.mimoto.exception.PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION;
 import static io.mosip.mimoto.exception.PlatformErrorMessages.INVALID_ISSUER_ID_EXCEPTION;
 import static io.mosip.mimoto.util.TestUtilities.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -91,9 +97,14 @@ public class InjiControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     @MockBean
     Utilities utilities;
 
+    @Autowired
+    IssuersController issuersController;
     @MockBean
     private AttestationOfflineVerify attestationOfflineVerify;
 
@@ -136,7 +147,7 @@ public class InjiControllerTest {
 
 
     @Test
-    public void getCredentialTypesTest() throws Exception{
+    public void getCredentialTypesTest() throws Exception {
         IssuerSupportedCredentialsResponse credentialTypesResponse = new IssuerSupportedCredentialsResponse();
         credentialTypesResponse.setSupportedCredentials(List.of(getCredentialSupportedResponse("credentialType1"),
                 getCredentialSupportedResponse("credentialType2")));
@@ -145,7 +156,7 @@ public class InjiControllerTest {
                 .thenReturn(credentialTypesResponse)
                 .thenThrow(new ApiNotAccessibleException());
         Mockito.when(credentialService.getCredentialsSupported("invalidId", null))
-                        .thenReturn(new IssuerSupportedCredentialsResponse());
+                .thenReturn(new IssuerSupportedCredentialsResponse());
 
         mockMvc.perform(get("/issuers/{issuer-id}/credentialTypes", "Issuer1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -289,6 +300,36 @@ public class InjiControllerTest {
                 .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
     }
+
+    @Test
+    public void getIssuerWellknownTest() throws Exception {
+        String issuerId = "test-issuer";
+        String wellKnownResponse = "{\"issuer\":\"test-issuer\",\"authorization_endpoint\":\"https://example.com/auth\"}";
+        ResponseEntity<String> wellKnownResponseEntity;
+        wellKnownResponseEntity = restTemplate.getForEntity(wellKnownResponse, String.class);
+        Mockito.when(issuersService.getIssuersWellknown(issuerId)).thenReturn(wellKnownResponseEntity);
+
+        ResponseEntity<Object> resultWellKnownResponseEntity = issuersController.getIssuerWellknown(issuerId);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(wellKnownResponseEntity.getBody());
+        ResponseEntity<Object> wellknownResponseEntityObject = ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+
+        assertEquals(resultWellKnownResponseEntity, wellknownResponseEntityObject);
+        verify(issuersService, times(1)).getIssuersWellknown(issuerId);
+    }
+
+    @Test
+    public void getIssuerWellknownTestIT() throws Exception {
+        String issuerId = "test-issuer";
+        String wellKnownResponse = "{\"issuer\":\"test-issuer\",\"authorization_endpoint\":\"https://example.com/auth\"}";
+        ResponseEntity<String> wellknownResponseEntity=restTemplate.getForEntity(wellKnownResponse,String.class);
+        Mockito.when(issuersService.getIssuersWellknown(issuerId)).thenReturn(wellknownResponseEntity);
+
+        mockMvc.perform(get("/issuer/{issuer-id}/wellknown", issuerId))
+                .andExpect(status().isOk())
+                .andExpect(content().json(wellKnownResponse));
+    }
+
 
     @Test
     public void processOfflineTest() throws Exception {

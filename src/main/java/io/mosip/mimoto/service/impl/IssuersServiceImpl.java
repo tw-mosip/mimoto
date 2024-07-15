@@ -14,7 +14,10 @@ import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +30,8 @@ public class IssuersServiceImpl implements IssuersService {
     @Autowired
     private Utilities utilities;
 
+    @Autowired
+    RestTemplate restTemplate;
     @Override
     public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException, IOException {
         IssuersDTO issuers;
@@ -67,7 +72,6 @@ public class IssuersServiceImpl implements IssuersService {
     }
 
 
-
     @Override
     public IssuerDTO getIssuerConfig(String issuerId) throws ApiNotAccessibleException, IOException {
         IssuerDTO issuerDTO = null;
@@ -85,4 +89,15 @@ public class IssuersServiceImpl implements IssuersService {
             throw new InvalidIssuerIdException();
         return issuerDTO;
     }
+
+    @Override
+    public ResponseEntity<String> getIssuersWellknown(String issuerId) throws ApiNotAccessibleException, IOException {
+        IssuerDTO issuerConfig;
+        issuerConfig = getIssuerConfig(issuerId);
+        String wellknown = issuerConfig.wellKnownEndpoint;
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(wellknown, String.class);
+        return responseEntity;
+    }
 }
+
+

@@ -1,6 +1,7 @@
 package io.mosip.mimoto.service;
 
 import com.google.gson.Gson;
+import io.mosip.mimoto.controller.IssuersController;
 import io.mosip.mimoto.dto.DisplayDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
@@ -22,6 +23,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,6 +34,8 @@ import java.util.*;
 import static io.mosip.mimoto.util.TestUtilities.getIssuerConfigDTO;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
@@ -43,6 +49,9 @@ public class IssuersServiceTest {
 
     @Mock
     Utilities utilities;
+
+    @Mock
+    RestTemplate restTemplate;
 
     List<String> issuerConfigRelatedFields = List.of("additional_headers", "authorization_endpoint","authorization_audience", "token_endpoint", "proxy_token_endpoint", "credential_endpoint", "credential_audience", "redirect_uri");
 
@@ -84,6 +93,21 @@ public class IssuersServiceTest {
         IssuerDTO issuer = issuersService.getIssuerConfig("Issuer1id");
 
         assertEquals(expectedIssuer, issuer);
+    }
+
+    @Test
+    public void shouldReturnIssuerWellknownForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException {
+        String issuerId = "test-issuer";
+        String wellKnownUrl = "https://example.com/.well-known";
+        String wellKnownResponse = "{\"issuer\":\"test-issuer\",\"authorization_endpoint\":\"https://example.com/auth\"}";
+        ResponseEntity<String> wellKnownResponseEntity=restTemplate.getForEntity(wellKnownResponse, String.class);
+
+        Mockito.when(restTemplate.getForEntity(wellKnownUrl, String.class))
+                .thenReturn(new ResponseEntity<>(wellKnownResponse, HttpStatus.OK));
+
+        ResponseEntity<String> resultResponseEntity=issuersService.getIssuersWellknown(issuerId);
+        assertEquals(wellKnownResponse, resultResponseEntity);
+        verify(restTemplate, times(1)).getForEntity(wellKnownUrl, String.class);
     }
 
     @Test
