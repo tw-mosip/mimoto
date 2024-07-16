@@ -1,20 +1,15 @@
 package io.mosip.mimoto.service;
 
 import com.google.gson.Gson;
-import io.mosip.mimoto.controller.IssuersController;
-import io.mosip.mimoto.dto.DisplayDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
-import io.mosip.mimoto.dto.LogoDTO;
-import io.mosip.mimoto.dto.mimoto.*;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.impl.CredentialServiceImpl;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,23 +17,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static io.mosip.mimoto.util.TestUtilities.getIssuerConfigDTO;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static io.mosip.mimoto.util.TestUtilities.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
 public class IssuersServiceTest {
 
     @InjectMocks
@@ -48,10 +39,10 @@ public class IssuersServiceTest {
     CredentialServiceImpl credentialService = new CredentialServiceImpl();
 
     @Mock
-    Utilities utilities;
+    RestApiClient restApiClient;
 
     @Mock
-    RestTemplate restTemplate;
+    Utilities utilities;
 
     List<String> issuerConfigRelatedFields = List.of("additional_headers", "authorization_endpoint","authorization_audience", "token_endpoint", "proxy_token_endpoint", "credential_endpoint", "credential_audience", "redirect_uri");
 
@@ -97,17 +88,17 @@ public class IssuersServiceTest {
 
     @Test
     public void shouldReturnIssuerWellknownForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException {
-        String issuerId = "test-issuer";
-        String wellKnownUrl = "https://example.com/.well-known";
-        String wellKnownResponse = "{\"issuer\":\"test-issuer\",\"authorization_endpoint\":\"https://example.com/auth\"}";
-        ResponseEntity<String> wellKnownResponseEntity=restTemplate.getForEntity(wellKnownResponse, String.class);
+        String issuerId = "Issuer1id";
+        String wellKnownUrl = "/.well-known";
+        CredentialIssuerWellKnownResponse expextedCredentialIssuerWellKnownResponse=getCredentialIssuerWellKnownResponseDto("Issuer1",
+               Map.of("CredentialType1",getCredentialSupportedResponse("CredentialType1")));
 
-        Mockito.when(restTemplate.getForEntity(wellKnownUrl, String.class))
-                .thenReturn(new ResponseEntity<>(wellKnownResponse, HttpStatus.OK));
+        Mockito.when(restApiClient.getApi(wellKnownUrl , String.class))
+                .thenReturn(getExpectedWellKnownJson());
 
-        ResponseEntity<String> resultResponseEntity=issuersService.getIssuersWellknown(issuerId);
-        assertEquals(wellKnownResponse, resultResponseEntity);
-        verify(restTemplate, times(1)).getForEntity(wellKnownUrl, String.class);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse=issuersService.getIssuerWellknown(issuerId);
+        assertEquals(expextedCredentialIssuerWellKnownResponse,credentialIssuerWellKnownResponse);
+        verify(restApiClient, times(1)).getApi(wellKnownUrl, String.class);
     }
 
     @Test

@@ -37,8 +37,6 @@ public class IssuersController {
     private static final String ID = "mosip.mimoto.issuers";
 
     private final Logger logger = LoggerFactory.getLogger(IssuersController.class);
-    @Autowired
-    private RestTemplate restTemplate;
 
     @GetMapping()
     public ResponseEntity<Object> getAllIssuers(@RequestParam(required = false) String search) {
@@ -64,7 +62,7 @@ public class IssuersController {
         responseWrapper.setVersion("v1");
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
         try {
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse=issuersService.getIssuerWellknown(issuerId);
+            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
             responseWrapper.setResponse(credentialIssuerWellKnownResponse);
             return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
         } catch (Exception exception) {

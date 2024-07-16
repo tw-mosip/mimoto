@@ -1,27 +1,25 @@
 package io.mosip.mimoto.service.impl;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
-import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponseDraft11;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.LoggerUtil;
+import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -33,10 +31,9 @@ public class IssuersServiceImpl implements IssuersService {
     private Utilities utilities;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private RestApiClient restApiClient;
 
-    @Autowired
-    RestTemplate restTemplate;
+
     @Override
     public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException, IOException {
         IssuersDTO issuers;
@@ -99,8 +96,8 @@ public class IssuersServiceImpl implements IssuersService {
     public CredentialIssuerWellKnownResponse getIssuerWellknown(String issuerId) throws ApiNotAccessibleException, IOException {
         IssuerDTO issuerConfig = getIssuerConfig(issuerId);
         String wellknown = issuerConfig.getWellKnownEndpoint();
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(wellknown, String.class);
-        return objectMapper.readValue(responseEntity.getBody(), CredentialIssuerWellKnownResponse.class);
+        String wellknownJson = restApiClient.getApi(wellknown, String.class);
+        return new Gson().fromJson(wellknownJson, CredentialIssuerWellKnownResponse.class);
     }
 }
 
