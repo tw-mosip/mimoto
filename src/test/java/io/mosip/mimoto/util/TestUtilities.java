@@ -1,13 +1,17 @@
 package io.mosip.mimoto.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.DisplayDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.LogoDTO;
 import io.mosip.mimoto.dto.mimoto.*;
+import io.mosip.mimoto.dto.openid.VerifierDTO;
+import io.mosip.mimoto.dto.openid.VerifiersDTO;
+import io.mosip.mimoto.dto.openid.presentation.PresentationRequestDTO;
+import io.mosip.mimoto.dto.openid.presentation.VerifiablePresentationDTO;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestUtilities {
     public static CredentialsSupportedResponse getCredentialSupportedResponse(String credentialSupportedName){
@@ -107,5 +111,73 @@ public class TestUtilities {
                 issuer.setAdditional_headers(Map.of("Content-Type", "application/json"));
         }
         return issuer;
+    }
+
+    public static PresentationRequestDTO getPresentationRequestDTO(){
+        PresentationRequestDTO presentationRequestDTO = new PresentationRequestDTO();
+        presentationRequestDTO.setClient_id("test_client_id");
+        presentationRequestDTO.setResource("test_resource");
+        presentationRequestDTO.setResponse_type("test_response_type");
+        presentationRequestDTO.setRedirect_uri("test_redirect_uri");
+        presentationRequestDTO.setPresentation_definition("{\"id\":\"vp token example\",\"input_descriptors\":[{\"id\":\"id card credential\",\"format\":{\"ldpVc\":{\"proofTypes\":[\"Ed25519Signature2020\"]}}}]}");
+        return presentationRequestDTO;
+    }
+
+    public static VCCredentialProperties getVCCredentialPropertiesDTO(String type){
+        VCCredentialProperties vcCredentialProperties = new VCCredentialProperties();
+        vcCredentialProperties.setId("test-id");
+        vcCredentialProperties.setIssuer("test-issuer");
+        vcCredentialProperties.setIssuanceDate("test-issuanceDate");
+        vcCredentialProperties.setExpirationDate("test-expirationDate");
+
+        ArrayList<String> contextList = new ArrayList<>();
+        contextList.add("context-1");
+        contextList.add("context-2");
+        vcCredentialProperties.setContext(contextList);
+
+        List<String> typeList = new ArrayList<>();
+        typeList.add("VerifiableCredential");
+        typeList.add("VCTypeCredential");
+        vcCredentialProperties.setContext(typeList);
+
+        VCCredentialResponseProof  vcCredentialResponseProof = new VCCredentialResponseProof();
+        vcCredentialResponseProof.setType(type);
+        vcCredentialResponseProof.setProofPurpose("test-proofPurpose");
+        vcCredentialResponseProof.setProofValue("test-proofValue");
+        vcCredentialResponseProof.setJws("test-jws");
+        vcCredentialResponseProof.setVerificationMethod("test-verificationMethod");
+        vcCredentialProperties.setProof(vcCredentialResponseProof);
+
+        Map<String, Object> credentialSubject = new HashMap<>();
+        credentialSubject.put("key1", "value1");
+        credentialSubject.put("key2", "value2");
+        vcCredentialProperties.setCredentialSubject(credentialSubject);
+
+        return vcCredentialProperties;
+    }
+
+    public static VerifiablePresentationDTO getVerifiablePresentationDTO(){
+        VerifiablePresentationDTO verifiablePresentationDTO = new VerifiablePresentationDTO();
+
+        ArrayList<String> contextList = new ArrayList<>();
+        contextList.add("https://www.w3.org/2018/credentials/v1");
+        verifiablePresentationDTO.setContext(contextList);
+
+        List<String> typeList = new ArrayList<>();
+        typeList.add("VerifiablePresentation");
+        verifiablePresentationDTO.setType(typeList);
+
+        verifiablePresentationDTO.setVerifiableCredential(Collections.singletonList(getVCCredentialPropertiesDTO("Ed25519Signature2020")));
+        return verifiablePresentationDTO;
+    }
+
+    public static String getTrustedVerifiers() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        VerifiersDTO verifiersDTO = new VerifiersDTO();
+        VerifierDTO verifierDTO = new VerifierDTO();
+        verifierDTO.setClientId("test-clientId");
+        verifierDTO.setRedirectUri(Collections.singletonList("test-redirectUri"));
+        verifiersDTO.setVerifiers(Collections.singletonList(verifierDTO));
+        return objectMapper.writeValueAsString(verifiersDTO);
     }
 }

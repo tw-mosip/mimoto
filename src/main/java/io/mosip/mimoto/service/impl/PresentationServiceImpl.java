@@ -53,7 +53,7 @@ public class PresentationServiceImpl implements PresentationService {
     }
 
     @NotNull
-    private static String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
+    public static String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         VerifiablePresentationDTO verifiablePresentationDTO = new VerifiablePresentationDTO();
         verifiablePresentationDTO.setVerifiableCredential(Collections.singletonList(vcCredentialProperties));
@@ -63,7 +63,7 @@ public class PresentationServiceImpl implements PresentationService {
     }
 
     @NotNull
-    private static String constructPresentationSubmission(String vpToken) throws JsonProcessingException {
+    public static String constructPresentationSubmission(String vpToken) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         VerifiablePresentationDTO verifiablePresentationDTO = objectMapper.readValue(vpToken, VerifiablePresentationDTO.class);
         PresentationSubmissionDTO presentationSubmissionDTO = new PresentationSubmissionDTO();
