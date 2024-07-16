@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-public class CredentialsSupportedResponse {
+public class CredentialsSupportedResponseDraft11 {
     private String format;
     private String id;
     private String scope;

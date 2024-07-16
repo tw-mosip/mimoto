@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CredentialIssuerWellKnownResponse {
+public class CredentialIssuerWellKnownResponseDraft11 {
     @SerializedName("credential_issuer")
     @JsonProperty("credential_issuer")
     private String credentialIssuer;
@@ -18,5 +18,5 @@ public class CredentialIssuerWellKnownResponse {
 
     @SerializedName("credentials_supported")
     @JsonProperty("credentials_supported")
-    private List<CredentialsSupportedResponse> credentialsSupported;
+    private List<CredentialsSupportedResponseDraft11> credentialsSupported;
 }

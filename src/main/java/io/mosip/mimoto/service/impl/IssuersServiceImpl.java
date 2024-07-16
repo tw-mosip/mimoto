@@ -1,16 +1,18 @@
 package io.mosip.mimoto.service.impl;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponseDraft11;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.LoggerUtil;
-import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class IssuersServiceImpl implements IssuersService {
 
     @Autowired
     private Utilities utilities;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Autowired
     RestTemplate restTemplate;
@@ -91,12 +96,11 @@ public class IssuersServiceImpl implements IssuersService {
     }
 
     @Override
-    public ResponseEntity<String> getIssuersWellknown(String issuerId) throws ApiNotAccessibleException, IOException {
-        IssuerDTO issuerConfig;
-        issuerConfig = getIssuerConfig(issuerId);
-        String wellknown = issuerConfig.wellKnownEndpoint;
+    public CredentialIssuerWellKnownResponse getIssuerWellknown(String issuerId) throws ApiNotAccessibleException, IOException {
+        IssuerDTO issuerConfig = getIssuerConfig(issuerId);
+        String wellknown = issuerConfig.getWellKnownEndpoint();
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(wellknown, String.class);
-        return responseEntity;
+        return objectMapper.readValue(responseEntity.getBody(), CredentialIssuerWellKnownResponse.class);
     }
 }
 
