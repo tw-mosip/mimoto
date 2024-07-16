@@ -9,6 +9,7 @@ import io.mosip.mimoto.service.PresentationService;
 import io.mosip.mimoto.service.VerifiersService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,6 +25,10 @@ public class PresentationServiceImpl implements PresentationService {
     @Autowired
     VerifiersService verifiersService;
 
+    @Qualifier("plainRestTemplate")
+    @Autowired
+    RestTemplate restTemplate;
+
     @Value("${mosip.inji.verify.redirect.url}")
     String injiVerifyRedirectUrl;
 
@@ -33,7 +38,6 @@ public class PresentationServiceImpl implements PresentationService {
         verifiersService.validateVerifier(presentationRequestDTO);
 
         //todo: Download the Credential From DataShare & extract to dataShare Service
-        RestTemplate restTemplate = new RestTemplate();
         String credentials_uri = presentationRequestDTO.getResource();
         String  vcCredentialResponseString = restTemplate.getForEntity(credentials_uri, String.class).getBody();
 
