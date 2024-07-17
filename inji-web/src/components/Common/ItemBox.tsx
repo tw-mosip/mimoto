@@ -8,7 +8,7 @@ export const ItemBox: React.FC<ItemBoxProps> = (props) => {
              className="bg-iw-tileBackground shadow flex flex-row shadow-iw-shadow p-4 rounded-md cursor-pointer items-center"
              onClick={props.onClick}
              onKeyUp={props.onClick}
-             tabIndex={6 + props.index}
+             tabIndex={-6 - props.index}
              role="menuitem">
             <img data-testid="ItemBox-Logo" src={props.url} alt="Issuer Logo"
                  className="w-30 h-10 justify-center me-4"/>
