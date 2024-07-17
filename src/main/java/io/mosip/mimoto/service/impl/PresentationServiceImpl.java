@@ -7,11 +7,10 @@ import io.mosip.mimoto.dto.openid.presentation.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.PresentationService;
 import io.mosip.mimoto.service.VerifiersService;
-import org.jetbrains.annotations.NotNull;
+import io.mosip.mimoto.util.RestApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +23,13 @@ public class PresentationServiceImpl implements PresentationService {
     @Autowired
     VerifiersService verifiersService;
 
+
+    @Autowired
+    RestApiClient restApiClient;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Value("${mosip.inji.verify.redirect.url}")
     String injiVerifyRedirectUrl;
 
@@ -32,12 +38,9 @@ public class PresentationServiceImpl implements PresentationService {
 
         verifiersService.validateVerifier(presentationRequestDTO);
 
-        //todo: Download the Credential From DataShare & extract to dataShare Service
-        RestTemplate restTemplate = new RestTemplate();
         String credentials_uri = presentationRequestDTO.getResource();
-        String  vcCredentialResponseString = restTemplate.getForEntity(credentials_uri, String.class).getBody();
+        String  vcCredentialResponseString = restApiClient.getApi(credentials_uri, String.class);
 
-        ObjectMapper objectMapper = new ObjectMapper();
         VCCredentialProperties vcCredentialProperties = objectMapper.readValue(vcCredentialResponseString, VCCredentialProperties.class);
         PresentationDefinitionDTO presentationDefinitionDTO = objectMapper.readValue(presentationRequestDTO.getPresentation_definition(), PresentationDefinitionDTO.class);
 
@@ -52,9 +55,7 @@ public class PresentationServiceImpl implements PresentationService {
         return null;
     }
 
-    @NotNull
-    private static String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    private String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
         VerifiablePresentationDTO verifiablePresentationDTO = new VerifiablePresentationDTO();
         verifiablePresentationDTO.setVerifiableCredential(Collections.singletonList(vcCredentialProperties));
         verifiablePresentationDTO.setType(Collections.singletonList("VerifiablePresentation"));
@@ -62,12 +63,10 @@ public class PresentationServiceImpl implements PresentationService {
         return objectMapper.writeValueAsString(verifiablePresentationDTO);
     }
 
-    @NotNull
-    private static String constructPresentationSubmission(String vpToken) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    private String constructPresentationSubmission(String vpToken) throws JsonProcessingException {
         VerifiablePresentationDTO verifiablePresentationDTO = objectMapper.readValue(vpToken, VerifiablePresentationDTO.class);
         PresentationSubmissionDTO presentationSubmissionDTO = new PresentationSubmissionDTO();
-        List<SubmissionDescriptorDTO> submissionDescriptorDTOList = new ArrayList<SubmissionDescriptorDTO>();
+        List<SubmissionDescriptorDTO> submissionDescriptorDTOList = new ArrayList<>();
         AtomicInteger atomicInteger = new AtomicInteger(0);
         verifiablePresentationDTO.getVerifiableCredential().forEach(verifiableCredential -> {
             SubmissionDescriptorDTO submissionDescriptorDTO = new SubmissionDescriptorDTO();
