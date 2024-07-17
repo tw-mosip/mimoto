@@ -27,8 +27,9 @@ export const LanguageSelector: React.FC = () => {
 
     return <div className={"flex flex-row justify-center items-center"}
                 data-testid={"LanguageSelector-Outer-Div"}
+                onMouseDown={()=>setIsOpen(false)}
                 onBlur={()=>setIsOpen(false)}
-                role="option">
+                role="button">
         <VscGlobe
             data-testid="Language-Selector-Icon"
             size={30} color={'var(--iw-color-languageGlobeIcon)'}/>
