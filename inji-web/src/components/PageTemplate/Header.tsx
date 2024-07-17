@@ -17,14 +17,16 @@ export const Header: React.FC = () => {
                 className="fixed top-0 left-0 right-0 bg-iw-background py-4 shadow-sm">
             <div className="container mx-auto flex justify-between items-center px-4">
                 <div data-testid="Header-InjiWeb-Logo-Container" className={"flex flex-row justify-center items-center"}>
-                    <div  role="button" className={"sm:hidden"} onClick={() => setIsOpen(open => !open)}>
+                    <div  role="button" className={"sm:hidden"} onClick={() => setIsOpen(open => !open)} onKeyDown={() => setIsOpen(open => !open)}>
                         <GiHamburgerMenu size={32}/>
                     </div>
-                    <img src={require("../../assets/InjiWebLogo.png")}
-                         onClick={() => navigate("/")}
-                         className={"h-13 w-28 cursor-pointer"}
-                         data-testid="Header-InjiWeb-Logo"
-                         alt="Inji Web Logo"/>
+                    <div onClick={() => navigate("/")}
+                         onKeyDown={() => navigate("/")}>
+                        <img src={require("../../assets/InjiWebLogo.png")}
+                             className={"h-13 w-28 cursor-pointer"}
+                             data-testid="Header-InjiWeb-Logo"
+                             alt="Inji Web Logo"/>
+                    </div>
                 </div>
                 <nav>
                     <ul className="flex space-x-4 items-center font-semibold" data-testid="Header-Menu-Elements">
@@ -34,7 +36,9 @@ export const Header: React.FC = () => {
                                                                    className="text-iw-title hidden sm:inline-block">{t("Header.aboutInji")}</a>
                         </li>
                         <li data-testid="Header-Menu-Help">
-                            <div data-testid="Header-Menu-Help-div" onClick={() => navigate("/help") }
+                            <div data-testid="Header-Menu-Help-div"
+                                 onClick={() => navigate("/help") }
+                                 onKeyDown={() => navigate("/help") }
                                  role="button"
                                  className="text-iw-title cursor-pointer hidden sm:inline-block">{t("Header.help")}</div>
                         </li>
@@ -44,15 +48,19 @@ export const Header: React.FC = () => {
             </div>
             { isOpen &&
                 <OutsideClickHandler onOutsideClick={()=>setIsOpen(false)} >
-                    <div className="container mx-auto px-4 flex flex-col justify-start items-start font-semibold" role="button" onBlur={() => setIsOpen(false)}>
+                    <div className="container mx-auto px-4 flex flex-col justify-start items-start font-semibold" role="button"
+                         onMouseOver={() => setIsOpen(false)}
+                         onBlur={() => setIsOpen(false)}>
                         <div data-testid="Header-Menu-AboutInji"
                              className={"py-5 w-full"}
                              role="button"
+                             onKeyDown={() => {window.open("https://docs.mosip.io/inji/inji-web/overview", "_blank","noopener");setIsOpen(false)}}
                              onClick={() => {window.open("https://docs.mosip.io/inji/inji-web/overview", "_blank","noopener");setIsOpen(false)}}>
                             {t("Header.aboutInji")}
                         </div>
                         <div data-testid="Header-Menu-Help"
                              role="button"
+                             onKeyDown={() => {navigate("/help");setIsOpen(false)}}
                              onClick={() => {navigate("/help");setIsOpen(false)}}
                              className="text-iw-title cursor-pointer py-5 w-full inline-block sm:hidden">
                                 {t("Header.help")}

@@ -7,6 +7,7 @@ export const ItemBox: React.FC<ItemBoxProps> = (props) => {
              data-testid={`ItemBox-Outer-Container-${props.index}`}
              className="bg-iw-tileBackground shadow flex flex-row shadow-iw-shadow p-4 rounded-md cursor-pointer items-center"
              onClick={props.onClick}
+             onKeyDown={props.onClick}
              role="menuitem">
             <img data-testid="ItemBox-Logo" src={props.url} alt="Issuer Logo"
                  className="w-30 h-10 justify-center me-4"/>
