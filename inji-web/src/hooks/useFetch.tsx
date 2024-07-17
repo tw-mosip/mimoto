@@ -20,14 +20,12 @@ export const useFetch = () => {
                 body: body,
             });
             if (!response.ok) {
-                setState(RequestStatus.ERROR);
-                return response;
+                 throw new Error("API Call failed");
             }
             if (uri.indexOf("download") !== -1) {
                 setState(RequestStatus.DONE);
                 return await response.blob();
             }
-
             setState(RequestStatus.DONE);
             return await response.json();
         } catch (e) {

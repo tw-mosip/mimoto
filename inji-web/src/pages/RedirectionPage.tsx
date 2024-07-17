@@ -41,8 +41,8 @@ export const RedirectionPage: React.FC = () => {
                 );
                 if (state !== RequestStatus.ERROR) {
                     await downloadCredentialPDF(credentialDownloadResponse, certificateId);
+                    setCompletedDownload(true);
                 }
-                setCompletedDownload(true);
                 if (urlState != null) {
                     removeActiveSession(urlState);
                 }
@@ -60,16 +60,15 @@ export const RedirectionPage: React.FC = () => {
                                    subTitle={t("error.invalidSession.subTitle")}
                                    state={RequestStatus.ERROR}/>
         }
+        if (state === RequestStatus.ERROR && error) {
+            return <DownloadResult title={t("error.generic.title")}
+                                   subTitle={t("error.generic.subTitle")}
+                                   state={RequestStatus.ERROR}/>
+        }
         if(!completedDownload){
             return <DownloadResult title={t("loading.title")}
                                    subTitle={t("loading.subTitle")}
                                    state={RequestStatus.LOADING}/>
-        } else {
-            if (state === RequestStatus.ERROR && error) {
-                return <DownloadResult title={t("error.generic.title")}
-                                       subTitle={t("error.generic.subTitle")}
-                                       state={RequestStatus.ERROR}/>
-            }
         }
         return <DownloadResult title={t("success.title")}
                                subTitle={t("success.subTitle")}
