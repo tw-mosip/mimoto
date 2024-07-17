@@ -8,8 +8,7 @@ import io.mosip.mimoto.dto.LogoDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.openid.VerifierDTO;
 import io.mosip.mimoto.dto.openid.VerifiersDTO;
-import io.mosip.mimoto.dto.openid.presentation.PresentationRequestDTO;
-import io.mosip.mimoto.dto.openid.presentation.VerifiablePresentationDTO;
+import io.mosip.mimoto.dto.openid.presentation.*;
 
 import java.util.*;
 
@@ -156,6 +155,20 @@ public class TestUtilities {
         return vcCredentialProperties;
     }
 
+    public static PresentationDefinitionDTO getPresentationDefinitionDTO(){
+        PresentationDefinitionDTO presentationDefinitionDTO = new PresentationDefinitionDTO();
+        InputDescriptorDTO inputDescriptorDTO = new InputDescriptorDTO();
+        Format format = new Format();
+        LDPVc ldpVc = new LDPVc();
+        ldpVc.setProofTypes(Collections.singletonList("Ed25519Signature2020"));
+        format.setLdpVc(ldpVc);
+        inputDescriptorDTO.setId("test-input-id");
+        inputDescriptorDTO.setFormat(format);
+        presentationDefinitionDTO.setId("test-id");
+        presentationDefinitionDTO.setInputDescriptors(Collections.singletonList(inputDescriptorDTO));
+        return presentationDefinitionDTO;
+    }
+
     public static VerifiablePresentationDTO getVerifiablePresentationDTO(){
         VerifiablePresentationDTO verifiablePresentationDTO = new VerifiablePresentationDTO();
 
@@ -171,13 +184,18 @@ public class TestUtilities {
         return verifiablePresentationDTO;
     }
 
-    public static String getTrustedVerifiers() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static VerifiersDTO getTrustedVerifiers() throws JsonProcessingException {
+
         VerifiersDTO verifiersDTO = new VerifiersDTO();
         VerifierDTO verifierDTO = new VerifierDTO();
         verifierDTO.setClientId("test-clientId");
         verifierDTO.setRedirectUri(Collections.singletonList("test-redirectUri"));
         verifiersDTO.setVerifiers(Collections.singletonList(verifierDTO));
-        return objectMapper.writeValueAsString(verifiersDTO);
+        return verifiersDTO;
+    }
+
+    public static String getObjectAsString(Object object) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(object);
     }
 }

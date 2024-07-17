@@ -1,7 +1,9 @@
 package io.mosip.mimoto.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.openid.VerifierDTO;
+import io.mosip.mimoto.dto.openid.VerifiersDTO;
 import io.mosip.mimoto.dto.openid.presentation.PresentationRequestDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidVerifierException;
@@ -14,31 +16,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class VerifierServiceTest {
 
     @Mock
     Utilities utilities;
+    @Mock
+    ObjectMapper objectMapper;
     @InjectMocks
     VerifiersServiceImpl verifiersService;
 
     @Before
     public void setUp() throws JsonProcessingException {
-        when(utilities.getTrustedVerifiersJsonValue()).thenReturn(TestUtilities.getTrustedVerifiers());
+        VerifiersDTO verifiersDTO = TestUtilities.getTrustedVerifiers();
+        String verifiersListString = TestUtilities.getObjectAsString(verifiersDTO);
+        when(utilities.getTrustedVerifiersJsonValue()).thenReturn(verifiersListString);
+        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(VerifiersDTO.class))).thenReturn(verifiersDTO);
     }
 
     @Test
     public void getCorrectVerifierWhenCorrectClientIdIsPassed() throws ApiNotAccessibleException, IOException {
-
         Optional<VerifierDTO> verifierDTO = verifiersService.getVerifiersByClientId("test-clientId");
         Assert.assertNotNull(verifierDTO.get());
         Assert.assertEquals(verifierDTO.get().getClientId(), "test-clientId");

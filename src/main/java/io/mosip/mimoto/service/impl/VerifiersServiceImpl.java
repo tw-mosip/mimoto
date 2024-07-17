@@ -23,13 +23,15 @@ public class VerifiersServiceImpl implements VerifiersService {
     @Autowired
     Utilities utilities;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @Override
     public Optional<VerifierDTO> getVerifiersByClientId(String clientId) throws ApiNotAccessibleException, IOException {
         String trustedVerifiersJsonValue = utilities.getTrustedVerifiersJsonValue();
         if (trustedVerifiersJsonValue == null) {
             throw new ApiNotAccessibleException();
         }
-        ObjectMapper objectMapper = new ObjectMapper();
         VerifiersDTO verifiersDTO = objectMapper.readValue(trustedVerifiersJsonValue, VerifiersDTO.class);
         return verifiersDTO.getVerifiers().stream().filter(verifier -> verifier.getClientId().equals(clientId)).findFirst();
     }
