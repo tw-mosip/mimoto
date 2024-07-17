@@ -19,15 +19,15 @@ export const useFetch = () => {
                 headers: header,
                 body: body,
             });
-
-            if (uri.indexOf("download") !== -1) {
-                setState(RequestStatus.DONE);
-                return await response.blob();
-            }
             if (!response.ok) {
                 setState(RequestStatus.ERROR);
                 return response;
             }
+            if (uri.indexOf("download") !== -1) {
+                setState(RequestStatus.DONE);
+                return await response.blob();
+            }
+
             setState(RequestStatus.DONE);
             return await response.json();
         } catch (e) {
