@@ -3,6 +3,7 @@ package io.mosip.mimoto.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.mimoto.VCCredentialProperties;
+import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.dto.openid.presentation.PresentationDefinitionDTO;
 import io.mosip.mimoto.dto.openid.presentation.VerifiablePresentationDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
@@ -58,7 +59,7 @@ public class PresentationServiceTest {
 
         doNothing().when(verifiersService).validateVerifier(Mockito.any());
         Mockito.when(restApiClient.getApi(Mockito.anyString(), Mockito.eq(String.class))).thenReturn(mockResponse);
-        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(VCCredentialProperties.class))).thenReturn(TestUtilities.getVCCredentialPropertiesDTO("Ed25519Signature2020"));
+        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(VCCredentialResponse.class))).thenReturn(TestUtilities.getVCCredentialResponseDTO("Ed25519Signature2020"));
 
         String actualRedirectUrl = presentationService.authorizePresentation(TestUtilities.getPresentationRequestDTO());
         String expectedRedirectUrl = "test_redirect_uri#vp_token=dGVzdC1kYXRh&presentation_submission=dGVzdC1kYXRh";
@@ -73,7 +74,7 @@ public class PresentationServiceTest {
 
         doNothing().when(verifiersService).validateVerifier(Mockito.any());
         Mockito.when(restApiClient.getApi(Mockito.anyString(), Mockito.eq(String.class))).thenReturn(mockResponse);
-        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(VCCredentialProperties.class))).thenReturn(TestUtilities.getVCCredentialPropertiesDTO("RSASignature2020"));
+        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(VCCredentialResponse.class))).thenReturn(TestUtilities.getVCCredentialResponseDTO("RSASignature2020"));
 
         String actualRedirectUrl = presentationService.authorizePresentation(TestUtilities.getPresentationRequestDTO());
         Assert.assertNull(actualRedirectUrl);
