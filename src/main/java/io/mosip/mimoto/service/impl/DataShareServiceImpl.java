@@ -19,10 +19,10 @@ public class DataShareServiceImpl {
     @Autowired
     RestApiClient restApiClient;
 
-    @Value("public.url")
+    @Value("${public.url}")
     String publicHostUrl;
 
-    @Value("mosip.data.share.url")
+    @Value("${mosip.data.share.url}")
     String dataShareUrl;
 
     public String storeDataInDataShare(String data) throws Exception {
