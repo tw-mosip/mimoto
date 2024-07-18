@@ -155,6 +155,14 @@ public class TestUtilities {
         return vcCredentialProperties;
     }
 
+    public static VCCredentialResponse getVCCredentialResponseDTO(String type){
+        VCCredentialResponse vcCredentialResponse = new VCCredentialResponse();
+        VCCredentialProperties vcCredentialProperties = getVCCredentialPropertiesDTO(type);
+        vcCredentialResponse.setCredential(vcCredentialProperties);
+        vcCredentialResponse.setFormat("ldp_vc");
+        return vcCredentialResponse;
+    }
+
     public static PresentationDefinitionDTO getPresentationDefinitionDTO(){
         PresentationDefinitionDTO presentationDefinitionDTO = new PresentationDefinitionDTO();
         InputDescriptorDTO inputDescriptorDTO = new InputDescriptorDTO();
