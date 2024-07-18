@@ -8,6 +8,8 @@ import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.PresentationService;
 import io.mosip.mimoto.service.VerifiersService;
 import io.mosip.mimoto.util.RestApiClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,6 @@ public class PresentationServiceImpl implements PresentationService {
     @Autowired
     VerifiersService verifiersService;
 
-
     @Autowired
     RestApiClient restApiClient;
 
@@ -33,18 +34,24 @@ public class PresentationServiceImpl implements PresentationService {
     @Value("${mosip.inji.verify.redirect.url}")
     String injiVerifyRedirectUrl;
 
+    private final Logger logger = LoggerFactory.getLogger(PresentationServiceImpl.class);
+
     @Override
     public String authorizePresentation(PresentationRequestDTO presentationRequestDTO) throws ApiNotAccessibleException, IOException {
 
+        logger.info("Started the presentation Validation");
         verifiersService.validateVerifier(presentationRequestDTO);
 
+        logger.info("Started the Credential Download From DataShare");
         String credentials_uri = presentationRequestDTO.getResource();
         String  vcCredentialResponseString = restApiClient.getApi(credentials_uri, String.class);
 
+        logger.info("Started the ObjectMapping");
         VCCredentialProperties vcCredentialProperties = objectMapper.readValue(vcCredentialResponseString, VCCredentialProperties.class);
         PresentationDefinitionDTO presentationDefinitionDTO = objectMapper.readValue(presentationRequestDTO.getPresentation_definition(), PresentationDefinitionDTO.class);
 
         if(presentationDefinitionDTO.getInputDescriptors().get(0).getFormat().getLdpVc().getProofTypes().get(0).equals(vcCredentialProperties.getProof().getType())){
+            logger.info("Started the Construction of VP token");
             String vpToken = constructVerifiablePresentationString(vcCredentialProperties);
             String presentationSubmission =constructPresentationSubmission(vpToken);
             return String.format(injiVerifyRedirectUrl,
@@ -53,6 +60,7 @@ public class PresentationServiceImpl implements PresentationService {
                     Base64.getUrlEncoder().encodeToString(presentationSubmission.getBytes(StandardCharsets.UTF_8)));
         }
         return null;
+
     }
 
     private String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
