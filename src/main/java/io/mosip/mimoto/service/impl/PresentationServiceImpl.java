@@ -3,6 +3,7 @@ package io.mosip.mimoto.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.mimoto.VCCredentialProperties;
+import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.dto.openid.presentation.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.PresentationService;
@@ -47,12 +48,12 @@ public class PresentationServiceImpl implements PresentationService {
         String  vcCredentialResponseString = restApiClient.getApi(credentials_uri, String.class);
 
         logger.info("Started the ObjectMapping");
-        VCCredentialProperties vcCredentialProperties = objectMapper.readValue(vcCredentialResponseString, VCCredentialProperties.class);
+        VCCredentialResponse vcCredentialResponse = objectMapper.readValue(vcCredentialResponseString, VCCredentialResponse.class);
         PresentationDefinitionDTO presentationDefinitionDTO = objectMapper.readValue(presentationRequestDTO.getPresentation_definition(), PresentationDefinitionDTO.class);
 
-        if(presentationDefinitionDTO.getInputDescriptors().get(0).getFormat().getLdpVc().getProofTypes().get(0).equals(vcCredentialProperties.getProof().getType())){
+        if(presentationDefinitionDTO.getInputDescriptors().get(0).getFormat().getLdpVc().getProofTypes().get(0).equals(vcCredentialResponse.getCredential().getProof().getType())){
             logger.info("Started the Construction of VP token");
-            String vpToken = constructVerifiablePresentationString(vcCredentialProperties);
+            String vpToken = constructVerifiablePresentationString(vcCredentialResponse.getCredential());
             String presentationSubmission =constructPresentationSubmission(vpToken);
             return String.format(injiVerifyRedirectUrl,
                     presentationRequestDTO.getRedirect_uri(),
