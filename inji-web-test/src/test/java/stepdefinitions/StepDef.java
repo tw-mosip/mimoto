@@ -124,6 +124,7 @@ public class StepDef {
 
     @Then("User verify Download Success text displayed")
     public void user_verify_download_success_text_displayed() {
+
         Assert.assertEquals(homePage.isSuccessMessageDisplayed(), "Success!");
     }
 
@@ -462,7 +463,7 @@ public class StepDef {
 
     @Then("User open new tab")
     public void user_open_new_tab() {
-        ((JavascriptExecutor) baseTest.getDriver()).executeScript("window.open('https://inji.qa-inji.mosip.net/')");
+        ((JavascriptExecutor) baseTest.getDriver()).executeScript("window.open('https://injiweb.qa-inji.mosip.net')");
 
         Set<String> allWindowHandles =baseTest.getDriver().getWindowHandles();
         System.out.println(allWindowHandles);

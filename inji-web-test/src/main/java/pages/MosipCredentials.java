@@ -37,6 +37,11 @@ public class MosipCredentials extends BasePage {
 
 
     public void enterOtp(WebDriver driver, String otpString) {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         for (int i = 0; i < otpString.length(); i++) {
             String locator = "(//input[@class='pincode-input-text'])[" + (i + 1) + "]";
             driver.findElement(By.xpath(locator)).sendKeys(String.valueOf(otpString.charAt(i)));

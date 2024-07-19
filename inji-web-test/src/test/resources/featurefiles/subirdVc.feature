@@ -21,7 +21,7 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      | 1234567890    | Aswin     | 01-01-2024    |
+      | 12072024    | PolicyTestName     | 01-01-2024    |
 
   @smoke @VerifyAndDownloadVcViaSunbirdLife
   Scenario Outline: download vc via sunbird
@@ -46,9 +46,9 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      |    1234567890 | Aswin     | 01-01-2024    |
+      |    12072024 | PolicyTestName     | 01-01-2024    |
 #
-  @smoke @VerifyAndDownloadVcViaSunbirdLife
+  @smoke @VerifyAndDownloadVcViaSunbirdLifeWithInvalidPolicyNumber
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"
     Then User gets the title of the page
@@ -69,9 +69,9 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      |     123456789 | Aswin     | 01-01-2024    |
+      |     1207202 | PolicyTestName     | 01-01-2024    |
 #
-  @smoke @VerifyAndDownloadVcViaVehicleInsurance
+  @smoke @VerifyAndDownloadVcViaVehicleInsuranceWithInvaildName
   Scenario Outline: download vc via sunbird
     Given Load application url "https://inji.qa-inji.mosip.net/"
     Then User gets the title of the page
@@ -92,7 +92,7 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      |     123456789 | Aswin     | 01-01-2024    |
+      |     12072024 | PolicyTestNam     | 01-01-2024    |
 
   @smoke @VerifyAndDownloadVcViaVehicleInsurance
   Scenario Outline: download vc via sunbird
@@ -116,4 +116,4 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      |    1234567890 | Aswin     | 01-01-2024    |
+      |    12072024 | PolicyTestName     | 01-01-2024    |
