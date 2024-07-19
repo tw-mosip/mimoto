@@ -72,3 +72,5 @@ $ docker-compose down
 - You can access the application in the below nginx server :  
 > Open URL http://localhost:81
 
+
+## **Mimoto Dependency Version :** v0.13.0

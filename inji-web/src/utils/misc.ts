@@ -1,6 +1,5 @@
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
-import forge from 'node-forge';
 import {api} from "./api";
 
 export const generateCodeChallenge = (verifier = generateRandomString()) => {
@@ -19,7 +18,9 @@ export const generateRandomString = (length = 43) => {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     let randomString = '';
     for (let i = 0; i < 43; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
+        const array = new Uint32Array(1);
+        const randomOffset = crypto.getRandomValues(array)[0] / (2 ** 32) * charset.length;
+        const randomIndex = Math.floor( randomOffset );
         randomString += charset[randomIndex];
     }
     return randomString;
@@ -27,13 +28,6 @@ export const generateRandomString = (length = 43) => {
 
 export const isObjectEmpty = (object: any) => {
     return object === null || object === undefined || Object.keys(object).length === 0;
-}
-
-export const generateKeys = async() => {
-    const keys = await forge.pki.rsa.generateKeyPair({ bits: 2048, workers: 2 });
-    const privateKeyPem = forge.pki.privateKeyToPem(keys.privateKey);
-    const publicKeyPem = forge.pki.publicKeyToPem(keys.publicKey);
-    return {publicKey: publicKeyPem, privateKey: privateKeyPem};
 }
 
 export const getTokenRequestBody = (code: string, codeVerifier: string, issuerId: string, credentialType: string) => {
@@ -53,7 +47,7 @@ export const downloadCredentialPDF = async (response: any, certificateId: string
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', fileName);
-    link.setAttribute('target', '_blank'); // Open the link in a new tab or window
+    link.setAttribute('target', '_blank');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -45,6 +45,11 @@
       }
     }
   },
+  "PageNotFound": {
+    "navigateButton": "اذهب إلى المنزل",
+    "heading": "هذا خطأ",
+    "subHeading": "الرابط المطلوب {{pathname}} لم يتم إيجادها في هذا الخادم."
+  },
   "HelpPage": {
     "title": "يساعد"
   },
