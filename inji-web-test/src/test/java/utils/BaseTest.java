@@ -46,7 +46,7 @@ public class BaseTest {
          driver = new RemoteWebDriver(new URL(URL), capabilities);
          jse = (JavascriptExecutor) driver;
         driver.manage().window().maximize();
-        driver.get("https://inji.qa-inji.mosip.net/");
+        driver.get("https://injiweb.qa-inji.mosip.net");
     }
 
     @After
