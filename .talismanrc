@@ -1,0 +1,10 @@
+fileignoreconfig:
+- filename: inji-web/src/components/Common/ItemBox.tsx
+  checksum: 7d10caab5f94bbac7c430a8ca2800c503fff99bd4e0e6c856a140bd83907d137
+- filename: inji-web/src/components/Help/HelpAccordionItem.tsx
+  checksum: 7ef35d440ca186530b761db064cde7c47dbdba4023681bd2b7abb7c0926ad4e1
+- filename: inji-web/src/components/PageTemplate/Header.tsx
+  checksum: df001d17335c68fb4e3703e0622baf454dbcce4bd1869f67502c399ef876ea1f
+- filename: inji-web/src/components/Common/LanguageSelector.tsx
+  checksum: 66f81412745594459c006fb681e28091a5287b30c37dd8afd8491ef2a209ea41
+version: ""

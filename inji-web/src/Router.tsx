@@ -10,6 +10,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "./types/redux";
 import {getDirCurrentLanguage} from "./utils/i18n";
 import {PageNotFound} from "./pages/PageNotFound";
+import {AuthorizationPage} from "./pages/AuthorizationPage";
 
 export const AppRouter = () => {
     const language = useSelector((state: RootState) => state.common.language);
@@ -31,6 +32,7 @@ export const AppRouter = () => {
             <Route path="/issuers/:issuerId" element={wrapElement(<CredentialsPage/>)}/>
             <Route path="/help" element={wrapElement(<HelpPage/>)}/>
             <Route path="/redirect" element={wrapElement(<RedirectionPage/>)}/>
+            <Route path="/authorize" element={wrapElement(<AuthorizationPage/>)}/>
             <Route path="/*" element={wrapElement(<PageNotFound/>)}/>
         </Routes>
     </BrowserRouter>)

@@ -1,5 +1,5 @@
-import {useState} from "react";
-import {api, MethodType} from "../utils/api";
+import { useState } from "react";
+import { MethodType } from "../utils/api";
 
 export enum RequestStatus {
     LOADING,
@@ -19,14 +19,12 @@ export const useFetch = () => {
                 headers: header,
                 body: body,
             });
-
+            if (!response.ok) {
+                 throw new Error();
+            }
             if (uri.indexOf("download") !== -1) {
                 setState(RequestStatus.DONE);
                 return await response.blob();
-            }
-            if (!response.ok) {
-                setState(RequestStatus.ERROR);
-                return response;
             }
             setState(RequestStatus.DONE);
             return await response.json();
