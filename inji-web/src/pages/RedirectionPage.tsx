@@ -12,6 +12,7 @@ import {getObjectForCurrentLanguage} from "../utils/i18n";
 
 export const RedirectionPage: React.FC = () => {
 
+
     const {error, state, fetchRequest} = useFetch();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);

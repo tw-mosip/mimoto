@@ -7,6 +7,7 @@ export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
 
     return <React.Fragment>
         <div className="rounded-md mb-2 shadow-sm shadow-iw-shadow"
+             tabIndex={0}
              data-testid="Help-Item-Container">
             <button
                 data-testid="Help-Item-Title-Button"

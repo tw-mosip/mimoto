@@ -29,6 +29,7 @@ export const LanguageSelector: React.FC = () => {
                 data-testid={"LanguageSelector-Outer-Div"}
                 onMouseDown={()=>setIsOpen(false)}
                 onBlur={()=>setIsOpen(false)}
+                tabIndex={0}
                 role="button">
         <VscGlobe
             data-testid="Language-Selector-Icon"
