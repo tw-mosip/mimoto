@@ -52,6 +52,7 @@ public class PresentationServiceImpl implements PresentationService {
         verifiersService.validateVerifier(presentationRequestDTO);
 
         logger.info("Started the Credential Download From DataShare");
+        String credentialsResourceUri = presentationRequestDTO.getResource();
         String  vcCredentialResponseString = restApiClient.getApi(credentialsResourceUri, String.class);
 
         logger.info("Started the ObjectMapping");
