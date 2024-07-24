@@ -15,6 +15,6 @@ public class VPNotCreatedException extends BaseUncheckedException {
     }
 
     public VPNotCreatedException(String errorMessage) {
-        super(PlatformErrorMessages.NO_CREDENTIALS_MATCH_VP_DEFINITION_EXCEPTION.getCode(), errorMessage);
+        super(OpenIdErrorMessages.BAD_REQUEST.getErrorCode(), errorMessage);
     }
 }

@@ -1,5 +1,6 @@
 package io.mosip.mimoto.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.openid.VerifierDTO;
 import io.mosip.mimoto.dto.openid.VerifiersDTO;
@@ -9,10 +10,11 @@ import io.mosip.mimoto.exception.InvalidVerifierException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
 import io.mosip.mimoto.service.VerifiersService;
 import io.mosip.mimoto.util.Utilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +27,10 @@ public class VerifiersServiceImpl implements VerifiersService {
     @Autowired
     ObjectMapper objectMapper;
 
+    private final Logger logger = LoggerFactory.getLogger(VerifiersServiceImpl.class);
+
     @Override
-    public Optional<VerifierDTO> getVerifiersByClientId(String clientId) throws ApiNotAccessibleException, IOException {
+    public Optional<VerifierDTO> getVerifiersByClientId(String clientId) throws ApiNotAccessibleException, JsonProcessingException {
         String trustedVerifiersJsonValue = utilities.getTrustedVerifiersJsonValue();
         if (trustedVerifiersJsonValue == null) {
             throw new ApiNotAccessibleException();
@@ -35,7 +39,8 @@ public class VerifiersServiceImpl implements VerifiersService {
         return verifiersDTO.getVerifiers().stream().filter(verifier -> verifier.getClientId().equals(clientId)).findFirst();
     }
     @Override
-    public void validateVerifier(PresentationRequestDTO presentationRequestDTO) throws ApiNotAccessibleException, IOException {
+    public void validateVerifier(PresentationRequestDTO presentationRequestDTO) throws ApiNotAccessibleException, JsonProcessingException {
+        logger.info("Started the presentation Validation");
         getVerifiersByClientId(presentationRequestDTO.getClient_id()).ifPresentOrElse(
             (verifierDTO) -> {
                 List<String> registeredRedirectUri = verifierDTO.getRedirectUri();

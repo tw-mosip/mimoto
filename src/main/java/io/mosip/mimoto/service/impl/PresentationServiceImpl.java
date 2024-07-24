@@ -6,8 +6,7 @@ import io.mosip.mimoto.dto.mimoto.VCCredentialProperties;
 import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.dto.openid.presentation.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.exception.InvalidCredentialResourceException;
-import io.mosip.mimoto.exception.PlatformErrorMessages;
+import io.mosip.mimoto.exception.OpenIdErrorMessages;
 import io.mosip.mimoto.exception.VPNotCreatedException;
 import io.mosip.mimoto.service.PresentationService;
 import io.mosip.mimoto.service.VerifiersService;
@@ -21,7 +20,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,9 @@ public class PresentationServiceImpl implements PresentationService {
 
     @Autowired
     VerifiersService verifiersService;
+
+    @Autowired
+    DataShareServiceImpl dataShareService;
 
     @Autowired
     RestApiClient restApiClient;
@@ -48,29 +53,28 @@ public class PresentationServiceImpl implements PresentationService {
     @Override
     public String authorizePresentation(PresentationRequestDTO presentationRequestDTO) throws ApiNotAccessibleException, IOException {
 
-        logger.info("Started the presentation Validation");
         verifiersService.validateVerifier(presentationRequestDTO);
+        VCCredentialResponse vcCredentialResponse = dataShareService.downloadCredentialFromDataShare(presentationRequestDTO);
 
-        logger.info("Started the Credential Download From DataShare");
-        String credentialsResourceUri = presentationRequestDTO.getResource();
-        if(!credentialsResourceUri.contains(dataShareUrl)){
-            throw new InvalidCredentialResourceException(PlatformErrorMessages.INVALID_CREDENTIAL_RESOURCE_URI_EXCEPTION.getMessage());
+        PresentationDefinitionDTO presentationDefinitionDTO;
+        try {
+            presentationDefinitionDTO = objectMapper.readValue(presentationRequestDTO.getPresentation_definition(), PresentationDefinitionDTO.class);
+            if (presentationDefinitionDTO == null) {
+                throw new VPNotCreatedException(OpenIdErrorMessages.BAD_REQUEST.getErrorMessage());
+            }
+        } catch (IOException ioException) {
+            throw new VPNotCreatedException(OpenIdErrorMessages.BAD_REQUEST.getErrorMessage());
         }
 
-        String  vcCredentialResponseString = restApiClient.getApi(credentialsResourceUri, String.class);
-
-        logger.info("Started the ObjectMapping");
-        VCCredentialResponse vcCredentialResponse = objectMapper.readValue(vcCredentialResponseString, VCCredentialResponse.class);
-        PresentationDefinitionDTO presentationDefinitionDTO = objectMapper.readValue(presentationRequestDTO.getPresentation_definition(), PresentationDefinitionDTO.class);
-
+        logger.info("Started the Constructing VP Token");
         return presentationDefinitionDTO.getInputDescriptors()
                 .stream()
                 .findFirst()
-                .map( inputDescriptorDTO -> {
+                .map(inputDescriptorDTO -> {
                     boolean matchingProofTypes = inputDescriptorDTO.getFormat().getLdpVc().getProofTypes()
                             .stream()
                             .anyMatch(proofType -> vcCredentialResponse.getCredential().getProof().getType().equals(proofType));
-                    if(matchingProofTypes){
+                    if (matchingProofTypes) {
                         logger.info("Started the Construction of VP token");
                         try {
                             String vpToken = constructVerifiablePresentationString(vcCredentialResponse.getCredential());
@@ -80,12 +84,12 @@ public class PresentationServiceImpl implements PresentationService {
                                     Base64.getUrlEncoder().encodeToString(vpToken.getBytes(StandardCharsets.UTF_8)),
                                     URLEncoder.encode(presentationSubmission, StandardCharsets.UTF_8));
                         } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
+                            throw new VPNotCreatedException(OpenIdErrorMessages.BAD_REQUEST.getErrorMessage());
                         }
                     }
                     logger.info("No Credentials Matched the VP request.");
-                    throw new VPNotCreatedException(PlatformErrorMessages.NO_CREDENTIALS_MATCH_VP_DEFINITION_EXCEPTION.getMessage());
-                }).orElseThrow(() -> new VPNotCreatedException(PlatformErrorMessages.NO_CREDENTIALS_MATCH_VP_DEFINITION_EXCEPTION.getMessage()));
+                    throw new VPNotCreatedException(OpenIdErrorMessages.BAD_REQUEST.getErrorMessage());
+                }).orElseThrow(() -> new VPNotCreatedException(OpenIdErrorMessages.BAD_REQUEST.getErrorMessage()));
     }
 
     private String constructVerifiablePresentationString(VCCredentialProperties vcCredentialProperties) throws JsonProcessingException {
