@@ -14,11 +14,12 @@ export const useFetch = () => {
     const fetchRequest = async (uri: string, method: MethodType, header: any, body?: any) => {
         try {
             setState(RequestStatus.LOADING);
-            const response = await fetch(uri, {
+            const requestOptions = {
                 method: MethodType[method],
                 headers: header,
-                body: body,
-            });
+                body: body
+            }
+            const response = await fetch(uri, requestOptions);
             if (!response.ok) {
                  throw new Error();
             }

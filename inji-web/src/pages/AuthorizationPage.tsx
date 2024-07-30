@@ -1,26 +1,22 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {SpinningLoader} from "../components/Common/SpinningLoader";
-import {ApiRequest} from "../types/data";
 import {api} from "../utils/api";
-import {useFetch} from "../hooks/useFetch";
-export const AuthorizationPage:React.FC = () => {
+import {LandingPageWrapper} from "../components/Common/LandingPageWrapper";
+import {ErrorSheildIcon} from "../components/Common/ErrorSheildIcon";
 
-    const {fetchRequest} = useFetch();
+export const AuthorizationPage: React.FC = () => {
+    const url = window.location.href;
+    const currentQueryParams = new URLSearchParams(window.location.search);
+    const [error, setError] = useState<String>(currentQueryParams.get("error")+"");
+    const [errorDesc, setErrorDesc] = useState<String>(currentQueryParams.get("error_description")+"");
     useEffect( () => {
-        const queryParams = new URLSearchParams(window.location.search)
-        const responseType = queryParams.get("response_type") + "";
-        const resource = queryParams.get("resource") + "";
-        const clientId = queryParams.get("client_id") + "";
-        const redirectUri = queryParams.get("redirect_uri") + "";
-        const presentationDefinition = queryParams.get("presentation_definition") + "";
-
-        const apiRequest: ApiRequest = api.presentationAuthorization;
-        fetchRequest(
-            apiRequest.url(responseType, resource, clientId, redirectUri, presentationDefinition),
-            apiRequest.methodType,
-            apiRequest.headers()
-        );
+        if(url.indexOf("error") === -1) {
+            window.location.href = api.mimotoHost + "/authorize" + window.location.search;
+        }
     },[])
 
-    return <SpinningLoader />
+    if(url.indexOf("error") == -1){
+        return <div><LandingPageWrapper icon={<SpinningLoader/>} title={""} subTitle={""} gotoHome={false}/></div>
+    }
+    return <div><LandingPageWrapper icon={<ErrorSheildIcon />} title={error+""} subTitle={errorDesc+""} gotoHome={false}/></div>
 }
