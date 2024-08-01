@@ -171,35 +171,35 @@ public class InjiControllerTest {
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getMessage())));
     }
 
-    @Ignore
-    @Test
-    public void generatePdfForVCTest() throws Exception {
-        Mockito.when(issuersService.getIssuerConfig("Issuer1"))
-                .thenReturn(getIssuerDTO("Issuer1"))
-                .thenThrow(new ApiNotAccessibleException());
-
-        Mockito.when(restApiClient.getApi(ArgumentMatchers.any(String.class), ArgumentMatchers.any()))
-                .thenReturn(getCredentialIssuerWellKnownResponseDtoDraft11("Issuer1",
-                        List.of(getCredentialSupportedResponseDraft11("CredentialType1"))));
-
-
-        Mockito.when(credentialService.generatePdfForVerifiableCredentials(new VCCredentialResponse(),
-                        getIssuerDTO("Issuer1"), getCredentialSupportedResponseDraft11("CredentialType1"),
-                        "dataShareUrl"))
-                .thenReturn(new ByteArrayInputStream("Mock Pdf".getBytes()))
-                .thenThrow(new Exception());
-
-        mockMvc.perform(get("/issuers/Issuer1/credentials/CredentialType1/download")
-                        .header("Authorization", "Bearer accessToken")
-                        .accept(MediaType.APPLICATION_PDF))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/issuers/Issuer1/credentials/CredentialType1/download")
-                        .header("Authorization", "Bearer accessToken").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
-    }
+//    @Ignore
+//    @Test
+//    public void generatePdfForVCTest() throws Exception {
+//        Mockito.when(issuersService.getIssuerConfig("Issuer1"))
+//                .thenReturn(getIssuerDTO("Issuer1"))
+//                .thenThrow(new ApiNotAccessibleException());
+//
+//        Mockito.when(restApiClient.getApi(ArgumentMatchers.any(String.class), ArgumentMatchers.any()))
+//                .thenReturn(getCredentialIssuerWellKnownResponseDtoDraft11("Issuer1",
+//                        List.of(getCredentialSupportedResponseDraft11("CredentialType1"))));
+//
+//
+//        Mockito.when(credentialService.generatePdfForVerifiableCredentials(new VCCredentialResponse(),
+//                        getIssuerDTO("Issuer1"), getCredentialSupportedResponseDraft11("CredentialType1"),
+//                        "dataShareUrl"))
+//                .thenReturn(new ByteArrayInputStream("Mock Pdf".getBytes()))
+//                .thenThrow(new Exception());
+//
+//        mockMvc.perform(get("/issuers/Issuer1/credentials/CredentialType1/download")
+//                        .header("Authorization", "Bearer accessToken")
+//                        .accept(MediaType.APPLICATION_PDF))
+//                .andExpect(status().isOk());
+//
+//        mockMvc.perform(get("/issuers/Issuer1/credentials/CredentialType1/download")
+//                        .header("Authorization", "Bearer accessToken").accept(MediaType.APPLICATION_JSON_VALUE))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+//                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+//    }
 
     @Test
     public void getAllIssuersTest() throws Exception {

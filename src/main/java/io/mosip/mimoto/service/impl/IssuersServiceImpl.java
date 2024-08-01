@@ -7,6 +7,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
+import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.IssuersService;
@@ -94,10 +95,29 @@ public class IssuersServiceImpl implements IssuersService {
 
     @Override
     public CredentialIssuerWellKnownResponse getIssuerWellknown(String issuerId) throws ApiNotAccessibleException, IOException {
-        IssuerDTO issuerConfig = getIssuerConfig(issuerId);
-        String wellknown = issuerConfig.getWellKnownEndpoint();
-        String wellknownJson = restApiClient.getApi(wellknown, String.class);
-        return new Gson().fromJson(wellknownJson, CredentialIssuerWellKnownResponse.class);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
+        IssuersDTO issuersDto = getAllIssuersWithAllFields();
+        Optional<IssuerDTO> issuerConfigResp = issuersDto.getIssuers().stream()
+                .filter(issuer -> issuer.getCredential_issuer().equals(issuerId))
+                .findFirst();
+        if (issuerConfigResp.isPresent()) {
+            IssuerDTO issuerDto = issuerConfigResp.get();
+            credentialIssuerWellKnownResponse = restApiClient.getApi(issuerDto.getWellKnownEndpoint(), CredentialIssuerWellKnownResponse.class);
+            if (credentialIssuerWellKnownResponse == null) {
+                throw new ApiNotAccessibleException();
+            }
+        }
+        return credentialIssuerWellKnownResponse;
+    }
+
+    @Override
+    public CredentialsSupportedResponse getIssuerWellknownForCredentialType(String issuerId, String credentialId) throws ApiNotAccessibleException, IOException {
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(issuerId);
+        CredentialsSupportedResponse credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported().get(credentialId);
+        if(credentialsSupportedResponse == null){
+            throw new ApiNotAccessibleException();
+        }
+        return credentialsSupportedResponse;
     }
 }
 

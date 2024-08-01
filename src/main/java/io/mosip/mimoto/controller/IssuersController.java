@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,7 @@ public class IssuersController {
 
     private final Logger logger = LoggerFactory.getLogger(IssuersController.class);
 
-    @GetMapping()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllIssuers(@RequestParam(required = false, name = "search") String search) {
         ResponseWrapper<IssuersDTO> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(ID);
@@ -58,7 +59,7 @@ public class IssuersController {
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
-    @GetMapping("/{issuer-id}/.well-known")
+    @GetMapping(value = "/{issuer-id}/.well-known", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getIssuerWellknown(@PathVariable("issuer-id") String issuerId) {
         try {
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
@@ -69,7 +70,7 @@ public class IssuersController {
         }
     }
 
-    @GetMapping("/{issuer-id}")
+    @GetMapping(value = "/{issuer-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getIssuerConfig(@PathVariable("issuer-id") String issuerId) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(ID);
@@ -96,7 +97,7 @@ public class IssuersController {
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
-    @GetMapping("/{issuer-id}/credentialTypes")
+    @GetMapping(value = "/{issuer-id}/credentialTypes", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getCredentialTypes(@PathVariable("issuer-id") String issuerId,
                                                      @RequestParam(required = false, name = "search") String search) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
