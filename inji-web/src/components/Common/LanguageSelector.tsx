@@ -27,7 +27,6 @@ export const LanguageSelector: React.FC = () => {
 
     return <div className={"flex flex-row justify-center items-center"}
                 data-testid={"LanguageSelector-Outer-Div"}
-                onMouseDown={()=>setIsOpen(false)}
                 onBlur={()=>setIsOpen(false)}
                 tabIndex={0}
                 role="button">
