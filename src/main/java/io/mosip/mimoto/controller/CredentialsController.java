@@ -9,6 +9,10 @@ import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
+import io.mosip.vercred.exception.ProofDocumentNotFoundException;
+import io.mosip.vercred.exception.ProofTypeNotFoundException;
+import io.mosip.vercred.exception.SignatureVerificationException;
+import io.mosip.vercred.exception.UnknownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static io.mosip.mimoto.exception.PlatformErrorMessages.API_NOT_ACCESSIBLE_EXCEPTION;
-import static io.mosip.mimoto.exception.PlatformErrorMessages.MIMOTO_PDF_SIGN_EXCEPTION;
+import static io.mosip.mimoto.exception.PlatformErrorMessages.*;
 
 @RestController
 @RequestMapping(value="/credentials")
@@ -77,6 +80,35 @@ public class CredentialsController {
             responseWrapper.setErrors(List.of(new ErrorDTO(MIMOTO_PDF_SIGN_EXCEPTION.getCode(), exception.getMessage())));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
         }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?>verifyCredential(@RequestBody String credential){
+
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setId(ID);
+        responseWrapper.setVersion("v1");
+        responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
+
+        try{
+            Boolean verificationResult = credentialService.verifyCredential(credential);
+            responseWrapper.setResponse(verificationResult);
+            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+
+        }catch(ProofDocumentNotFoundException exception){
+            responseWrapper.setErrors(List.of(new ErrorDTO(PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode(), exception.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
+        } catch (ProofTypeNotFoundException exception) {
+            responseWrapper.setErrors(List.of(new ErrorDTO(PROOF_TYPE_NOT_FOUND_EXCEPTION.getCode(), exception.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
+        } catch (SignatureVerificationException exception) {
+            responseWrapper.setErrors(List.of(new ErrorDTO(SIGNATURE_VERIFICATION_EXCEPTION.getCode(), exception.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
+        }catch (UnknownException exception) {
+            responseWrapper.setErrors(List.of(new ErrorDTO(UNKNOWN_EXCEPTION.getCode(), exception.getMessage())));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
+        }
+
     }
 
 }
