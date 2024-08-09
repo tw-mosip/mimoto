@@ -83,30 +83,44 @@ public class CredentialsController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?>verifyCredential(@RequestBody String credential){
+    public ResponseEntity<Object>verifyCredential(@RequestBody String credential){
 
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(ID);
         responseWrapper.setVersion("v1");
         responseWrapper.setResponsetime(DateUtils.getRequestTimeString());
-
-        try{
+        try {
             Boolean verificationResult = credentialService.verifyCredential(credential);
             responseWrapper.setResponse(verificationResult);
             return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
 
-        }catch(ProofDocumentNotFoundException exception){
-            responseWrapper.setErrors(List.of(new ErrorDTO(PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode(), exception.getMessage())));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
-        } catch (ProofTypeNotFoundException exception) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(PROOF_TYPE_NOT_FOUND_EXCEPTION.getCode(), exception.getMessage())));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
-        } catch (SignatureVerificationException exception) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(SIGNATURE_VERIFICATION_EXCEPTION.getCode(), exception.getMessage())));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
-        }catch (UnknownException exception) {
-            responseWrapper.setErrors(List.of(new ErrorDTO(UNKNOWN_EXCEPTION.getCode(), exception.getMessage())));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseWrapper);
+        } catch ( ProofDocumentNotFoundException | ProofTypeNotFoundException |
+                 SignatureVerificationException | UnknownException exception) {
+
+            String errorCode;
+            HttpStatus httpStatus;
+
+            switch (exception.getClass().getSimpleName()) {
+                case "ProofDocumentNotFoundException" -> {
+                    errorCode = PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode();
+                    httpStatus = HttpStatus.BAD_REQUEST;
+                }
+                case "ProofTypeNotSupportedException" -> {
+                    errorCode = PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode();
+                    httpStatus = HttpStatus.BAD_REQUEST;
+                }
+                case "SignatureVerificationException" -> {
+                    errorCode = SIGNATURE_VERIFICATION_EXCEPTION.getCode();
+                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+                }
+                default -> {
+                    errorCode = UNKNOWN_EXCEPTION.getCode();
+                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+                }
+            }
+
+            responseWrapper.setErrors(List.of(new ErrorDTO(errorCode, exception.getMessage())));
+            return ResponseEntity.status(httpStatus).body(responseWrapper);
         }
 
     }

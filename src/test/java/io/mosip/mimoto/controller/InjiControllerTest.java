@@ -28,10 +28,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +40,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ResourceUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -660,8 +655,8 @@ public class InjiControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(credential))
                 .andExpect(status().is5xxServerError())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PROOF_TYPE_NOT_FOUND_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PROOF_TYPE_NOT_FOUND_EXCEPTION.getMessage())));
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getMessage())));
 
 
     }

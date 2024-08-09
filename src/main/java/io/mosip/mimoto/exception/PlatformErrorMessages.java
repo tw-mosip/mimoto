@@ -88,7 +88,7 @@ public enum PlatformErrorMessages {
     INVALID_VERIFIER_REDIRECT_URI_EXCEPTION(PlatformConstants.PREFIX + "039", "Invalid Redirect Uri"),
     INVALID_CREDENTIAL_RESOURCE_URI_EXCEPTION(PlatformConstants.PREFIX + "040", "The Credential Resource is Invalid"),
     PROOF_DOCUMENT_NOT_FOUND_EXCEPTION(PlatformConstants.PREFIX + "041", "Proof document is not available in the received credentials" ),
-    PROOF_TYPE_NOT_FOUND_EXCEPTION(PlatformConstants.PREFIX + "042", "Proof Type available in received credentials is not matching with supported proof terms" ),
+    PROOF_TYPE_NOT_SUPPORTED_EXCEPTION(PlatformConstants.PREFIX + "042", "Proof Type available in received credentials is not matching with supported proof terms" ),
     SIGNATURE_VERIFICATION_EXCEPTION(PlatformConstants.PREFIX + "043", "Error while doing signature verification" ),
     UNKNOWN_EXCEPTION(PlatformConstants.PREFIX + "044", "Error while doing verification of verifiable credential" );
 

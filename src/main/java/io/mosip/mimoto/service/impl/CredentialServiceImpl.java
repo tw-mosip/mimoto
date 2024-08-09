@@ -30,6 +30,7 @@ import io.mosip.pixelpass.PixelPass;
 import io.mosip.vercred.CredentialsVerifier;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
 import io.mosip.vercred.exception.ProofTypeNotFoundException;
+import io.mosip.vercred.exception.SignatureVerificationException;
 import io.mosip.vercred.exception.UnknownException;
 import jakarta.annotation.PostConstruct;
 import org.apache.velocity.VelocityContext;
@@ -142,7 +143,7 @@ public class CredentialServiceImpl implements CredentialService {
         return renderVCInCredentialTemplate(data);
     }
 
-    public Boolean verifyCredential(String credential) {
+    public Boolean verifyCredential(String credential) throws ProofDocumentNotFoundException, ProofTypeNotFoundException, SignatureVerificationException, UnknownException{
         return credentialsVerifier.verifyCredentials(credential);
     }
 
