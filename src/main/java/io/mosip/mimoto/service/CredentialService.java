@@ -5,7 +5,7 @@ import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
-import io.mosip.vercred.exception.ProofTypeNotFoundException;
+import io.mosip.vercred.exception.ProofTypeNotSupportedException;
 import io.mosip.vercred.exception.SignatureVerificationException;
 import io.mosip.vercred.exception.UnknownException;
 
@@ -18,5 +18,5 @@ public interface CredentialService {
 
     ByteArrayInputStream downloadCredentialAsPDF(String issuerId, String credentialType, TokenResponseDTO response) throws Exception;
 
-    Boolean verifyCredential(VCCredentialResponse credential) throws ProofDocumentNotFoundException, ProofTypeNotFoundException, SignatureVerificationException, UnknownException, JsonProcessingException;
+    Boolean verifyCredential(VCCredentialResponse credential) throws ProofDocumentNotFoundException, ProofTypeNotSupportedException, SignatureVerificationException, UnknownException, JsonProcessingException;
 }

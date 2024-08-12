@@ -10,7 +10,7 @@ import io.mosip.mimoto.exception.InvalidCredentialResourceException;
 import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.util.DateUtils;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
-import io.mosip.vercred.exception.ProofTypeNotFoundException;
+import io.mosip.vercred.exception.ProofTypeNotSupportedException;
 import io.mosip.vercred.exception.SignatureVerificationException;
 import io.mosip.vercred.exception.UnknownException;
 import org.slf4j.Logger;
@@ -91,7 +91,7 @@ public class CredentialsController {
             Boolean verificationResult = credentialService.verifyCredential(credential);
             responseWrapper.setResponse(verificationResult);
             return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
-        } catch (ProofDocumentNotFoundException | ProofTypeNotFoundException | SignatureVerificationException |
+        } catch (ProofDocumentNotFoundException | ProofTypeNotSupportedException | SignatureVerificationException |
                  UnknownException | JsonProcessingException exception) {
 
             String errorCode;
@@ -102,7 +102,7 @@ public class CredentialsController {
                     errorCode = PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode();
                     httpStatus = HttpStatus.BAD_REQUEST;
                 }
-                case "ProofTypeNotFoundException" -> {
+                case "ProofTypeNotSupportedException" -> {
                     errorCode = PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode();
                     httpStatus = HttpStatus.BAD_REQUEST;
                 }

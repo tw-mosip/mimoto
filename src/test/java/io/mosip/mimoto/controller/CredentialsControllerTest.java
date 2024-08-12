@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.service.impl.CredentialServiceImpl;
-import io.mosip.vercred.exception.ProofTypeNotFoundException;
+import io.mosip.vercred.exception.ProofTypeNotSupportedException;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ public class CredentialsControllerTest {
 
         Mockito.when(credentialService.verifyCredential(credential))
                 .thenReturn(true)
-                .thenThrow(new ProofTypeNotFoundException("Proof Type available in received credentials is not matching with supported proof terms"));
+                .thenThrow(new ProofTypeNotSupportedException("Proof Type available in received credentials is not matching with supported proof terms"));
 
         this.mockMvc.perform(post("/credentials/verify")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
