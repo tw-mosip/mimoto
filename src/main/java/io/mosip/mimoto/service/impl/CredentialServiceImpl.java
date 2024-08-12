@@ -12,6 +12,7 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
@@ -22,10 +23,7 @@ import io.mosip.mimoto.exception.InvalidCredentialResourceException;
 import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.service.IssuersService;
-import io.mosip.mimoto.util.JoseUtil;
-import io.mosip.mimoto.util.LoggerUtil;
-import io.mosip.mimoto.util.RestApiClient;
-import io.mosip.mimoto.util.Utilities;
+import io.mosip.mimoto.util.*;
 import io.mosip.pixelpass.PixelPass;
 import io.mosip.vercred.CredentialsVerifier;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
@@ -143,8 +141,10 @@ public class CredentialServiceImpl implements CredentialService {
         return renderVCInCredentialTemplate(data);
     }
 
-    public Boolean verifyCredential(String credential) throws ProofDocumentNotFoundException, ProofTypeNotFoundException, SignatureVerificationException, UnknownException{
-        return credentialsVerifier.verifyCredentials(credential);
+    public Boolean verifyCredential(VCCredentialResponse credential) throws ProofDocumentNotFoundException, ProofTypeNotFoundException, SignatureVerificationException, UnknownException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String credentialString = objectMapper.writeValueAsString(credential.getCredential());
+        return credentialsVerifier.verifyCredentials(credentialString);
     }
 
     @NotNull

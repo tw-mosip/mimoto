@@ -1,6 +1,7 @@
 package io.mosip.mimoto.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.Lists;
 import io.mosip.kernel.biometrics.spi.CbeffUtil;
@@ -638,23 +639,26 @@ public class InjiControllerTest {
     @Test
     public void verifyCredentialTest() throws Exception {
         File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/VerifiableCredential.json");
-        String credential = new String(Files.readAllBytes(file.toPath()));
+        ObjectMapper objectMapper = new ObjectMapper();
+        VCCredentialResponse credential = objectMapper.readValue(file, VCCredentialResponse.class);
 
         Mockito.when(credentialService.verifyCredential(credential))
                 .thenReturn(true)
                 .thenThrow(new ProofTypeNotFoundException("Proof Type available in received credentials is not matching with supported proof terms"));
 
         this.mockMvc.perform(post("/credentials/verify")
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .content(credential))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(JsonUtils.javaObjectToJsonString(credential))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response", Matchers.is(true)));
 
 
         this.mockMvc.perform(post("/credentials/verify")
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .content(credential))
-                .andExpect(status().is5xxServerError())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(JsonUtils.javaObjectToJsonString(credential))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode())))
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getMessage())));
 

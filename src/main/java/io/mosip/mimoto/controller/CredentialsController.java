@@ -1,13 +1,13 @@
 package io.mosip.mimoto.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
+import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidCredentialResourceException;
 import io.mosip.mimoto.service.CredentialService;
-import io.mosip.mimoto.service.IdpService;
-import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.DateUtils;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
 import io.mosip.vercred.exception.ProofTypeNotFoundException;
@@ -17,7 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
@@ -34,14 +37,10 @@ public class CredentialsController {
     private static final String ID = "mosip.mimoto.credentials";
     private final Logger logger = LoggerFactory.getLogger(CredentialsController.class);
 
-    @Autowired
-    IssuersService issuersService;
 
     @Autowired
     CredentialService credentialService;
 
-    @Autowired
-    IdpService idpService;
 
     @PostMapping("/download")
     public ResponseEntity<?> downloadCredentialAsPDF(
@@ -82,9 +81,8 @@ public class CredentialsController {
         }
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<Object>verifyCredential(@RequestBody String credential){
-
+    @PostMapping(value = "/verify")
+    public ResponseEntity<Object>verifyCredential(@RequestBody VCCredentialResponse credential) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(ID);
         responseWrapper.setVersion("v1");
@@ -93,9 +91,8 @@ public class CredentialsController {
             Boolean verificationResult = credentialService.verifyCredential(credential);
             responseWrapper.setResponse(verificationResult);
             return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
-
-        } catch ( ProofDocumentNotFoundException | ProofTypeNotFoundException |
-                 SignatureVerificationException | UnknownException exception) {
+        } catch (ProofDocumentNotFoundException | ProofTypeNotFoundException | SignatureVerificationException |
+                 UnknownException | JsonProcessingException exception) {
 
             String errorCode;
             HttpStatus httpStatus;
@@ -105,7 +102,7 @@ public class CredentialsController {
                     errorCode = PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode();
                     httpStatus = HttpStatus.BAD_REQUEST;
                 }
-                case "ProofTypeNotSupportedException" -> {
+                case "ProofTypeNotFoundException" -> {
                     errorCode = PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode();
                     httpStatus = HttpStatus.BAD_REQUEST;
                 }
@@ -113,12 +110,15 @@ public class CredentialsController {
                     errorCode = SIGNATURE_VERIFICATION_EXCEPTION.getCode();
                     httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
                 }
+                case "JsonProcessingException" -> {
+                    errorCode = JSON_PARSING_EXCEPTION.getCode();
+                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+                }
                 default -> {
                     errorCode = UNKNOWN_EXCEPTION.getCode();
                     httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
                 }
             }
-
             responseWrapper.setErrors(List.of(new ErrorDTO(errorCode, exception.getMessage())));
             return ResponseEntity.status(httpStatus).body(responseWrapper);
         }

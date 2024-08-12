@@ -90,7 +90,8 @@ public enum PlatformErrorMessages {
     PROOF_DOCUMENT_NOT_FOUND_EXCEPTION(PlatformConstants.PREFIX + "041", "Proof document is not available in the received credentials" ),
     PROOF_TYPE_NOT_SUPPORTED_EXCEPTION(PlatformConstants.PREFIX + "042", "Proof Type available in received credentials is not matching with supported proof terms" ),
     SIGNATURE_VERIFICATION_EXCEPTION(PlatformConstants.PREFIX + "043", "Error while doing signature verification" ),
-    UNKNOWN_EXCEPTION(PlatformConstants.PREFIX + "044", "Error while doing verification of verifiable credential" );
+    JSON_PARSING_EXCEPTION(PlatformConstants.PREFIX + "044", "Given data couldn't be parsed to JSON string" ),
+    UNKNOWN_EXCEPTION(PlatformConstants.PREFIX + "045", "Error while doing verification of verifiable credential" );
 
     /** The error message. */
     private final String errorMessage;

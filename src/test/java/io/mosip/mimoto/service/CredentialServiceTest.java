@@ -1,5 +1,6 @@
 package io.mosip.mimoto.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
@@ -55,10 +56,9 @@ public class CredentialServiceTest {
 
 
     @Test
-    public void shouldReturnTrueIfAValidCredentialIsPassedForVerification() {
+    public void shouldReturnTrueIfAValidCredentialIsPassedForVerification() throws JsonProcessingException {
+        VCCredentialResponse vc = new VCCredentialResponse();
         Mockito.when(credentialsVerifier.verifyCredentials(any(String.class))).thenReturn(true);
-        Boolean isVerified = credentialService.verifyCredential("mockCredentialData");
-        assertTrue(isVerified);
-
+        assertTrue(credentialService.verifyCredential(vc));
     }
 }
