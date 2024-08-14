@@ -52,6 +52,40 @@ public class TestUtilities {
         credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
         return credentialIssuerWellKnownResponse;
     }
+    public static String getExpectedWellKnownJson() {
+        return "{"
+                + "\"credential_issuer\": \"Issuer1\","
+                + "\"credential_endpoint\": \"/credential_endpoint\","
+                + "\"credential_configurations_supported\": {"
+                + "\"CredentialType1\": {"
+                + "\"format\": \"ldp_vc\","
+                + "\"scope\": \"CredentialType1_vc_ldp\","
+                + "\"display\": [{"
+                + "\"logo\": {"
+                + "\"url\": \"/logo\","
+                + "\"alt_text\": \"logo-url\""
+                + "},"
+                + "\"name\": \"CredentialType1\","
+                + "\"locale\": \"en\","
+                + "\"text_color\": \"#FFFFFF\","
+                + "\"background_color\": \"#B34622\""
+                + "}],"
+                + "\"proof_types_supported\": {},"
+                + "\"credential_definition\": {"
+                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
+                + "\"credentialSubject\": {"
+                + "\"name\": {"
+                + "\"display\": [{"
+                + "\"name\": \"Given Name\","
+                + "\"locale\": \"en\""
+                + "}]"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "}";
+    }
     public static IssuerDTO getIssuerDTO(String issuerName) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("/logo");
