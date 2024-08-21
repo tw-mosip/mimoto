@@ -76,4 +76,4 @@
           S3_BUCKET: "inji-stack" # Replace with your S3 bucket name
           S3_OBJECT_KEY: "inji-web" # Replace with your desired object key (e.g., folder structure)
         run: |
-          aws s3 cp inji-web-test/test-output/test-reports s3://$S3_BUCKET/$S3_OBJECT_KEY/ --recursive                      
+          aws s3 cp inji-web-test/test-output s3://$S3_BUCKET/$S3_OBJECT_KEY/ --recursive                      
