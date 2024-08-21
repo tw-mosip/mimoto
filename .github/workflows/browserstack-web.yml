@@ -27,33 +27,10 @@
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup ufw firewall
-        run: |
-          sudo ufw enable
-          sudo ufw allow ssh
-          sudo ufw allow 51820/udp
-          sudo ufw status
-
-      - name: Install WireGuard
-        run: sudo apt-get install -y wireguard
-
       - name: Install AWS CLI
         run: |
           sudo apt-get update
-          sudo apt-get install -y awscli        
-
-      - name: Configure WireGuard
-        run: |
-          echo "${{ secrets.CLUSTER_WIREGUARD }}" | sudo tee /etc/wireguard/wg0.conf
-
-      - name: Start WireGuard
-        run: |
-          sudo chmod 600 /etc/wireguard/wg0.conf
-          sudo chmod 700 /etc/wireguard/
-          sudo chmod 644 /lib/systemd/system/wg-quick@.service
-          sudo systemctl daemon-reload
-          sudo wg-quick up wg0
-          sudo wg show wg0          
+          sudo apt-get install -y awscli                 
     
       - name: Run tests
         run: |
@@ -72,8 +49,8 @@
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "ap-south-1" # Specify your AWS region
-          S3_BUCKET: "inji-stack" # Replace with your S3 bucket name
-          S3_OBJECT_KEY: "inji-web" # Replace with your desired object key (e.g., folder structure)
+          AWS_REGION: "ap-south-1" 
+          S3_BUCKET: "inji-stack" 
+          S3_OBJECT_KEY: "inji-web" 
         run: |
           aws s3 cp inji-web-test/test-output s3://$S3_BUCKET/$S3_OBJECT_KEY/ --recursive                      
