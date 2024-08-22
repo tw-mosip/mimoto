@@ -49,8 +49,8 @@
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "ap-south-1" 
-          S3_BUCKET: "inji-stack" 
-          S3_OBJECT_KEY: "inji-web" 
+          AWS_REGION: ${{ secrets.AWS_REGION }} 
+          S3_BUCKET: ${{ secrets.S3_BUCKET }} 
+          S3_OBJECT_KEY: ${{ secrets.S3_OBJECT_KEY }} 
         run: |
           aws s3 cp inji-web-test/test-output s3://$S3_BUCKET/$S3_OBJECT_KEY/ --recursive                      
