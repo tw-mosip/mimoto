@@ -73,4 +73,4 @@ $ docker-compose down
 > Open URL http://localhost:81
 
 
-## **Mimoto Dependency Version :** v0.13.0
+## **Mimoto Dependency Version :** v0.14.0
