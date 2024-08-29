@@ -45,6 +45,18 @@
       }
     }
   },
+  "AuthorizationPage": {
+    "error": {
+      "code": {
+        "invalid_redirect_uri":"Access Denied!",
+        "invalid_client": "Access Denied!"
+      },
+      "message": {
+        "invalid_redirect_uri":"Credentials cannot be shared because we couldn’t identify who requested them. Please contact the admin for help.",
+        "invalid_client": "Credentials cannot be shared because we couldn’t identify who requested them. Please contact the admin for help."
+      }
+    }
+  },
   "PageNotFound": {
     "navigateButton": "Go To Home",
     "heading": "That's an error",
