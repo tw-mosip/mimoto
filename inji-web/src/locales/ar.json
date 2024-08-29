@@ -45,6 +45,18 @@
       }
     }
   },
+  "AuthorizationPage": {
+    "error": {
+      "code": {
+        "invalid_redirect_uri": "تم الرفض!",
+        "invalid_client": "تم الرفض!"
+      },
+      "message": {
+        "invalid_redirect_uri": "لا يمكن مشاركة بيانات الاعتماد لأننا لم نتمكن من تحديد من طلبها. ",
+        "invalid_client": "لا يمكن مشاركة بيانات الاعتماد لأننا لم نتمكن من تحديد من طلبها. "
+      }
+    }
+  },
   "PageNotFound": {
     "navigateButton": "اذهب إلى المنزل",
     "heading": "هذا خطأ",

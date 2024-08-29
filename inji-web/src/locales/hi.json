@@ -45,6 +45,18 @@
       }
     }
   },
+  "AuthorizationPage": {
+    "error": {
+      "code": {
+        "invalid_redirect_uri": "पहुंच अस्वीकृत!",
+        "invalid_client": "पहुंच अस्वीकृत!"
+      },
+      "message": {
+        "invalid_redirect_uri": "क्रेडेंशियल साझा नहीं किए जा सकते क्योंकि हम यह नहीं पहचान सके कि उनका अनुरोध किसने किया था। ",
+        "invalid_client": "क्रेडेंशियल साझा नहीं किए जा सकते क्योंकि हम यह नहीं पहचान सके कि उनका अनुरोध किसने किया था। "
+      }
+    }
+  },
   "PageNotFound": {
     "navigateButton": "घर जाओ",
     "heading": "यह एक त्रुटि है",
