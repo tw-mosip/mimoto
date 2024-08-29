@@ -45,6 +45,18 @@
       }
     }
   },
+  "AuthorizationPage": {
+    "error": {
+      "code": {
+        "invalid_redirect_uri": "Accès refusé!",
+        "invalid_client": "Accès refusé!"
+      },
+      "message": {
+        "invalid_redirect_uri": "Les informations d’identification ne peuvent pas être partagées car nous n’avons pas pu identifier qui les a demandées. ",
+        "invalid_client": "Les informations d’identification ne peuvent pas être partagées car nous n’avons pas pu identifier qui les a demandées. "
+      }
+    }
+  },
   "PageNotFound": {
     "navigateButton": "Aller à la maison",
     "heading": "C'est une erreur",
