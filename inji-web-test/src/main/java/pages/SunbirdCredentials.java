@@ -18,7 +18,7 @@ public class SunbirdCredentials extends BasePage {
             e.printStackTrace();
         }
 
-        return isElementIsVisible(driver, By.xpath("//*[text()='Veridonia Insurance Company']"));
+        return isElementIsVisible(driver, By.xpath("//*[text()='StayProtected Insurance']"));
 
     }
 
@@ -44,7 +44,7 @@ public class SunbirdCredentials extends BasePage {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        clickOnElement(driver, By.xpath("//*[text()='Veridonia Insurance Company']"));
+        clickOnElement(driver, By.xpath("//*[text()='StayProtected Insurance']"));
 
     }
 
