@@ -10,6 +10,7 @@ import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import static io.mosip.mimoto.util.TestUtilities.getCredentialIssuerWellKnownResponseDto;
 import static io.mosip.mimoto.util.TestUtilities.getCredentialSupportedResponse;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -171,7 +173,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         assertTrue(invalidWellknownResponseException.getMessage().contains("format: Format must not be blank"));
         assertTrue(invalidWellknownResponseException.getMessage().contains("scope: Scope must not be blank"));
         assertTrue(invalidWellknownResponseException.getMessage().contains("proofTypesSupported: Proof types supported must not be empty"));
-        assertTrue(invalidWellknownResponseException.getMessage().contains("credentialDefinition: must not be null"));
+        assertFalse(invalidWellknownResponseException.getMessage().contains("credentialDefinition: must not be null"));
         assertTrue(invalidWellknownResponseException.getMessage().contains("display: Display information must not be empty"));
 
     }
@@ -180,7 +182,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
     public void shouldDetectMissingProofAlgorithmsSupported() {
         CredentialIssuerWellKnownResponse response = getCredentialIssuerWellKnownResponseDto("Issuer1",
                 Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
-        response.getCredentialConfigurationsSupported().get("CredentialType1").getProofTypesSupported().get("jwt");
+        response.getCredentialConfigurationsSupported().get("CredentialType1").getProofTypesSupported().get("jwt").setProofSigningAlgValuesSupported(null);
         CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
         InvalidWellknownResponseException invalidWellknownResponseException = assertThrows(InvalidWellknownResponseException.class, () ->
                 credentialIssuerWellknownResponseValidator.validate(response, validator));
@@ -215,7 +217,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
     }
 
     @Test
-    public void shouldDetectMissingMandatoryFieldsOfCredentialDefinitionResponseDtoResponse() {
+    public void shouldDetectMissingMandatoryFieldsOfCredentialDefinitionResponseDtoResponseIfFormatIsLdpVc() {
         CredentialIssuerWellKnownResponse response = getCredentialIssuerWellKnownResponseDto("Issuer1",
                 Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
         CredentialDefinitionResponseDto credentialDefinitionResponseDto=new CredentialDefinitionResponseDto();
@@ -227,7 +229,48 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         InvalidWellknownResponseException invalidWellknownResponseException = assertThrows(InvalidWellknownResponseException.class, () ->
                 credentialIssuerWellknownResponseValidator.validate(response, validator)
         );
+
         assertTrue(invalidWellknownResponseException.getMessage().contains("type: must not be empty"));
         assertTrue(invalidWellknownResponseException.getMessage().contains("credentialSubject: must not be empty"));
+    }
+
+    @Test
+    void shouldThrowInvalidWellKnownResponseExceptionWhenMandatoryFieldsAreNotPresentInMsoMdocVc() {
+        CredentialsSupportedResponse credentialSupportedResponse = getCredentialSupportedResponse("CredentialType1", "mso_mdoc");
+        credentialSupportedResponse.setClaims(Map.of());
+        CredentialIssuerWellKnownResponse wellKnownResponseWithoutClaims = getCredentialIssuerWellKnownResponseDto("Issuer1",
+                Map.of("CredentialType1", credentialSupportedResponse));
+
+        CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
+        InvalidWellknownResponseException invalidWellknownResponseException1 = assertThrows(InvalidWellknownResponseException.class, () ->
+                credentialIssuerWellknownResponseValidator.validate(wellKnownResponseWithoutClaims, validator)
+        );
+
+        assertTrue(invalidWellknownResponseException1.getMessage().contains("Mandatory field 'claims' missing"),"Mandatory field (claims) check for mso_mdoc VC");
+
+
+        CredentialsSupportedResponse credentialSupportedResponse1 = getCredentialSupportedResponse("CredentialType1", "mso_mdoc");
+        credentialSupportedResponse1.setDoctype("");
+        CredentialIssuerWellKnownResponse wellKnownResponseWithoutDocType = getCredentialIssuerWellKnownResponseDto("Issuer1",
+                Map.of("CredentialType1", credentialSupportedResponse1));
+
+        CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator1 = new CredentialIssuerWellknownResponseValidator();
+        InvalidWellknownResponseException invalidWellknownResponseException2 = assertThrows(InvalidWellknownResponseException.class, () ->
+                credentialIssuerWellknownResponseValidator.validate(wellKnownResponseWithoutDocType, validator)
+        );
+
+        assertTrue(invalidWellknownResponseException2.getMessage().contains("Mandatory field 'doctype' missing"),"Mandatory field (docType) check for mso_mdoc VC");
+    }
+
+    @SneakyThrows
+    @Test
+    void shouldNotThrowInvalidWellKnownResponseExceptionWhenMandatoryFieldsAreNotPresentInMsoMdocVc() {
+        CredentialIssuerWellKnownResponse wellKnownResponseWithoutClaims = getCredentialIssuerWellKnownResponseDto("Issuer1",
+                Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1", "mso_mdoc")));
+
+        CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
+
+        credentialIssuerWellknownResponseValidator.validate(wellKnownResponseWithoutClaims, validator);
+
     }
 }
