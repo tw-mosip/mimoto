@@ -1,5 +1,6 @@
 package io.mosip.mimoto.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
@@ -10,6 +11,7 @@ import io.mosip.mimoto.service.impl.CredentialServiceImpl;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
+import jakarta.validation.Validator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 import static io.mosip.mimoto.util.TestUtilities.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -35,6 +38,9 @@ public class IssuersServiceTest {
     @InjectMocks
     IssuersServiceImpl issuersService = new IssuersServiceImpl();
 
+    @Mock
+    Validator validator;
+
     @InjectMocks
     CredentialServiceImpl credentialService = new CredentialServiceImpl();
 
@@ -43,6 +49,9 @@ public class IssuersServiceTest {
 
     @Mock
     Utilities utilities;
+
+    @Mock
+    ObjectMapper objectMapper;
 
     List<String> issuerConfigRelatedFields11 = List.of("additional_headers", "authorization_endpoint","authorization_audience", "token_endpoint", "proxy_token_endpoint", "credential_endpoint", "credential_audience", "redirect_uri");
     List<String> issuerConfigRelatedFields=List.of("additional_headers", "authorization_endpoint","authorization_audience","credential_endpoint", "credential_audience");
@@ -93,12 +102,14 @@ public class IssuersServiceTest {
         CredentialIssuerWellKnownResponse expextedCredentialIssuerWellKnownResponse=getCredentialIssuerWellKnownResponseDto("Issuer1",
                Map.of("CredentialType1",getCredentialSupportedResponse("CredentialType1")));
 
-        Mockito.when(restApiClient.getApi(wellKnownUrl , CredentialIssuerWellKnownResponse.class))
-                .thenReturn(expextedCredentialIssuerWellKnownResponse);
+        Mockito.when(restApiClient.getApi(wellKnownUrl , String.class))
+                .thenReturn(getExpectedWellKnownJson());
+        Mockito.when(objectMapper.readValue(getExpectedWellKnownJson(), CredentialIssuerWellKnownResponse.class)).thenReturn(expextedCredentialIssuerWellKnownResponse);
+        Mockito.when(validator.validate(any())).thenReturn(Collections.emptySet());
 
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse=issuersService.getIssuerWellknown(issuerId);
         assertEquals(expextedCredentialIssuerWellKnownResponse,credentialIssuerWellKnownResponse);
-        verify(restApiClient, times(1)).getApi(wellKnownUrl, CredentialIssuerWellKnownResponse.class);
+        verify(restApiClient, times(1)).getApi(wellKnownUrl, String.class);
     }
 
     @Test
