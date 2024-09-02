@@ -124,7 +124,11 @@ public class StepDef {
 
     @Then("User verify Download Success text displayed")
     public void user_verify_download_success_text_displayed() {
-
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Assert.assertEquals(homePage.isSuccessMessageDisplayed(), "Success!");
     }
 
@@ -260,10 +264,10 @@ public class StepDef {
         System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"fileExists\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
 
         // Get file properties
-        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileProperties\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
+        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileProperties\", \"arguments\": {\"fileName\": \"MosipVerifiableCredential.pdf\"}}"));
 
         // Get file content. The content is Base64 encoded
-        String base64EncodedFile = (String) baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileContent\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}");
+        String base64EncodedFile = (String) baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileContent\", \"arguments\": {\"fileName\": \"MosipVerifiableCredential.pdf\"}}");
 
         // Decode the content to Base64
         byte[] data = Base64.getDecoder().decode(base64EncodedFile);
@@ -407,7 +411,7 @@ public class StepDef {
     public void user_validate_the_list_of_credential_types_title_of_the_page_for_sunbird() {
         System.out.println(homePage.isVeridoniaInsuranceCompanyTextDisplayed());
         System.out.println(homePage.isCredentialTypesDisplayed());
-        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "Veridonia Insurance Company");
+        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "StayProtected Insurance");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "List of Credential Types");
     }
 
