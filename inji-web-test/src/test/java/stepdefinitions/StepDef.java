@@ -264,10 +264,10 @@ public class StepDef {
         System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"fileExists\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
 
         // Get file properties
-        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileProperties\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}"));
+        System.out.println(baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileProperties\", \"arguments\": {\"fileName\": \"MosipVerifiableCredential.pdf\"}}"));
 
         // Get file content. The content is Base64 encoded
-        String base64EncodedFile = (String) baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileContent\", \"arguments\": {\"fileName\": \"MOSIPVerifiableCredential.pdf\"}}");
+        String base64EncodedFile = (String) baseTest.getJse().executeScript("browserstack_executor: {\"action\": \"getFileContent\", \"arguments\": {\"fileName\": \"MosipVerifiableCredential.pdf\"}}");
 
         // Decode the content to Base64
         byte[] data = Base64.getDecoder().decode(base64EncodedFile);
