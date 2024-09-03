@@ -10,7 +10,6 @@ import jakarta.validation.Validator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
 import java.util.Set;
 
 public class CredentialIssuerWellknownResponseValidator {
@@ -24,8 +23,7 @@ public class CredentialIssuerWellknownResponseValidator {
             throw new InvalidWellknownResponseException(sb.toString());
         }
 
-        for (Map.Entry<String, CredentialsSupportedResponse> entry : response.getCredentialConfigurationsSupported().entrySet()) {
-            CredentialsSupportedResponse supportedCredentialConfiguration = entry.getValue();
+        for (CredentialsSupportedResponse supportedCredentialConfiguration : response.getCredentialConfigurationsSupported().values()) {
             //TODO: Extract the vc specific validations to separate classes
             if (supportedCredentialConfiguration.getFormat().equals("mso_mdoc")) {
                 if (StringUtils.isBlank(supportedCredentialConfiguration.getDoctype())) {
