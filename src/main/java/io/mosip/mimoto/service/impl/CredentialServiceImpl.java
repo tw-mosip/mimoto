@@ -16,14 +16,15 @@ import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.openid.presentation.PresentationDefinitionDTO;
-import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.exception.IdpException;
-import io.mosip.mimoto.exception.InvalidCredentialResourceException;
+import io.mosip.mimoto.exception.*;
 import io.mosip.mimoto.model.QRCodeType;
 import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.service.IssuersService;
-import io.mosip.mimoto.util.*;
+import io.mosip.mimoto.util.JoseUtil;
+import io.mosip.mimoto.util.LoggerUtil;
+import io.mosip.mimoto.util.RestApiClient;
+import io.mosip.mimoto.util.Utilities;
 import io.mosip.pixelpass.PixelPass;
 import io.mosip.vercred.CredentialsVerifier;
 import io.mosip.vercred.exception.ProofDocumentNotFoundException;
@@ -31,7 +32,6 @@ import io.mosip.vercred.exception.ProofTypeNotSupportedException;
 import io.mosip.vercred.exception.SignatureVerificationException;
 import io.mosip.vercred.exception.UnknownException;
 import jakarta.annotation.PostConstruct;
-import lombok.NoArgsConstructor;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +42,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +51,8 @@ import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static io.mosip.mimoto.exception.PlatformErrorMessages.*;
 
 @Service
 public class CredentialServiceImpl implements CredentialService {
@@ -121,8 +124,13 @@ public class CredentialServiceImpl implements CredentialService {
         CredentialsSupportedResponse credentialsSupportedResponse = issuerService.getIssuerWellknownForCredentialType(issuerId, credentialType);
         VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerConfig, credentialIssuerWellKnownResponse,  credentialsSupportedResponse, response.getAccess_token());
         VCCredentialResponse vcCredentialResponse = downloadCredential(credentialIssuerWellKnownResponse.getCredentialEndPoint(), vcCredentialRequest, response.getAccess_token());
-        String dataShareUrl = dataShareService.storeDataInDataShare(objectMapper.writeValueAsString(vcCredentialResponse));
-        return generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, dataShareUrl);
+        Boolean verificationStatus = verifyCredential(vcCredentialResponse);
+        if(verificationStatus) {
+            String dataShareUrl = dataShareService.storeDataInDataShare(objectMapper.writeValueAsString(vcCredentialResponse));
+            return generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, dataShareUrl);
+        }
+        throw new VCVerificationException(PlatformErrorMessages.SIGNATURE_VERIFICATION_EXCEPTION.getCode(),
+                PlatformErrorMessages.SIGNATURE_VERIFICATION_EXCEPTION.getMessage());
     }
 
     public VCCredentialResponse downloadCredential(String credentialEndpoint, VCCredentialRequest vcCredentialRequest, String accessToken) throws InvalidCredentialResourceException {
@@ -154,10 +162,33 @@ public class CredentialServiceImpl implements CredentialService {
         return renderVCInCredentialTemplate(data);
     }
 
-    public Boolean verifyCredential(VCCredentialResponse credential) throws ProofDocumentNotFoundException, ProofTypeNotSupportedException, SignatureVerificationException, UnknownException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String credentialString = objectMapper.writeValueAsString(credential.getCredential());
-        return credentialsVerifier.verifyCredentials(credentialString);
+    public Boolean verifyCredential(VCCredentialResponse credential) throws VCVerificationException {
+        try {
+            String credentialString = objectMapper.writeValueAsString(credential.getCredential());
+            return credentialsVerifier.verifyCredentials(credentialString);
+        } catch ( ProofDocumentNotFoundException | ProofTypeNotSupportedException | SignatureVerificationException | UnknownException | JsonProcessingException exception ) {
+            String errorCode = UNKNOWN_EXCEPTION.getCode();
+            String errorMessage = UNKNOWN_EXCEPTION.getMessage();
+            switch (exception.getClass().getSimpleName()) {
+                case "ProofDocumentNotFoundException" -> {
+                    errorCode = PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getCode();
+                    errorMessage = PROOF_DOCUMENT_NOT_FOUND_EXCEPTION.getMessage();
+                }
+                case "ProofTypeNotSupportedException" -> {
+                    errorCode = PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getCode();
+                    errorMessage = PROOF_TYPE_NOT_SUPPORTED_EXCEPTION.getMessage();
+                }
+                case "SignatureVerificationException" -> {
+                    errorCode = SIGNATURE_VERIFICATION_EXCEPTION.getCode();
+                    errorMessage = SIGNATURE_VERIFICATION_EXCEPTION.getMessage();
+                }
+                case "JsonProcessingException" -> {
+                    errorCode = JSON_PARSING_EXCEPTION.getCode();
+                    errorMessage = JSON_PARSING_EXCEPTION.getMessage();
+                }
+            }
+            throw new VCVerificationException(errorCode, errorMessage);
+        }
     }
 
     @NotNull
