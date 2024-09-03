@@ -7,7 +7,9 @@ import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.Map;
 import java.util.Set;
 
 public class CredentialIssuerWellknownResponseValidator {
@@ -21,11 +23,11 @@ public class CredentialIssuerWellknownResponseValidator {
             throw new InvalidWellknownResponseException(sb.toString());
         }
 
-        for (String name : response.getCredentialConfigurationsSupported().keySet()) {
+        for(Map.Entry<String, CredentialsSupportedResponse> entry: response.getCredentialConfigurationsSupported().entrySet()){
+            CredentialsSupportedResponse supportedCredentialConfiguration = entry.getValue();
             //TODO: Extract the vc specific validations to separate classes
-            CredentialsSupportedResponse supportedCredentialConfiguration = response.getCredentialConfigurationsSupported().get(name);
             if (supportedCredentialConfiguration.getFormat().equals("mso_mdoc")) {
-                if (supportedCredentialConfiguration.getDoctype().isBlank() || supportedCredentialConfiguration.getDoctype() == null) {
+                if (StringUtils.isBlank(supportedCredentialConfiguration.getDoctype())) {
                     throw new InvalidWellknownResponseException("Mandatory field 'doctype' missing");
                 }
                 if(supportedCredentialConfiguration.getClaims().isEmpty() || supportedCredentialConfiguration.getClaims()==null){
