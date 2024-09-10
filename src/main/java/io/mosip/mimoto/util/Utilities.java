@@ -183,6 +183,9 @@ public class Utilities {
     }
 
     private String getConfigJsonString(String configJsonString, String configServerFileStorageURL, String resourcePath) throws IOException {
+        logger.info("\n configJsonString -> " + configJsonString);
+        logger.info("\n configServerFileStorageURL -> " + configServerFileStorageURL);
+        logger.info("\n resourcePath -> " + resourcePath);
         if(!StringUtils.isEmpty(configJsonString)){
             return configJsonString;
         }
