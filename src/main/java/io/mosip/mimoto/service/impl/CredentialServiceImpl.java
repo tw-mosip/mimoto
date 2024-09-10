@@ -100,6 +100,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     PixelPass pixelPass;
     CredentialsVerifier credentialsVerifier;
+
     @PostConstruct
     public void init(){
         pixelPass = new PixelPass();

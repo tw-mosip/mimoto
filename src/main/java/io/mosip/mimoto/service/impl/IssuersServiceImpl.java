@@ -50,7 +50,7 @@ public class IssuersServiceImpl implements IssuersService {
 
 
     @Override
-    public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException{
+    public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException, IOException {
         IssuersDTO issuers;
         String issuersConfigJsonValue = utilities.getIssuersConfigJsonValue();
         if (issuersConfigJsonValue == null) {

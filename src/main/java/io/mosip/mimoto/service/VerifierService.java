@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface VerifierService {
     Optional<VerifierDTO> getVerifierByClientId(String clientId) throws ApiNotAccessibleException, IOException;
-    void validateVerifier(String clientId, String redirectUri) throws ApiNotAccessibleException, JsonProcessingException;
+    void validateVerifier(String clientId, String redirectUri) throws ApiNotAccessibleException, IOException;
 }

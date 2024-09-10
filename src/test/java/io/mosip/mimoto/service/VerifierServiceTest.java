@@ -35,7 +35,7 @@ public class VerifierServiceTest {
     VerifierServiceImpl verifiersService;
 
     @Before
-    public void setUp() throws JsonProcessingException {
+    public void setUp() throws IOException {
         VerifiersDTO verifiersDTO = TestUtilities.getTrustedVerifiers();
         String verifiersListString = TestUtilities.getObjectAsString(verifiersDTO);
         when(utilities.getTrustedVerifiersJsonValue()).thenReturn(verifiersListString);

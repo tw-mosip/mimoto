@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.apache.commons.validator.routines.UrlValidator.ALLOW_ALL_SCHEMES;
@@ -42,7 +43,7 @@ public class VerifierServiceImpl implements VerifierService {
 
     private final Logger logger = LoggerFactory.getLogger(VerifierServiceImpl.class);
 
-    public Optional<VerifierDTO> getVerifierByClientId(String clientId) throws ApiNotAccessibleException, JsonProcessingException {
+    public Optional<VerifierDTO> getVerifierByClientId(String clientId) throws ApiNotAccessibleException, IOException {
         String trustedVerifiersJsonValue = utilities.getTrustedVerifiersJsonValue();
         if (trustedVerifiersJsonValue == null) {
             throw new ApiNotAccessibleException();
@@ -51,7 +52,7 @@ public class VerifierServiceImpl implements VerifierService {
         return verifiersDTO.getVerifiers().stream().filter(verifier -> verifier.getClientId().equals(clientId)).findFirst();
     }
     @Override
-    public void validateVerifier(String clientId, String redirectUri) throws ApiNotAccessibleException, JsonProcessingException {
+    public void validateVerifier(String clientId, String redirectUri) throws ApiNotAccessibleException, IOException {
         logger.info("Started the presentation Validation");
         getVerifierByClientId(clientId).ifPresentOrElse(
             (verifierDTO) -> {
