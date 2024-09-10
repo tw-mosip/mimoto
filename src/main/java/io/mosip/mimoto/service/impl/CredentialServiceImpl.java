@@ -165,6 +165,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     public Boolean verifyCredential(VCCredentialResponse vcCredentialResponse) throws VCVerificationException {
         try {
+            vcCredentialResponse.getCredential().getProof().setType("dfsdf");
             String credentialString = objectMapper.writeValueAsString(vcCredentialResponse.getCredential());
             return credentialsVerifier.verifyCredentials(credentialString);
         } catch (ProofDocumentNotFoundException | ProofTypeNotSupportedException | SignatureVerificationException | UnknownException | JsonProcessingException |
