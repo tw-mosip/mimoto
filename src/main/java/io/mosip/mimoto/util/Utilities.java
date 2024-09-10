@@ -189,10 +189,13 @@ public class Utilities {
         if(!StringUtils.isEmpty(configJsonString)){
             return configJsonString;
         }
-        if(!validator.isValid(configServerFileStorageURL + resourcePath)){
-            Resource resource = new ClassPathResource(resourcePath);
-            return Files.readString(resource.getFile().toPath());
-        }
+//        if(validator.isValid("http://config-server1.config-server1/config/mimoto/default/develop/mimoto-issuers-config.json")){
+//            logger.info("");
+//        }
+//        if(!validator.isValid(configServerFileStorageURL + resourcePath)){
+//            Resource resource = new ClassPathResource(resourcePath);
+//            return Files.readString(resource.getFile().toPath());
+//        }
         return getJson(configServerFileStorageURL, resourcePath);
     }
     public static ResponseWrapper<Object> handleExceptionWithErrorCode(Exception exception) {
