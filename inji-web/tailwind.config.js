@@ -20,6 +20,7 @@ module.exports = {
                     primary: 'var(--iw-color-primary)',
                     helpAccordionHover: 'var(--iw-color-helpAccordionHover)',
                     shadow: 'var(--iw-color-shadow)',
+                    selectedShadow: 'var(--iw-color-selected-shadow)',
                     spinningLoaderPrimary: 'var(--iw-color-spinningLoaderPrimary)',
                     spinningLoaderSecondary: 'var(--iw-color-spinningLoaderSecondary)',
                     navigationBar: 'var(--iw-color-navigationBar)',
