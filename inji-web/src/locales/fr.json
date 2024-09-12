@@ -10,18 +10,20 @@
   },
   "HomePage": {
     "Intro": {
-      "title": "Le téléchargement d'un identifiant se fait en un seul clic !",
+      "title": "Le téléchargement d'un identifiant se fait en un seul clic!",
       "subTitle": "Veuillez rechercher l'émetteur et, à l'étape suivante, sélectionnez les informations d'identification à télécharger.",
-      "searchText": "Rechercher les émetteurs par nom"
+      "searchText": "Rechercher des émetteurs par nom"
     },
     "emptyContainerContent": "Aucun émetteur trouvé. ",
     "containerHeading": "Liste des émetteurs",
+    "containerSubHeading": "Recherchez votre émetteur de confiance et choisissez un type d'identifiant à l'étape suivante.",
     "errorContent": "Le service est actuellement indisponible. "
   },
   "CredentialsPage": {
-    "searchText": "Rechercher le type d’informations d’identification",
+    "searchText": "Rechercher un type d'identifiant",
     "emptyContainerContent": "Aucune information d'identification trouvée. ",
     "containerHeading": "Liste des types d'informations d'identification",
+    "containerSubHeading": "Choisissez un identifiant et confirmez votre identité à l'étape suivante.",
     "errorContent": "Le service est actuellement indisponible. "
   },
   "RedirectionPage": {
@@ -38,6 +40,32 @@
       "invalidSession": {
         "title": "Session invalide",
         "subTitle": "la session n'est pas valide ou la session est terminée"
+      },
+      "verification": {
+        "proof_type_not_supported": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé! "
+        },
+        "json_parsing_failed": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé, en raison d'une erreur technique, nous ne pouvons pas télécharger le VC. "
+        },
+        "signature_verification_failed": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé! "
+        },
+        "unknown_exception": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé, il semble que nos services soient temporairement indisponibles. "
+        },
+        "proof_document_not_found": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé! "
+        },
+        "public_key_not_found": {
+          "title": "Une erreur s'est produite",
+          "subTitle": "Désolé, votre identifiant n'a pas pu être téléchargé car il y a un problème avec la validation de la signature de l'émetteur. "
+        }
       },
       "generic": {
         "title": "Une erreur s'est produite",

@@ -12,16 +12,18 @@
     "Intro": {
       "title": "تنزيل بيانات الاعتماد هو بنقرة واحدة!",
       "subTitle": "يرجى البحث عن جهة الإصدار وفي الخطوة التالية، حدد بيانات الاعتماد للتنزيل.",
-      "searchText": "البحث عن المصدرين بالاسم"
+      "searchText": "بحث المصدرين بالاسم"
     },
     "emptyContainerContent": "لم يتم العثور على جهات الإصدار. ",
     "containerHeading": "قائمة المصدرين",
+    "containerSubHeading": "ابحث عن جهة الإصدار الموثوق بها واختر نوع بيانات الاعتماد في الخطوة التالية.",
     "errorContent": "الخدمة غير متاحة حالياً. "
   },
   "CredentialsPage": {
-    "searchText": "البحث عن نوع بيانات الاعتماد",
+    "searchText": "بحث عن نوع بيانات الاعتماد",
     "emptyContainerContent": "لم يتم العثور على بيانات الاعتماد. ",
     "containerHeading": "قائمة أنواع الاعتمادات",
+    "containerSubHeading": "اختر بيانات الاعتماد، وأكد هويتك في الخطوة التالية.",
     "errorContent": "الخدمة غير متاحة حاليا الآن. "
   },
   "RedirectionPage": {
@@ -38,6 +40,32 @@
       "invalidSession": {
         "title": "جلسة غير صالحة",
         "subTitle": "الجلسة غير صالحة أو الجلسة مكتملة"
+      },
+      "verification": {
+        "proof_type_not_supported": {
+          "title": "حدث خطأ",
+          "subTitle": "آسف! "
+        },
+        "json_parsing_failed": {
+          "title": "حدث خطأ",
+          "subTitle": "عذرًا، بسبب خطأ فني، لا يمكننا تنزيل VC. "
+        },
+        "signature_verification_failed": {
+          "title": "حدث خطأ",
+          "subTitle": "آسف! "
+        },
+        "unknown_exception": {
+          "title": "حدث خطأ",
+          "subTitle": "عذرًا، يبدو أن خدماتنا غير متاحة مؤقتًا. "
+        },
+        "proof_document_not_found": {
+          "title": "حدث خطأ",
+          "subTitle": "آسف! "
+        },
+        "public_key_not_found": {
+          "title": "حدث خطأ",
+          "subTitle": "عذرًا، تعذر تنزيل بيانات الاعتماد الخاصة بك نظرًا لوجود مشكلة في التحقق من صحة توقيع جهة الإصدار. "
+        }
       },
       "generic": {
         "title": "حدث خطأ",

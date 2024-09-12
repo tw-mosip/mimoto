@@ -53,3 +53,25 @@ export const downloadCredentialPDF = async (response: any, certificateId: string
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 }
+
+export const getErrorObject = (downloadResponse: any) => {
+    const errorCode = downloadResponse?.errors ? downloadResponse?.errors[0]?.errorCode : "";
+    if([
+        "proof_type_not_supported",
+        "json_parsing_failed",
+        "signature_verification_failed",
+        "unknown_exception",
+        "proof_document_not_found",
+        "public_key_not_found"
+    ].indexOf(errorCode) != -1 ){
+        return {
+            code: `error.verification.${errorCode}.title`,
+            message: `error.verification.${errorCode}.subTitle`
+        }
+    }
+    return {
+        code: "error.generic.title",
+        message: "error.generic.subTitle"
+    }
+}
+

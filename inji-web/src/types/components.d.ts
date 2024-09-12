@@ -43,6 +43,7 @@ export type EmptyListContainerProps = {
 
 export type HeaderTileProps = {
     content: string;
+    subContent: string;
 }
 export type SearchIssuerProps = {
     state: RequestStatus;

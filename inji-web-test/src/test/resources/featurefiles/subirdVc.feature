@@ -69,7 +69,7 @@ Feature: Login using Sunbird Credentials
 
     Examples:
       | policy number | full name | date of birth |
-      |     1207202 | PolicyTestAutomation     | 01-01-2024    |
+      |     1207202 | PolicyTestName     | 01-01-2024    |
 #
   @smoke @VerifyAndDownloadVcViaVehicleInsuranceWithInvaildName
   Scenario Outline: download vc via sunbird
