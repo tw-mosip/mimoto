@@ -135,7 +135,7 @@ public class SunbirdCredentials extends BasePage {
     }
 
     public Boolean isAuthenticationFailedDisplayed() {
-        return isElementIsVisible(driver, By.xpath("//div[contains(text(), 'Authentication Failed: ')]  "));
+        return isElementIsVisible(driver, By.xpath("//div[contains(text(), 'Login failed, please enter correct credentials')]  "));
     }
 
     public Boolean isVehicleInsuranceDisplayed() {
