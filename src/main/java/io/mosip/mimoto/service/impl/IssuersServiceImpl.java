@@ -1,7 +1,13 @@
 package io.mosip.mimoto.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
@@ -9,14 +15,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
-import io.mosip.mimoto.dto.mimoto.CredentialDisplayResponseDto;
-import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
-import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
-import io.mosip.mimoto.dto.mimoto.IssuerSupportedCredentialsResponse;
-import io.mosip.mimoto.dto.mimoto.VCCredentialDefinition;
-import io.mosip.mimoto.dto.mimoto.VCCredentialRequest;
-import io.mosip.mimoto.dto.mimoto.VCCredentialRequestProof;
-import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
+import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.service.IssuersService;
@@ -24,6 +23,7 @@ import io.mosip.mimoto.util.JoseUtil;
 import io.mosip.mimoto.util.LoggerUtil;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
+import io.mosip.pixelpass.PixelPass;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -31,6 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,6 +55,15 @@ public class IssuersServiceImpl implements IssuersService {
 
     @Autowired
     private JoseUtil joseUtil;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    PixelPass pixelPass;
+    @PostConstruct
+    public void init(){
+        pixelPass = new PixelPass();
+    }
 
 
     @Override
@@ -188,7 +200,7 @@ public class IssuersServiceImpl implements IssuersService {
                 .build();
     }
 
-    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, String issuerLogoUrl) throws IOException {
+    private ByteArrayInputStream getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, String issuerLogoUrl) throws IOException, WriterException {
         Map<String, Object> data = new HashMap<>();
         LinkedHashMap<String, Object> rowProperties = new LinkedHashMap<>();
         String backgroundColor = credentialsSupportedResponse.getDisplay().get(0).getBackgroundColor();
@@ -213,6 +225,16 @@ public class IssuersServiceImpl implements IssuersService {
                     }
                 });
 
+        if(!credentialsSupportedResponse.getId().equals("MOSIPVerifiableCredential")) {
+            logger.info("Credential That is converted to PDF" + objectMapper.writeValueAsString(vcCredentialResponse.getCredential()));
+            String qrData = pixelPass.generateQRData(objectMapper.writeValueAsString(vcCredentialResponse.getCredential()), "");
+            logger.info("QR Data => " + qrData);
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(qrData, BarcodeFormat.QR_CODE, 650, 650);
+            BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+            String base64Image = encodeToString(qrImage, "png");
+            data.put("qrCodeImage", base64Image);
+        }
         data.put("logoUrl", issuerLogoUrl);
         data.put("rowProperties", rowProperties);
         data.put("textColor", textColor);
@@ -243,5 +265,21 @@ public class IssuersServiceImpl implements IssuersService {
         converterProperties.setFontProvider(defaultFont);
         HtmlConverter.convertToPdf(mergedHtml, pdfwriter, converterProperties);
         return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    public static String encodeToString(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+            Base64.Encoder encoder = Base64.getEncoder();
+            imageString = encoder.encodeToString(imageBytes);
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imageString;
     }
 }

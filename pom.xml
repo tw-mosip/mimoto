@@ -401,8 +401,16 @@
             <version>${powermock.beta.version}</version>
             <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.8.20</version>
+        </dependency>
+        <dependency>
+            <groupId>io.mosip</groupId>
+            <artifactId>pixelpass-jar</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <repositories>
