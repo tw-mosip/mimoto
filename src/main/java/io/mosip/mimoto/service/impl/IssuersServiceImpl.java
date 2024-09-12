@@ -242,7 +242,6 @@ public class IssuersServiceImpl implements IssuersService {
         data.put("titleName", credentialSupportedType);
         data.put("face", face);
 
-
         String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
 
         Properties props = new Properties();
