@@ -1,7 +1,14 @@
 package io.mosip.mimoto.controller;
 
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.mimoto.dto.mimoto.AttestationStatement;
+import io.mosip.mimoto.dto.mimoto.GenericResponseDTO;
+import io.mosip.mimoto.util.AttestationOfflineVerify;
+import io.mosip.mimoto.util.AttestationOnlineVerify;
+import io.mosip.mimoto.util.LoggerUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,18 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.mimoto.dto.mimoto.AttestationStatement;
-import io.mosip.mimoto.dto.mimoto.GenericResponseDTO;
-import io.mosip.mimoto.util.AttestationOfflineVerify;
-import io.mosip.mimoto.util.AttestationOnlineVerify;
-import io.mosip.mimoto.util.LoggerUtil;
-
 @RestController
 @RequestMapping(value = "/safetynet")
+@Tag(name = "Attestation", description = "All the Attestation Related Endpoints")
 public class AttestationServiceController {
-
-    private final Logger logger = LoggerUtil.getLogger(AttestationServiceController.class);
 
     @Autowired
     AttestationOfflineVerify attestationOfflineVerify;
@@ -35,6 +34,7 @@ public class AttestationServiceController {
      * @param attestation
      * @return
      */
+    @Operation(hidden = true)
     @PostMapping(path = "/offline/verify", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> processOffline(@RequestBody String attestation)
     {
@@ -45,7 +45,7 @@ public class AttestationServiceController {
             GenericResponseDTO responseDTO = new GenericResponseDTO();
             responseDTO.setStatus("Error");
             responseDTO.setMessage(e.getMessage());
-            
+
             return new ResponseEntity<>(responseDTO, HttpStatus.OK);
         }
     }
@@ -56,6 +56,7 @@ public class AttestationServiceController {
      * @param attestation
      * @return
      */
+    @Operation(hidden = true)
     @PostMapping(path = "/online/verify", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> processOnline(@RequestBody String attestation)
     {
@@ -66,7 +67,7 @@ public class AttestationServiceController {
             GenericResponseDTO responseDTO = new GenericResponseDTO();
             responseDTO.setStatus("Error");
             responseDTO.setMessage(e.getMessage());
-            
+
             return new ResponseEntity<>(responseDTO, HttpStatus.OK);
         }
     }
