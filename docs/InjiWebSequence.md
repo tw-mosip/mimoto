@@ -43,7 +43,7 @@
 
 - Mimoto Currently Supports Two Different QR Codes
   - EmbeddedVC -> uses Pixel pass library to embed the complete VC within the QR
-  - OVPRequest -> QR Contains a authorize endpoint, which validates the VP and redirects the VP token to the caller.
+  - OnlineSharing -> QR Contains a authorize endpoint, which validates the VP and redirects the VP token to the caller.
 - Mimoto can toggle the issuers QR using the QR Code Type in the [mimoto-issuers-config.json](https://github.com/mosip/inji-config/blob/31704e5a31775551f535f74b3f9baad587468b79/mimoto-issuers-config.json#L105)
 - Mimoto authorizes the verifiers using [mimoto-trusted-verifiers.json](https://github.com/mosip/inji-config/blob/release-0.3.x/mimoto-trusted-verifiers.json) as the source of truth
 
