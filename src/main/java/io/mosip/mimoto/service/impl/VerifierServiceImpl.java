@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.apache.commons.validator.routines.UrlValidator.ALLOW_ALL_SCHEMES;
@@ -41,6 +42,14 @@ public class VerifierServiceImpl implements VerifierService {
     }
 
     private final Logger logger = LoggerFactory.getLogger(VerifierServiceImpl.class);
+
+    public VerifiersDTO getTrustedVerifiers() throws ApiNotAccessibleException, JsonProcessingException {
+        String trustedVerifiersJsonValue = utilities.getTrustedVerifiersJsonValue();
+        if (trustedVerifiersJsonValue == null) {
+            throw new ApiNotAccessibleException();
+        }
+        return objectMapper.readValue(trustedVerifiersJsonValue, VerifiersDTO.class);
+    }
 
     public Optional<VerifierDTO> getVerifierByClientId(String clientId) throws ApiNotAccessibleException, JsonProcessingException {
         String trustedVerifiersJsonValue = utilities.getTrustedVerifiersJsonValue();
