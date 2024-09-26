@@ -3,7 +3,7 @@
     {
       "client_id": "https://injiverify.dev2.mosip.net",
       "redirect_uri": [
-        "https://injiverify.qa-inji.mosip.net/redirect",
+        "https://52e1-2405-201-c058-b814-bcfb-6843-2c42-27b7.ngrok-free.app/verifier/vp-response",
         "https://injiverify.dev2.mosip.net/redirect"
       ],
       "response_uri": [
