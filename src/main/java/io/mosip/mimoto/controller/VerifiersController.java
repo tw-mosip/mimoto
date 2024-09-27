@@ -2,10 +2,8 @@ package io.mosip.mimoto.controller;
 
 import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
-import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.openid.VerifiersDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.service.VerifierService;
 import io.mosip.mimoto.util.DateUtils;
 import org.slf4j.Logger;
@@ -16,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -26,14 +23,14 @@ import static io.mosip.mimoto.exception.PlatformErrorMessages.API_NOT_ACCESSIBLE
 
 @RestController
 @RequestMapping(value = "/verifiers")
-public class VerifierController {
+public class VerifiersController {
 
     @Autowired
     VerifierService verifierService;
 
     private static final String ID = "mosip.mimoto.verifier";
 
-    private final Logger logger = LoggerFactory.getLogger(VerifierController.class);
+    private final Logger logger = LoggerFactory.getLogger(VerifiersController.class);
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllTrustedVerifiers() {
