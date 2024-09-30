@@ -271,13 +271,13 @@ public class StepDef {
 
         // Decode the content to Base64
         byte[] data = Base64.getDecoder().decode(base64EncodedFile);
-        OutputStream stream = new FileOutputStream("MOSIPVerifiableCredential.pdf");
+        OutputStream stream = new FileOutputStream("MosipVerifiableCredential.pdf");
         stream.write(data);
 
         System.out.println(stream);
         stream.close();
 
-        File pdfFile = new File(System.getProperty("user.dir")+"/MOSIPVerifiableCredential.pdf");
+        File pdfFile = new File(System.getProperty("user.dir")+"/MosipVerifiableCredential.pdf");
         PDDocument document = PDDocument.load(pdfFile);
 
         PDFTextStripper stripper = new PDFTextStripper();
@@ -417,31 +417,26 @@ public class StepDef {
 
     @Then("User validate the list of credential types title of the page in arabic laguage for sunbird")
     public void user_validate_the_list_of_credential_types_title_of_the_page_in_arabic_laguage_for_sunbird() {
-//        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "شركة فيريدونيا للتأمين");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "قائمة أنواع الاعتمادات");
     }
 
     @Then("User validate the list of credential types title of the page in tamil laguage for sunbird")
     public void user_validate_the_list_of_credential_types_title_of_the_page_in_tamil_laguage_for_sunbird() {
-//        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "வெரிடோனியா இன்சூரன்ஸ் நிறுவனம்");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "நற்சான்றிதழ் வகைகளின் பட்டியல்");
     }
 
     @Then("User validate the list of credential types title of the page in kannada laguage for sunbird")
     public void user_validate_the_list_of_credential_types_title_of_the_page_in_kannada_laguage_for_sunbird() {
-//        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "ವೆರಿಡೋನಿಯಾ ವಿಮಾ ಕಂಪನಿ");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "ರುಜುವಾತು ಪ್ರಕಾರಗಳ ಪಟ್ಟಿ");
     }
 
     @Then("User validate the list of credential types title of the page in hindi laguage for sunbird")
     public void user_validate_the_list_of_credential_types_title_of_the_page_in_hindi_laguage_for_sunbird() {
-//        Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(), "वेरिडोनिया बीमा कंपनींं");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "क्रेडेंशियल प्रकारों की सूची");
     }
 
     @Then("User validate the list of credential types title of the page in french laguage for sunbird")
     public void user_validate_the_list_of_credential_types_title_of_the_page_in_french_laguage_for_sunbird() {
-//		Assert.assertEquals(homePage.isVeridoniaInsuranceCompanyTextDisplayed(),"वेरिडोनिया बीमा कंपनींं");
         Assert.assertEquals(homePage.isCredentialTypesDisplayed(), "Liste des types d'informations d'identification");
     }
 
@@ -488,11 +483,4 @@ public class StepDef {
     public void user_verify_the_page_after_refresh() {
 
     }
-
-//    @When("User set no network")
-//    public void user_set_no_network() {
-//        baseTest.getDriver().getSessionId();
-//
-//        setNetwork.setNoNetworkProfile();
-//    }
 }
