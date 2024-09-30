@@ -55,7 +55,7 @@ public class VerifiersControllerTest {
                         Matchers.allOf(
                                 Matchers.hasKey("client_id"),
                                 Matchers.hasKey("redirect_uris"),
-                                Matchers.hasKey("response_uri")
+                                Matchers.hasKey("response_uris")
                         )
                 )));
     }
