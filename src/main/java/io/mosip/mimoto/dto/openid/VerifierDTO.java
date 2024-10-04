@@ -22,7 +22,8 @@ public class VerifierDTO {
     @Schema(description = "Redirect URIs of the Verifier")
     List<String> redirectUris;
 
-    @JsonProperty("response_uri")
+    @JsonProperty("response_uris")
     @Schema(description = "Response URIs of the Verifier")
-    List<String> responseUri;
+    List<String> responseUris;
 }
+
