@@ -5,7 +5,7 @@ import {renderContent} from "../../utils/style";
 
 export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
     return (
-        <React.Fragment>
+        <React.Fragment>   
             <div className="rounded-md mb-2 shadow-sm shadow-iw-shadow"
                  data-testid="Help-Item-Container">
                 <button
