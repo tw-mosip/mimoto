@@ -10,18 +10,20 @@
   },
   "HomePage": {
     "Intro": {
-      "title": "Downloading a Credential is one-click away!",
-      "subTitle": "Please search for the issuer and in the next step, select credential to download.",
+      "title": "Access your Verifiable Credentials with ease!",
+      "subTitle": "Securely download and share your credentials instantly.",
       "searchText": "Search Issuers by name"
     },
     "emptyContainerContent": "No issuers found. Please refresh your browser window or try again later",
     "containerHeading": "List of Issuers",
+    "containerSubHeading": "Search for your trusted issuer and choose a credential type in the next step.",
     "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "CredentialsPage": {
     "searchText": "Search Credential Type",
     "emptyContainerContent": "No Credentials found. Please refresh your browser window or try again later",
     "containerHeading": "List of Credential Types",
+    "containerSubHeading": "Choose a credential, and confirm your identity in the next step.",
     "errorContent": "The service is currently unavailable now. Please try again later."
   },
   "RedirectionPage": {
@@ -39,11 +41,54 @@
         "title": "Invalid Session",
         "subTitle": "session is not valid or session is completed"
       },
+      "verification": {
+        "proof_type_not_supported": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry! Due to technical error we cannot download your credential."
+        },
+        "json_parsing_failed": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry, due to technical error, we are unable to download the VC. Please try again later!"
+        },
+        "signature_verification_failed": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry! Your credential couldn’t be downloaded as there is an issue with validating the issuer's signature. Please contact the admin for further assistance."
+        },
+        "unknown_exception": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry, it seems our services are temporarily unavailable. Please check back shortly, and we appreciate your patience!"
+        },
+        "proof_document_not_found": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry! Your credential couldn’t be downloaded as there is an issue with validating the issuer's signature. Please contact the admin for further assistance."
+        },
+        "public_key_not_found": {
+          "title": "An Error Occurred",
+          "subTitle": "Sorry! Your credential couldn’t be downloaded as there is an issue with validating the issuer's signature. Please contact the admin for further assistance."
+        }
+      },
       "generic": {
-        "title": "Download Failed",
-        "subTitle": "something went wrong, please try again later"
+        "title": "An Error Occurred",
+        "subTitle": "Sorry, due to technical error, we are unable to download the VC. Please try again later!"
       }
     }
+  },
+  "AuthorizationPage": {
+    "error": {
+      "code": {
+        "invalid_redirect_uri":"Access Denied!",
+        "invalid_client": "Access Denied!"
+      },
+      "message": {
+        "invalid_redirect_uri":"Credentials cannot be shared because we couldn’t identify who requested them. Please contact the admin for help.",
+        "invalid_client": "Credentials cannot be shared because we couldn’t identify who requested them. Please contact the admin for help."
+      }
+    }
+  },
+  "PageNotFound": {
+    "navigateButton": "Go To Home",
+    "heading": "That's an error",
+    "subHeading": "The requested URL {{pathname}} was not found on this server."
   },
   "HelpPage": {
     "title": "Help"

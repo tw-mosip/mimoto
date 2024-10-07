@@ -1,3 +1,4 @@
+import React from 'react';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 import {api} from "./api";
@@ -75,3 +76,11 @@ export const getErrorObject = (downloadResponse: any) => {
     }
 }
 
+export const constructContent = (descriptions: string[],applyHTML:boolean) => {
+    return descriptions.map((desc, index) => {
+        if (applyHTML) {
+            return { __html: desc };
+        }
+        return desc;
+    });
+};

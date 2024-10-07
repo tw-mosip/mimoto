@@ -1,24 +1,9 @@
 import React from "react";
 import { HelpAccordionItemProps } from "../../types/components";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import {renderContent} from "../../utils/style"; 
 
 export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
-    const renderContent = (content: string | { __html: string }) => {
-        if (typeof content === 'object' && '__html' in content) {
-            return (
-                <span 
-                    dangerouslySetInnerHTML={{
-                        __html: content.__html.replace(
-                            /<a\s/g, 
-                            '<a class="text-blue-600 hover:text-blue-800 underline font-semibold" '
-                        )
-                    }} 
-                />
-            );
-        }
-        return content;
-    };
-
     return (
         <React.Fragment>
             <div className="rounded-md mb-2 shadow-sm shadow-iw-shadow"
