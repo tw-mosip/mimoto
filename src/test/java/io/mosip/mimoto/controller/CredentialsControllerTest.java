@@ -47,7 +47,7 @@ public class CredentialsControllerTest {
         TokenResponseDTO tokenResponseDTO = TestUtilities.getTokenResponseDTO();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream("test-data".getBytes());
         Mockito.when(credentialService.getTokenResponse(Mockito.anyMap(), Mockito.eq(issuer))).thenReturn(tokenResponseDTO);
-        Mockito.when(credentialService.downloadCredentialAsPDF(Mockito.eq(issuer), Mockito.eq(credential), Mockito.eq(tokenResponseDTO))).thenReturn(byteArrayInputStream);
+        Mockito.when(credentialService.downloadCredentialAsPDF(Mockito.eq(issuer), Mockito.eq(credential), Mockito.eq(tokenResponseDTO), Mockito.eq("3"))).thenReturn(byteArrayInputStream);
 
         mockMvc.perform(post("/credentials/download")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -57,6 +57,7 @@ public class CredentialsControllerTest {
                                 new BasicNameValuePair("redirect_uri", "test-redirect_uri"),
                                 new BasicNameValuePair("code_verifier", "test-code_verifier"),
                                 new BasicNameValuePair("issuer", issuer),
+                                new BasicNameValuePair("vcExpiryTimes", "3"),
                                 new BasicNameValuePair("credential", credential)
                         )))))
                 .andExpect(status().isOk())
@@ -82,6 +83,7 @@ public class CredentialsControllerTest {
                                 new BasicNameValuePair("redirect_uri", "test-redirect_uri"),
                                 new BasicNameValuePair("code_verifier", "test-code_verifier"),
                                 new BasicNameValuePair("issuer", issuer),
+                                new BasicNameValuePair("vcExpiryTimes", "3"),
                                 new BasicNameValuePair("credential", credential)
                         )))))
                 .andExpect(status().isBadRequest())
@@ -97,7 +99,7 @@ public class CredentialsControllerTest {
         String credential = "test-credential";
         TokenResponseDTO tokenResponseDTO = TestUtilities.getTokenResponseDTO();
         Mockito.when(credentialService.getTokenResponse(Mockito.anyMap(), Mockito.eq(issuer))).thenReturn(tokenResponseDTO);
-        Mockito.when(credentialService.downloadCredentialAsPDF(Mockito.eq(issuer), Mockito.eq(credential), Mockito.eq(tokenResponseDTO))).thenThrow(ApiNotAccessibleException.class);
+        Mockito.when(credentialService.downloadCredentialAsPDF(Mockito.eq(issuer), Mockito.eq(credential), Mockito.eq(tokenResponseDTO), Mockito.eq("3") )).thenThrow(ApiNotAccessibleException.class);
 
         mockMvc.perform(post("/credentials/download")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -107,6 +109,7 @@ public class CredentialsControllerTest {
                                 new BasicNameValuePair("redirect_uri", "test-redirect_uri"),
                                 new BasicNameValuePair("code_verifier", "test-code_verifier"),
                                 new BasicNameValuePair("issuer", issuer),
+                                new BasicNameValuePair("vcExpiryTimes", "3"),
                                 new BasicNameValuePair("credential", credential)
                         )))))
                 .andExpect(status().isBadRequest())
