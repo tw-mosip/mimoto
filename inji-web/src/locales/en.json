@@ -221,6 +221,30 @@
       "description3":"2. OnlineSharing: This option generates a QR code with a URL that points to the VC stored securely online. This ensures a less dense QR code, making it easier to scan, and supports seamless online sharing.",
       "description4":"These configurations can be found in the Mimoto issuer's configuration. Depending on your needs, you can switch between these two options to adjust how the VC is downloaded and shared."
     }
-
+  },
+  "DataShareExpiryModal": {
+    "title": "Share Validity",
+    "subTitle": "Please provide your consent to set a validity for sharing the {{credentialName}}",
+    "content": {
+      "selectedDocument": "Selected Document",
+      "consent" : "Consent Validity *",
+      "validityTimesHeader": "Number of times",
+      "validityTimesOptions": {
+        "once": "Once",
+        "thrice": "Thrice",
+        "noLimit": "No Limit",
+        "custom": "Custom"
+      },
+      "validityDate": "Date"
+    },
+    "success": "Proceed",
+    "cancel": "Back",
+    "disclaimer": "Please note that the QR Code can be shared only for the number of times you have chosen here. To use the QR Code for sharing again, you have to download the PDF again."
+  },
+  "CustomExpiryModal": {
+    "title": "Please enter the number of times you want to use this credential ",
+    "metrics": "Times",
+    "success": "Proceed",
+    "cancel": "Cancel"
   }
 }

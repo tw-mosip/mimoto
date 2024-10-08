@@ -221,5 +221,30 @@
       "description3": "2. Partage en ligne : cette option génère un code QR avec une URL qui pointe vers le VC stocké en ligne de manière sécurisée. ",
       "description4": "Ces configurations se trouvent dans la configuration de l'émetteur Mimoto. "
     }
+  },
+  "DataShareExpiryModal": {
+    "title": "Validité du partage",
+    "subTitle": "Veuillez donner votre consentement pour définir une validité pour le partage du {{credentialName}}",
+    "content": {
+      "selectedDocument": "Document sélectionné",
+      "consent": "Validité du consentement *",
+      "validityTimesHeader": "Nombre de fois",
+      "validityTimesOptions": {
+        "once": "Une fois",
+        "thrice": "Trois fois",
+        "noLimit": "Aucune limite",
+        "custom": "Coutume"
+      },
+      "validityDate": "Date"
+    },
+    "success": "Procéder",
+    "cancel": "Dos",
+    "disclaimer": "Veuillez noter que le QR Code ne peut être partagé que le nombre de fois que vous avez choisi ici. "
+  },
+  "CustomExpiryModal": {
+    "title": "Veuillez saisir le nombre de fois que vous souhaitez utiliser cet identifiant ",
+    "metrics": "Fois",
+    "success": "Procéder",
+    "cancel": "Annuler"
   }
 }
