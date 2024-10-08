@@ -1,7 +1,7 @@
 import React from "react";
 import { HelpAccordionItemProps } from "../../types/components";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import {renderContent} from "../../utils/style"; 
+import {renderContent} from "../../utils/builder"; 
 
 export const HelpAccordionItem: React.FC<HelpAccordionItemProps> = (props) => {
     return (

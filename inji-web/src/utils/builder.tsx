@@ -15,3 +15,12 @@ export const renderContent = (content: string | { __html: string }) => {
     }
     return content;
 };
+
+export const constructContent = (descriptions: string[],applyHTML:boolean) => {
+    return descriptions.map((desc, index) => {
+        if (applyHTML) {
+            return { __html: desc };
+        }
+        return desc;
+    });
+};

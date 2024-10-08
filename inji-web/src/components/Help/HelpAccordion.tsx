@@ -3,10 +3,10 @@ import {HelpAccordionItem} from "./HelpAccordionItem";
 import { HelpAccordionItemProps } from "../../types/components";
 import {useTranslation} from "react-i18next";
 import { title } from "process";
-import { constructContent } from "../../utils/misc";
+import { constructContent } from "../../utils/builder";
 
-export const HelpAccordion: React.FC = () =>     {
-
+export const HelpAccordion: React.FC = () =>{
+    
     const [open, setOpen] = useState(0);
     const {t} = useTranslation("Help");
 
@@ -116,8 +116,8 @@ export const HelpAccordion: React.FC = () =>     {
                         content={item.content}
                         open={open}
                         setOpen={setOpen}
-                    />
-                ))}
+                    />))
+                }
             </div>
         </React.Fragment>
     );
