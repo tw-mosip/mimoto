@@ -75,3 +75,11 @@ export const getErrorObject = (downloadResponse: any) => {
     }
 }
 
+export const constructContent = (descriptions: string[],applyHTML:boolean) => {
+    return descriptions.map((desc, index) => {
+        if (applyHTML) {
+            return { __html: desc };
+        }
+        return desc;
+    });
+};
