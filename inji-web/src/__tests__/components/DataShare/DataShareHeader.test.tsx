@@ -1,22 +1,21 @@
-import {render, screen} from "@testing-library/react";
+import {screen} from "@testing-library/react";
 import {DataShareHeader} from "../../../components/DataShare/DataShareHeader";
+import { renderWithProvider } from "../../../test-utils/mockUtils";
 
 describe("Testing Layout of the Expiry Header", () => {
-    beforeEach(()=>{
-        render(<DataShareHeader title={"title"} subTitle={"subTitle"}/>);
+    
+    test("Check if the layout is matching with the snapshots", ()=>{
+        const{asFragment} = renderWithProvider(<DataShareHeader title={"title"} subTitle={"subTitle"}/>)
+        expect(asFragment()).toMatchSnapshot();
     })
-    test("Test Presence of the Outer Container", ()=>{
-        const document = screen.getByTestId("DataShareHeader-Outer-Container");
-        expect(document).toBeInTheDocument();
+});
+describe("Testing Functionality of the Expiry Header",() =>{
+    test("Check Presence of the Header Title", ()=>{
+        renderWithProvider(<DataShareHeader title={"title"} subTitle={"subTitle"}/>);
+        expect(screen.getByTestId("DataShareHeader-Header-Title")).toHaveTextContent("title");
     })
-    test("Test Presence of the Header Title", ()=>{
-        const document = screen.getByTestId("DataShareHeader-Header-Title");
-        expect(document).toBeInTheDocument();
-        expect(document).toHaveTextContent("title");
+    test("Check Presence of the Header SubTitle", ()=>{
+        renderWithProvider(<DataShareHeader title={"title"} subTitle={"subTitle"}/>);
+        expect(screen.getByTestId("DataShareHeader-Header-SubTitle")).toHaveTextContent("subTitle");
     })
-    test("Test Presence of the Header SubTitle", ()=>{
-        const document = screen.getByTestId("DataShareHeader-Header-SubTitle");
-        expect(document).toBeInTheDocument();
-        expect(document).toHaveTextContent("subTitle");
-    })
-})
+});

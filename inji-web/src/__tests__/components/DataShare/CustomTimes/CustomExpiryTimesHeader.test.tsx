@@ -1,22 +1,19 @@
-import {render, screen} from "@testing-library/react";
+import {screen} from "@testing-library/react";
 import {CustomExpiryTimesHeader} from "../../../../components/DataShare/CustomExpiryTimes/CustomExpiryTimesHeader";
+import { renderWithProvider } from "../../../../test-utils/mockUtils";
 
-describe("Test the Layout of the Custom Expiry Header", () => {
 
-    beforeEach( ()=> {
-        render(<CustomExpiryTimesHeader title={"CTHeader"} />);
-    } )
-
-    test("Test the presence of the Outer Container", ()=>{
-        const document = screen.getByTestId("CustomExpiryTimesHeader-Outer-Container");
-        expect(document).toBeInTheDocument();
+describe("Testing the Layout of the Custom Expiry Header", () => {
+    test("Check if the layout is matching with the snapshots", ()=>{
+        const{asFragment} = renderWithProvider(<CustomExpiryTimesHeader title={"CTHeader"} />)
+        expect(asFragment()).toMatchSnapshot();
     })
-    test("Test the presence of the Title Content", ()=>{
-        const document = screen.getByTestId("CustomExpiryTimesHeader-Title-Content");
-        expect(document).toBeInTheDocument();
-    })
-    test("Test to Have the content", ()=>{
+   
+});
+describe("Testing the functionality of custom expiry Header",()=>{
+    test("Check to Have the content", ()=>{
+        renderWithProvider(<CustomExpiryTimesHeader title={"CTHeader"} />);
         const document = screen.getByTestId("CustomExpiryTimesHeader-Title-Content");
         expect(document).toHaveTextContent("CTHeader");
     })
-})
+});
