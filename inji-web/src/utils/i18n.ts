@@ -37,6 +37,7 @@ export const initializeI18n = () => {
             },
         });
 };
+initializeI18n();
 
 export const switchLanguage = async (language: string) => {
     storage.setItem(storage.SELECTED_LANGUAGE, language);
