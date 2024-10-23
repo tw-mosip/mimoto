@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  script_runner:
+    container_name: script_runner
+    image: openjdk:11
+    entrypoint: [ "/bin/sh","/startup.sh" ]
+    volumes:
+      - ./certgen.zip:/certgen.zip
+      - ./startup.sh:/startup.sh
+    networks:
+      - network
   nginx:
     container_name: nginx
     image: nginx:alpine
@@ -10,6 +19,9 @@ services:
       - ./config/mimoto-issuers-config.json:/config/server/mimoto-issuers-config.json
       - ./config/CredentialTemplate.html:/config/server/CredentialTemplate.html
       - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - network
+
   mimoto-service:
     container_name: 'Mimoto-Service'
     image: 'mosipid/mimoto:0.13.1'
@@ -28,3 +40,11 @@ services:
       - ./loader_path/:/home/mosip/additional_jars/
     depends_on:
       - nginx
+      - script_runner
+    networks:
+      - network
+
+networks:
+  network:
+    name: mosip_network
+    external: true

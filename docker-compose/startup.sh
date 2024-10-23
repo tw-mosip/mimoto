@@ -20,13 +20,13 @@ update_cert_property_value() {
 }
 
 get_csrf_token() {
-  local RESPONSE=$(curl --location 'http://localhost:8088/v1/esignet/csrf/token')
+  local RESPONSE=$(curl --location 'http://esignet:8088/v1/esignet/csrf/token')
   local TOKEN="$(echo "$RESPONSE" | grep -o '"token":"[^"]*' | sed 's/"token":"//')"
   echo "$TOKEN"
 }
 
 create_oidc_client() {
-  local RESPONSE=$(curl --location 'http://localhost:8088/v1/esignet/client-mgmt/oidc-client' \
+  local RESPONSE=$(curl --location 'http://esignet:8088/v1/esignet/client-mgmt/oidc-client' \
                         --header 'X-XSRF-TOKEN: $1' \
                         --header 'Content-Type: application/json' \
                         --header 'Authorization: Bearer $1' \
@@ -68,31 +68,28 @@ create_oidc_client() {
   echo $RESPONSE
 }
 
-LOADER_PATH="loader_path"
-mkdir $LOADER_PATH
-
-URL="https://repo1.maven.org/maven2/io/mosip/kernel/kernel-auth-adapter/1.2.0.1/kernel-auth-adapter-1.2.0.1.jar"
-OUTPUT_FILE="$LOADER_PATH/kernel-auth-adapter.jar"
-download_file $OUTPUT_FILE $URL
-
 # CERTGEN
 CERTS_PATH="certs"
-#CERTS_URL=""
+HOME="/"
 CERTS_OUTPUT_FILE="certgen.zip"
-CERTS_PROP_PARTNER_NAME="custom2-oidc-client"
+CERTS_PROP_PARTNER_NAME="mpartner-default-mimotooidc"
 KEY_STORE_P12_FILENAME="oidckeystore.p12"
 
 mkdir $CERTS_PATH
-#download_file "$CERTS_PATH/$CERTS_OUTPUT_FILE" "$CERTS_URL"
 unzip "$CERTS_OUTPUT_FILE"
-#unzip "$CERTS_PATH/$CERTS_OUTPUT_FILE"
+
+
+apt update -y
+apt install -y unzip \
 
 cd certgen
 update_cert_property_value "partner_name" "$CERTS_PROP_PARTNER_NAME"
 update_cert_property_value "path" "$(pwd)/certs"
 chmod 777 certgen.sh
-sed -i '' 's/\r//g' cert.properties
-sed -i '' 's/\r//g' certgen.sh
+sed -i 's/\r//g' cert.properties
+sed -i 's/\r//g' certgen.sh
+apt install -y npm
+npm install -g pem-jwk
 ./certgen.sh
 cd ..
 
@@ -101,14 +98,15 @@ chmod 777 "certgen/certs/$CERTS_PROP_PARTNER_NAME/keystore.p12"
 cp "certgen/certs/$CERTS_PROP_PARTNER_NAME/keystore.p12" $CERTS_PATH
 cd $CERTS_PATH
 mv "keystore.p12" $KEY_STORE_P12_FILENAME
+cd $HOME
 
 CSRF_TOKEN=$(get_csrf_token)
-
+echo "Current directory : $(pwd)"
 PUBKEY_JWK=$(cat "certgen/certs/$CERTS_PROP_PARTNER_NAME/pubkey.jwk")
 
 OIDC_CLIENT_ID=$(create_oidc_client $CSRF_TOKEN $CERTS_PROP_PARTNER_NAME $PUBKEY_JWK)
 
-docker-compose up -d
+tail -f /dev/null
 
 
 
