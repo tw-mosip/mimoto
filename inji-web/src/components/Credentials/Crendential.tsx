@@ -21,14 +21,14 @@ export const Credential: React.FC<CredentialProps> = (props) => {
     const onSuccess = (defaultVCStorageExpiryLimit: number = vcStorageExpiryLimitInTimes) => {
         const state = generateRandomString();
         const code_challenge: CodeChallengeObject = generateCodeChallenge(state);
-        window.open(api.authorization(selectedIssuer.selected_issuer, props.credentialWellknown, filteredCredentialConfig, state, code_challenge), '_self', 'noopener');
         addNewSession({
             selectedIssuer: selectedIssuer.selected_issuer,
             certificateId: props.credentialId,
             codeVerifier: state,
-            vcStorageExpiryLimitInTimes: defaultVCStorageExpiryLimit,
+            vcStorageExpiryLimitInTimes: isNaN(defaultVCStorageExpiryLimit) ? vcStorageExpiryLimitInTimes : defaultVCStorageExpiryLimit,
             state: state,
         });
+        window.open(api.authorization(selectedIssuer.selected_issuer, props.credentialWellknown, filteredCredentialConfig, state, code_challenge), '_self', 'noopener');
     }
 
     return <React.Fragment>

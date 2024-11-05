@@ -19,6 +19,7 @@ export class api {
 
     static authorizationRedirectionUrl = window.location.origin + "/redirect";
 
+
     static fetchIssuers: ApiRequest = {
         url: () => (api.mimotoHost + "/issuers"),
         methodType: MethodType.GET,
