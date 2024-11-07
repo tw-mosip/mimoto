@@ -278,7 +278,8 @@
     },
     "success": "Procéder",
     "cancel": "Dos",
-    "disclaimer": "Veuillez noter que le QR Code ne peut être partagé que le nombre de fois que vous avez choisi ici. "
+    "disclaimer": "Veuillez noter que le QR Code ne peut être partagé que le nombre de fois que vous avez choisi ici. ",
+    "toastText":"À venir"
   },
   "CustomExpiryModal": {
     "title": "Veuillez saisir le nombre de fois que vous souhaitez utiliser cet identifiant ",
