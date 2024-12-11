@@ -66,7 +66,9 @@ public class IssuerDTO {
     @NotBlank
     @Schema(description = "Toggler to Enable / Disable the Issuer", defaultValue = "false")
     String enabled;
+    @Expose
     @NotBlank
-    @Schema(description = "Issuer Host")
+    @JsonInclude(NON_NULL)
+    @Schema(description = "Credential Issuer Host")
     String credential_issuer_host;
 }
