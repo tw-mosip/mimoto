@@ -1,9 +1,7 @@
 package io.mosip.mimoto.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import io.mosip.mimoto.model.QRCodeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -70,5 +68,5 @@ public class IssuerDTO {
     String enabled;
     @NotBlank
     @Schema(description = "Issuer Host")
-    String credential_issuer_identifier;
+    String credential_issuer_host;
 }
