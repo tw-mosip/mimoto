@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
 
@@ -100,7 +102,13 @@ public class DataShareServiceImpl {
                     ErrorConstants.RESOURCE_INVALID.getErrorCode(),
                     ErrorConstants.RESOURCE_INVALID.getErrorMessage());
         }
-        String vcCredentialResponseString = restApiClient.getApi(credentialsResourceUri, String.class);
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.ACCEPT, "application/json");
+        headers.add(HttpHeaders.ACCEPT_CHARSET, "UTF-8");
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String vcCredentialResponseString = restTemplate.exchange(credentialsResourceUri, HttpMethod.GET, entity, String.class).getBody();
         if (vcCredentialResponseString == null) {
             throw new InvalidCredentialResourceException(
                     ErrorConstants.SERVER_UNAVAILABLE.getErrorCode(),
