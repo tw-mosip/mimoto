@@ -72,9 +72,9 @@
       "proxy_token_endpoint": "https://esignet-mosipid.dev1.mosip.net/v1/esignet/oauth/v2/token",
       "client_alias": "mpartner-default-test-mosipid",
       "qr_code_type": "OnlineSharing",
-      "enabled": "true",
       "wellknown_endpoint": "https://injicertify-mosipid.dev1.mosip.net/v1/certify/issuance/.well-known/openid-credential-issuer",
-      "credential_issuer_host": "https://injicertify-mosipid.dev1.mosip.net"
+      "credential_issuer_host": "https://injicertify-mosipid.dev1.mosip.net",
+      "enabled": "true"
     },
     {
       "credential_issuer": "StayProtected",
@@ -98,9 +98,9 @@
       "proxy_token_endpoint": "https://esignet-insurance.dev1.mosip.net/v1/esignet/oauth/v2/token",
       "client_alias": "esignet-sunbird-partner",
       "qr_code_type": "OnlineSharing",
-      "enabled": "true",
       "wellknown_endpoint": "https://injicertify-insurance.dev1.mosip.net/v1/certify/issuance/.well-known/openid-credential-issuer",
-      "credential_issuer_host": "https://injicertify-insurance.dev1.mosip.net"
+      "credential_issuer_host": "https://injicertify-insurance.dev1.mosip.net",
+      "enabled": "true"
     },
     {
       "credential_issuer": "Mock",
@@ -124,9 +124,9 @@
       "proxy_token_endpoint": "https://esignet-mock.dev1.mosip.net/v1/esignet/oauth/v2/token",
       "client_alias": "mpartner-mock-testing",
       "qr_code_type": "OnlineSharing",
-      "enabled": "true",
       "wellknown_endpoint": "https://injicertify-mock.dev1.mosip.net/v1/certify/issuance/.well-known/openid-credential-issuer",
-      "credential_issuer_host": "https://injicertify-mock.dev1.mosip.net"
+      "credential_issuer_host": "https://injicertify-mock.dev1.mosip.net",
+      "enabled": "true"
     }
   ]
 }
