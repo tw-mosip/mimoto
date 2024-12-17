@@ -19,7 +19,7 @@ public class IssuerDTO {
     @Expose
     @NotBlank
     @Schema(description = "Unique Identifier of the Issuer")
-    String credential_issuer;
+    String issuer_id;
     @Expose
     @NotBlank
     @Schema(description = "protocol of the download flow", allowableValues = {"OTP", "OpenId4VCI"})
@@ -70,5 +70,5 @@ public class IssuerDTO {
     @NotBlank
     @JsonInclude(NON_NULL)
     @Schema(description = "Credential Issuer Host")
-    String credential_issuer_host;
+    String credential_issuer;
 }
