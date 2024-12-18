@@ -101,6 +101,7 @@ public class TestUtilities {
         display.setLogo(logo);
         IssuerDTO issuer = new IssuerDTO();
         issuer.setIssuer_id(issuerName + "id");
+        issuer.setCredential_issuer("https://injicertify-mock.dev1.mosip.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         if (issuerName.equals("Issuer1")) issuer.setWellknown_endpoint("/well-known-proxy");
@@ -122,6 +123,7 @@ public class TestUtilities {
         display.setLogo(logo);
         IssuerDTO issuer = new IssuerDTO();
         issuer.setIssuer_id(issuerName + "id");
+        issuer.setCredential_issuer("https://injicertify-mock.dev1.mosip.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         issuer.setEnabled("true");
