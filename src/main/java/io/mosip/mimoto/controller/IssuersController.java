@@ -115,6 +115,7 @@ public class IssuersController {
 
     public AuthorizationServerWellKnownResponse getAuthorizationServerWellknown(String oauthServerUrl) throws ApiNotAccessibleException, IOException {
         try {
+            log.info("Start fetching Authorization Server Wellknown::");
             AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);
             return authorizationServerWellKnownResponse;
         } catch (Exception exception) {

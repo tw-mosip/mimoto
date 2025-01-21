@@ -32,6 +32,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     private ObjectMapper objectMapper;
 
     @Override
+    @Cacheable(value = "authServerWellknown", key = "{#authorizationServerHostUrl}")
     public AuthorizationServerWellKnownResponse getWellknown(String authorizationServerHostUrl) {
         try {
             String wellknownEndpoint = authorizationServerHostUrl + "/.well-known/oauth-authorization-server";
