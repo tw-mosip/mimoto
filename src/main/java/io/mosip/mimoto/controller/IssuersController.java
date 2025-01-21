@@ -5,8 +5,11 @@ import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
+import io.mosip.mimoto.dto.mimoto.AuthorizationServerWellKnownResponse;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
+import io.mosip.mimoto.service.AuthorizationServerService;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +34,9 @@ import static io.mosip.mimoto.exception.PlatformErrorMessages.INVALID_ISSUER_ID_
 public class IssuersController {
     @Autowired
     IssuersService issuersService;
+
+    @Autowired
+    AuthorizationServerService authorizationServerService;
 
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_DESCRIPTION)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,5 +88,37 @@ public class IssuersController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+    }
+
+    @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_DESCRIPTION)
+    @GetMapping(value = "/{issuer-id}/configuration", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CredentialIssuerConfigurationResponse> getIssuerConfiguration(@PathVariable("issuer-id") String issuerId) {
+        try {
+            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
+            String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
+            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(oauthServerUrl);
+
+            CredentialIssuerConfigurationResponse issuerConfigurationResponse = new CredentialIssuerConfigurationResponse(
+                    credentialIssuerWellKnownResponse.getCredentialIssuer(),
+                    credentialIssuerWellKnownResponse.getAuthorizationServers(),
+                    credentialIssuerWellKnownResponse.getCredentialEndPoint(),
+                    credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported(),
+                    authorizationServerWellKnownResponse
+            );
+
+            return ResponseEntity.status(HttpStatus.OK).body(issuerConfigurationResponse);
+        } catch (Exception exception) {
+            log.error("Exception occurred while fetching issuers configurations " + exception);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    public AuthorizationServerWellKnownResponse getAuthorizationServerWellknown(String oauthServerUrl) throws ApiNotAccessibleException, IOException {
+        try {
+            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);
+            return authorizationServerWellKnownResponse;
+        } catch (Exception exception) {
+            throw exception;
+        }
     }
 }

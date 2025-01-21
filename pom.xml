@@ -452,8 +452,6 @@
             <version>${kernel.cbeffutil.version}</version>
         </dependency>
 
-
-
     </dependencies>
 
     <repositories>
