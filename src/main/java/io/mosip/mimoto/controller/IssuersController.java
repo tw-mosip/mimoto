@@ -53,6 +53,11 @@ public class IssuersController {
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
+    /**
+     * @deprecated Since version 0.16.0, this endpoint is deprecated and will be removed in a future release.
+     * Please use new endpoint {@link #getIssuerConfiguration(String)} instead.
+     */
+    @Deprecated(since = "0.16.0", forRemoval = true)
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_DESCRIPTION)
     @GetMapping(value = "/{issuer-id}/well-known-proxy", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CredentialIssuerWellKnownResponse> getIssuerWellknown(@PathVariable("issuer-id") String issuerId) {
@@ -90,13 +95,13 @@ public class IssuersController {
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
-    @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_WELLKNOWN_DESCRIPTION)
+    @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_CONFIGURATION_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_CONFIGURATION_DESCRIPTION)
     @GetMapping(value = "/{issuer-id}/configuration", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CredentialIssuerConfigurationResponse> getIssuerConfiguration(@PathVariable("issuer-id") String issuerId) {
         try {
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
             String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
-            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(oauthServerUrl);
+            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);
 
             CredentialIssuerConfigurationResponse issuerConfigurationResponse = new CredentialIssuerConfigurationResponse(
                     credentialIssuerWellKnownResponse.getCredentialIssuer(),
@@ -110,16 +115,6 @@ public class IssuersController {
         } catch (Exception exception) {
             log.error("Exception occurred while fetching issuers configurations " + exception);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    public AuthorizationServerWellKnownResponse getAuthorizationServerWellknown(String oauthServerUrl) throws ApiNotAccessibleException, IOException {
-        try {
-            log.info("Start fetching Authorization Server Wellknown::");
-            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);
-            return authorizationServerWellKnownResponse;
-        } catch (Exception exception) {
-            throw exception;
         }
     }
 }
