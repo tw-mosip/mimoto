@@ -56,8 +56,8 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
                 sb.append("\n").append(violation.getPropertyPath()).append(": ").append(violation.getMessage());
             }
 
-            String errorCode = PlatformErrorMessages.INVALID_CREDENTIAL_ISSUER_WELLKNOWN_RESPONSE_EXCEPTION.getCode();
-            String errorMsg = PlatformErrorMessages.INVALID_CREDENTIAL_ISSUER_WELLKNOWN_RESPONSE_EXCEPTION.getMessage() + "\n" + sb;
+            String errorCode = PlatformErrorMessages.INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION.getCode();
+            String errorMsg = PlatformErrorMessages.INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION.getMessage() + "\n" + sb;
             throw new InvalidWellknownResponseException(errorCode, errorMsg);
         }
     }
