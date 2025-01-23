@@ -28,4 +28,11 @@ public class AuthorizationServerWellKnownResponse {
     @JsonProperty("grant_types_supported")
     @Schema(description = "List of grant types_supported by Authorization Server")
     private List<@NotBlank String> grantTypesSupported;
+
+    @NotBlank
+    @URL
+    @SerializedName("token_endpoint")
+    @JsonProperty(value = "token_endpoint", access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(description = "Endpoint for getting the token from the authorization server")
+    private String tokenEndpoint;
 }

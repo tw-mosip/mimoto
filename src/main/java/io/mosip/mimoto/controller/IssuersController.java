@@ -35,9 +35,6 @@ public class IssuersController {
     @Autowired
     IssuersService issuersService;
 
-    @Autowired
-    AuthorizationServerService authorizationServerService;
-
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_DESCRIPTION)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseWrapper<IssuersDTO>> getAllIssuers(@RequestParam(required = false, name = "search") String search) {
@@ -99,17 +96,7 @@ public class IssuersController {
     @GetMapping(value = "/{issuer-id}/configuration", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CredentialIssuerConfigurationResponse> getIssuerConfiguration(@PathVariable("issuer-id") String issuerId) {
         try {
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
-            String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
-            AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);
-
-            CredentialIssuerConfigurationResponse issuerConfigurationResponse = new CredentialIssuerConfigurationResponse(
-                    credentialIssuerWellKnownResponse.getCredentialIssuer(),
-                    credentialIssuerWellKnownResponse.getAuthorizationServers(),
-                    credentialIssuerWellKnownResponse.getCredentialEndPoint(),
-                    credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported(),
-                    authorizationServerWellKnownResponse
-            );
+            CredentialIssuerConfigurationResponse issuerConfigurationResponse = issuersService.getIssuerConfiguration(issuerId);
 
             return ResponseEntity.status(HttpStatus.OK).body(issuerConfigurationResponse);
         } catch (Exception exception) {

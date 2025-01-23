@@ -129,7 +129,8 @@ public class IdpController {
         try {
             IssuerDTO issuerDTO = issuersService.getIssuerConfig(issuer);
             HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO);
-            TokenResponseDTO response = new RestTemplate().postForObject(idpService.getTokenEndpoint(issuerDTO), request, TokenResponseDTO.class);
+            CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuersService.getIssuerConfiguration(issuer);
+            TokenResponseDTO response = new RestTemplate().postForObject(idpService.getTokenEndpoint(credentialIssuerConfigurationResponse), request, TokenResponseDTO.class);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception ex){
             log.error("Exception Occurred while Invoking the Token Endpoint : ", ex);
