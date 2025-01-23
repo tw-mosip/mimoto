@@ -15,10 +15,7 @@ import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.dto.openid.presentation.PresentationDefinitionDTO;
-import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.exception.IdpException;
-import io.mosip.mimoto.exception.InvalidCredentialResourceException;
-import io.mosip.mimoto.exception.VCVerificationException;
+import io.mosip.mimoto.exception.*;
 import io.mosip.mimoto.model.QRCodeType;
 import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.IdpService;
@@ -107,7 +104,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
-    public TokenResponseDTO getTokenResponse(Map<String, String> params, String issuerId) throws ApiNotAccessibleException, IOException {
+    public TokenResponseDTO getTokenResponse(Map<String, String> params, String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         IssuerDTO issuerDTO = issuerService.getIssuerConfig(issuerId);
         CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuerService.getIssuerConfiguration(issuerId);
         String tokenEndpoint = idpService.getTokenEndpoint(credentialIssuerConfigurationResponse);

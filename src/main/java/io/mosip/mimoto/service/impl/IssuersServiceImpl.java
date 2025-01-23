@@ -12,6 +12,7 @@ import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import io.mosip.mimoto.service.AuthorizationServerService;
@@ -140,7 +141,7 @@ public class IssuersServiceImpl implements IssuersService {
 
 
     @Override
-    public CredentialIssuerConfigurationResponse getIssuerConfiguration(String issuerId) throws ApiNotAccessibleException, IOException {
+    public CredentialIssuerConfigurationResponse getIssuerConfiguration(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(issuerId);
         String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = authorizationServerService.getWellknown(oauthServerUrl);

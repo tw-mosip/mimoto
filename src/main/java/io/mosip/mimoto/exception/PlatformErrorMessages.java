@@ -88,7 +88,7 @@ public enum PlatformErrorMessages {
     INVALID_VERIFIER_REDIRECT_URI_EXCEPTION(PlatformConstants.PREFIX + "039", "Invalid Redirect Uri"),
     INVALID_CREDENTIAL_RESOURCE_URI_EXCEPTION(PlatformConstants.PREFIX + "040", "The Credential Resource is Invalid"),
     INVALID_CREDENTIAL_ISSUER_WELLKNOWN_RESPONSE_EXCEPTION(PlatformConstants.PREFIX + "041", "Invalid Wellknown from Issuer"),
-    INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION(PlatformConstants.PREFIX + "042", "Invalid Wellknown from Authorization Server");
+    INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION(PlatformConstants.PREFIX + "042", "Error occurred when fetching Authorization Server Wellknown");
 
 
     /** The error message. */

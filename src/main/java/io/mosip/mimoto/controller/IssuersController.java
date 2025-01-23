@@ -100,7 +100,7 @@ public class IssuersController {
 
             return ResponseEntity.status(HttpStatus.OK).body(issuerConfigurationResponse);
         } catch (Exception exception) {
-            log.error("Exception occurred while fetching issuers configurations " + exception);
+            log.error("Exception occurred while fetching issuers configurations - " + exception);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }

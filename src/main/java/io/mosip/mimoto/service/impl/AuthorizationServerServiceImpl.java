@@ -3,8 +3,7 @@ package io.mosip.mimoto.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.mimoto.AuthorizationServerWellKnownResponse;
-import io.mosip.mimoto.exception.InvalidWellknownResponseException;
-import io.mosip.mimoto.exception.PlatformErrorMessages;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.service.AuthorizationServerService;
 import io.mosip.mimoto.util.RestApiClient;
 import jakarta.validation.ConstraintViolation;
@@ -33,32 +32,42 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
     @Override
     @Cacheable(value = "authServerWellknown", key = "{#authorizationServerHostUrl}")
-    public AuthorizationServerWellKnownResponse getWellknown(String authorizationServerHostUrl) {
+    public AuthorizationServerWellKnownResponse getWellknown(String authorizationServerHostUrl) throws AuthorizationServerWellknownResponseException {
+        URI uri;
         try {
             String wellknownEndpoint = authorizationServerHostUrl + "/.well-known/oauth-authorization-server";
-            log.info("fetching Authorization Server Wellknown by calling :: "+wellknownEndpoint);
-            URI uri = URI.create(wellknownEndpoint);
-            String wellknownResponse = restApiClient.getApi(uri, String.class);
+            log.info("fetching Authorization Server Wellknown by calling :: " + wellknownEndpoint);
+            uri = URI.create(wellknownEndpoint);
+        } catch (Exception e) {
+            throw new AuthorizationServerWellknownResponseException(e.getMessage());
+        }
+        String wellknownResponse = restApiClient.getApi(uri, String.class);
+        if (wellknownResponse == null) {
+            throw new AuthorizationServerWellknownResponseException("Authorization Server wellknown api is not accessible");
+        }
+        try {
             AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = objectMapper.readValue(wellknownResponse, AuthorizationServerWellKnownResponse.class);
             validate(authorizationServerWellKnownResponse);
 
             return authorizationServerWellKnownResponse;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new AuthorizationServerWellknownResponseException(e.getMessage());
         }
     }
 
-    public void validate(AuthorizationServerWellKnownResponse response) throws InvalidWellknownResponseException {
-        Set<ConstraintViolation<AuthorizationServerWellKnownResponse>> violations = validator.validate(response);
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder("Validation failed:");
-            for (ConstraintViolation<AuthorizationServerWellKnownResponse> violation : violations) {
-                sb.append("\n").append(violation.getPropertyPath()).append(": ").append(violation.getMessage());
-            }
+    public void validate(AuthorizationServerWellKnownResponse response) throws AuthorizationServerWellknownResponseException {
+        try {
+            Set<ConstraintViolation<AuthorizationServerWellKnownResponse>> violations = validator.validate(response);
+            if (!violations.isEmpty()) {
+                StringBuilder sb = new StringBuilder("Validation failed:");
+                for (ConstraintViolation<AuthorizationServerWellKnownResponse> violation : violations) {
+                    sb.append("\n").append(violation.getPropertyPath()).append(": ").append(violation.getMessage());
+                }
 
-            String errorCode = PlatformErrorMessages.INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION.getCode();
-            String errorMsg = PlatformErrorMessages.INVALID_AUTHORIZATION_SERVER_WELLKNOWN_RESPONSE_EXCEPTION.getMessage() + "\n" + sb;
-            throw new InvalidWellknownResponseException(errorCode, errorMsg);
+                throw new AuthorizationServerWellknownResponseException(sb.toString());
+            }
+        } catch (Exception e) {
+            throw new AuthorizationServerWellknownResponseException(e.getMessage());
         }
     }
 }
