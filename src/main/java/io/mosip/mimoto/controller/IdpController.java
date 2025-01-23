@@ -128,11 +128,12 @@ public class IdpController {
         ResponseWrapper<TokenResponseDTO> responseWrapper = new ResponseWrapper<>();
         try {
             IssuerDTO issuerDTO = issuersService.getIssuerConfig(issuer);
-            HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO);
             CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuersService.getIssuerConfiguration(issuer);
-            TokenResponseDTO response = new RestTemplate().postForObject(idpService.getTokenEndpoint(credentialIssuerConfigurationResponse), request, TokenResponseDTO.class);
+            String tokenEndpoint = idpService.getTokenEndpoint(credentialIssuerConfigurationResponse);
+            HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO, tokenEndpoint);
+            TokenResponseDTO response = new RestTemplate().postForObject(tokenEndpoint, request, TokenResponseDTO.class);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             log.error("Exception Occurred while Invoking the Token Endpoint : ", ex);
             String[] errorObj = Utilities.handleExceptionWithErrorCode(ex);
             List<ErrorDTO> errors = Utilities.getErrors(errorObj[0], errorObj[1]);

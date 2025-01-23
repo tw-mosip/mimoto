@@ -36,13 +36,12 @@ public class IdpServiceImpl implements IdpService {
     JoseUtil joseUtil;
 
     @Override
-    public HttpEntity<MultiValueMap<String, String>> constructGetTokenRequest(Map<String, String> params, IssuerDTO issuerDTO) throws IOException, IssuerOnboardingException {
+    public HttpEntity<MultiValueMap<String, String>> constructGetTokenRequest(Map<String, String> params, IssuerDTO issuerDTO, String authorizationAudience) throws IOException, IssuerOnboardingException {
         HttpHeaders headers = new HttpHeaders();
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        String clientAssertion = joseUtil.getJWT(issuerDTO.getClient_id(), keyStorePath, fileName, issuerDTO.getClient_alias(), cyptoPassword, issuerDTO.getAuthorization_audience());
-
+        String clientAssertion = joseUtil.getJWT(issuerDTO.getClient_id(), keyStorePath, fileName, issuerDTO.getClient_alias(), cyptoPassword, authorizationAudience);
         map.add("code", params.get("code"));
         map.add("client_id", issuerDTO.getClient_id());
         map.add("grant_type", params.get("grant_type"));

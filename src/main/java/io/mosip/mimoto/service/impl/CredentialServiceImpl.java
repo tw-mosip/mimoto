@@ -99,6 +99,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     PixelPass pixelPass;
     CredentialsVerifier credentialsVerifier;
+
     @PostConstruct
     public void init(){
         pixelPass = new PixelPass();
@@ -109,9 +110,10 @@ public class CredentialServiceImpl implements CredentialService {
     public TokenResponseDTO getTokenResponse(Map<String, String> params, String issuerId) throws ApiNotAccessibleException, IOException {
         IssuerDTO issuerDTO = issuerService.getIssuerConfig(issuerId);
         CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuerService.getIssuerConfiguration(issuerId);
-        HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO);
-        TokenResponseDTO response = restTemplate.postForObject(idpService.getTokenEndpoint(credentialIssuerConfigurationResponse), request, TokenResponseDTO.class);
-        if(response == null) {
+        String tokenEndpoint = idpService.getTokenEndpoint(credentialIssuerConfigurationResponse);
+        HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO, tokenEndpoint);
+        TokenResponseDTO response = restTemplate.postForObject(tokenEndpoint, request, TokenResponseDTO.class);
+        if (response == null) {
             throw new IdpException("Exception occurred while performing the authorization");
         }
         return response;
