@@ -1,7 +1,7 @@
 package io.mosip.mimoto.controller;
 
 import io.mosip.mimoto.dto.IssuersDTO;
-import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import org.hamcrest.Matchers;
@@ -138,15 +138,15 @@ public class IssuersControllerTest {
     }
 
     @Test
-    public void getIssuerWellknownTest() throws Exception {
+    public void getIssuerConfigurationTest() throws Exception {
         String issuerId = "id1";
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedWellknown.json");
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json");
         String expectedCredentialIssuerWellknownResponse = new String(Files.readAllBytes(file.toPath()));
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")));
-        Mockito.when(issuersService.getIssuerWellknown(issuerId)).thenReturn(credentialIssuerWellKnownResponse);
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")));
+        Mockito.when(issuersService.getIssuerConfiguration(issuerId)).thenReturn(credentialIssuerConfigurationResponse);
 
 
-        String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/well-known-proxy").accept(MediaType.APPLICATION_JSON_VALUE))
+        String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/configuration").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

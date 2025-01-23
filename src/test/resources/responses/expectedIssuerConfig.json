@@ -39,5 +39,9 @@
         }
       ]
     }
+  },
+  "authorization": {
+    "authorization_endpoint": "https://dev/authorize",
+    "grant_types_supported": ["authorization_code"]
   }
 }

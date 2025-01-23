@@ -89,6 +89,15 @@ public class TestUtilities {
         return credentialIssuerWellKnownResponse;
     }
 
+    public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String,CredentialsSupportedResponse> credentialsSupportedResponses){
+        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = new AuthorizationServerWellKnownResponse();
+        authorizationServerWellKnownResponse.setAuthorizationEndpoint("https://dev/authorize");
+        authorizationServerWellKnownResponse.setTokenEndpoint("https://dev/token");
+        authorizationServerWellKnownResponse.setGrantTypesSupported(List.of("authorization_code"));
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/"+issuerName,List.of("https://dev.net"),"https://dev/issuance/credential",credentialsSupportedResponses,authorizationServerWellKnownResponse);
+        return credentialIssuerConfigurationResponse;
+    }
+
     public static IssuerDTO getIssuerDTO(String issuerName) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("/logo");
