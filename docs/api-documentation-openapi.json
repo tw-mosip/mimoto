@@ -1441,9 +1441,7 @@
                                                     "string"
                                                 ],
                                                 "authorization_endpoint": "string",
-                                                "authorization_audience": "string",
                                                 "token_endpoint": "string",
-                                                "proxy_token_endpoint": "string",
                                                 "credential_endpoint": "string",
                                                 "credential_type": [
                                                     "string"
@@ -1636,9 +1634,7 @@
                                                     "string"
                                                 ],
                                                 "authorization_endpoint": "string",
-                                                "authorization_audience": "string",
                                                 "token_endpoint": "string",
-                                                "proxy_token_endpoint": "string",
                                                 "credential_endpoint": "string",
                                                 "credential_type": [
                                                     "string"
@@ -1733,9 +1729,7 @@
                                                 "mosip_identity_vc_ldp"
                                             ],
                                             "authorization_endpoint": "https://esignet.collab.mosip.net/authorize",
-                                            "authorization_audience": "https://esignet.collab.mosip.net/v1/esignet/oauth/v2/token",
                                             "token_endpoint": "https://api.collab.mosip.net/v1/mimoto/get-token/ESignet",
-                                            "proxy_token_endpoint": "https://esignet.collab.mosip.net/v1/esignet/oauth/v2/token",
                                             "credential_endpoint": "https://esignet.collab.mosip.net/v1/esignet/vci/credential",
                                             "credential_type": [
                                                 "VerifiableCredential",
@@ -1832,9 +1826,7 @@
                                                     "mosip_identity_vc_ldp"
                                                 ],
                                                 "authorization_endpoint": "https://esignet.collab.mosip.net/authorize",
-                                                "authorization_audience": "https://esignet.collab.mosip.net/v1/esignet/oauth/v2/token",
                                                 "token_endpoint": "https://api.collab.mosip.net/v1/mimoto/get-token/ESignet",
-                                                "proxy_token_endpoint": "https://esignet.collab.mosip.net/v1/esignet/oauth/v2/token",
                                                 "credential_endpoint": "https://esignet.collab.mosip.net/v1/esignet/vci/credential",
                                                 "credential_type": [
                                                     "VerifiableCredential",

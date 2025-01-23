@@ -133,14 +133,8 @@ public class TestUtilities {
         else {
             if (!nullFields.contains("redirect_uri"))
                 issuer.setRedirect_uri("/redirection");
-            if (!nullFields.contains("authorization_audience"))
-                issuer.setAuthorization_audience("/authorization_audience");
-            if (!nullFields.contains("redirect_uri"))
-                issuer.setRedirect_uri("/redirection");
             if (!nullFields.contains("token_endpoint"))
                 issuer.setToken_endpoint("/token_endpoint");
-            if (!nullFields.contains("proxy_token_endpoint"))
-                issuer.setProxy_token_endpoint("/proxy_token_endpoint");
         }
         return issuer;
     }
