@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
+import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import io.mosip.mimoto.service.impl.CredentialServiceImpl;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.CredentialIssuerWellknownResponseValidator;
@@ -29,7 +32,6 @@ import java.util.Map;
 
 import static io.mosip.mimoto.util.TestUtilities.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.lenient;
@@ -58,6 +60,9 @@ public class IssuersServiceTest {
     @Mock
     ObjectMapper objectMapper;
 
+    @Mock
+    AuthorizationServerService authorizationServerService;
+    
     List<String> issuerConfigRelatedFields11 = List.of("additional_headers", "authorization_endpoint","authorization_audience", "token_endpoint", "proxy_token_endpoint", "credential_endpoint", "credential_audience", "redirect_uri");
     List<String> issuerConfigRelatedFields=List.of("additional_headers", "authorization_endpoint","authorization_audience","credential_endpoint", "credential_audience");
 
@@ -105,7 +110,7 @@ public class IssuersServiceTest {
         String issuerId = "Issuer1id";
         String wellKnownUrl = "/well-known-proxy";
         CredentialIssuerWellKnownResponse expextedCredentialIssuerWellKnownResponse=getCredentialIssuerWellKnownResponseDto("Issuer1",
-               Map.of("CredentialType1",getCredentialSupportedResponse("CredentialType1")));
+               Map.of("CredentialType1",getCredentialSupportedResponse("CredentialType1")),List.of());
 
         Mockito.when(restApiClient.getApi(wellKnownUrl , String.class))
                 .thenReturn(getExpectedWellKnownJson());
@@ -155,5 +160,21 @@ public class IssuersServiceTest {
         assertEquals(expectedIssuersDTO, actualIssuersDTO);
         assertEquals(actualIssuersDTO.getIssuers().get(0).getEnabled(), "true");
         assertEquals(actualIssuersDTO.getIssuers().size(), 1);
+    }
+
+    @Test
+    public void shouldReturnProperCredentialConfigurationsForTheRequestedIssuer() throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
+        String wellKnownUrl = "/well-known-proxy";
+        CredentialIssuerConfigurationResponse expectedCredentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto("Issuer1", Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")), List.of());
+        CredentialIssuerWellKnownResponse expextedCredentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto("Issuer1",
+                Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")),List.of(""));
+        Mockito.when(restApiClient.getApi(wellKnownUrl, String.class))
+                .thenReturn(getExpectedWellKnownJson());
+        Mockito.when(objectMapper.readValue(getExpectedWellKnownJson(), CredentialIssuerWellKnownResponse.class)).thenReturn(expextedCredentialIssuerWellKnownResponse);
+        Mockito.when(authorizationServerService.getWellknown("https://dev.net")).thenReturn(expectedCredentialIssuerConfigurationResponse.getAuthorizationServerWellKnownResponse());
+
+        CredentialIssuerConfigurationResponse actualCredentialIssuerConfigurationResponse = issuersService.getIssuerConfiguration("Issuer1id");
+
+        assertEquals(expectedCredentialIssuerConfigurationResponse, actualCredentialIssuerConfigurationResponse);
     }
 }

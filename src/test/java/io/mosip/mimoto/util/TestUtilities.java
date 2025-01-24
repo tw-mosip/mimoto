@@ -80,30 +80,38 @@ public class TestUtilities {
         return credentialsSupportedResponse;
     }
 
-    public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String,CredentialsSupportedResponse> credentialsSupportedResponses){
+    public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> nullFields) {
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
-        credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/"+issuerName);
-        credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
-        credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net"));
-        credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
+        if (!nullFields.contains("credential_issuer")) {
+            credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
+        }
+        if (!nullFields.contains("authorization_servers")) {
+            credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net"));
+        }
+        if (!nullFields.contains("credential_endpoint")) {
+            credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
+        }
+        if (!nullFields.contains("credential_configurations_supported")) {
+            credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
+        }
         return credentialIssuerWellKnownResponse;
     }
 
-    public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> ignoreFields) {
-        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(ignoreFields);
+    public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> nullFields) {
+        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(nullFields);
         CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://dev.net"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
         return credentialIssuerConfigurationResponse;
     }
 
-    public static AuthorizationServerWellKnownResponse getAuthServerWellknownResponseDto(List<String> ignoreFields) {
+    public static AuthorizationServerWellKnownResponse getAuthServerWellknownResponseDto(List<String> nullFields) {
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = new AuthorizationServerWellKnownResponse();
-        if (!ignoreFields.contains("authorization_endpoint")) {
+        if (!nullFields.contains("authorization_endpoint")) {
             authorizationServerWellKnownResponse.setAuthorizationEndpoint("https://dev/authorize");
         }
-        if (!ignoreFields.contains("token_endpoint")) {
+        if (!nullFields.contains("token_endpoint")) {
             authorizationServerWellKnownResponse.setTokenEndpoint("https://dev/token");
         }
-        if (!ignoreFields.contains("grant_types_supported")) {
+        if (!nullFields.contains("grant_types_supported")) {
             authorizationServerWellKnownResponse.setGrantTypesSupported(List.of("authorization_code"));
         }
         return authorizationServerWellKnownResponse;
@@ -160,6 +168,42 @@ public class TestUtilities {
     }
 
     public static String getExpectedWellKnownJson() {
+        return "{"
+                + "\"credential_issuer\": \"Issuer1\","
+                + "\"credential_endpoint\": \"/credential_endpoint\","
+                + "\"authorization_servers\": [\"https://dev.net\"],"
+                + "\"credential_configurations_supported\": {"
+                + "\"CredentialType1\": {"
+                + "\"format\": \"ldp_vc\","
+                + "\"scope\": \"CredentialType1_vc_ldp\","
+                + "\"display\": [{"
+                + "\"logo\": {"
+                + "\"url\": \"/logo\","
+                + "\"alt_text\": \"logo-url\""
+                + "},"
+                + "\"name\": \"CredentialType1\","
+                + "\"locale\": \"en\","
+                + "\"text_color\": \"#FFFFFF\","
+                + "\"background_color\": \"#B34622\""
+                + "}],"
+                + "\"proof_types_supported\": {},"
+                + "\"credential_definition\": {"
+                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
+                + "\"credentialSubject\": {"
+                + "\"name\": {"
+                + "\"display\": [{"
+                + "\"name\": \"Given Name\","
+                + "\"locale\": \"en\""
+                + "}]"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "}";
+    }
+
+    public static String getExpectedWellKnownJsonWithoutAuthorizationServersField() {
         return "{"
                 + "\"credential_issuer\": \"Issuer1\","
                 + "\"credential_endpoint\": \"/credential_endpoint\","
