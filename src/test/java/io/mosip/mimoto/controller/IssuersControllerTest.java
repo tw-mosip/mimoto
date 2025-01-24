@@ -142,7 +142,7 @@ public class IssuersControllerTest {
         String issuerId = "id1";
         File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json");
         String expectedCredentialIssuerWellknownResponse = new String(Files.readAllBytes(file.toPath()));
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")));
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")), List.of());
         Mockito.when(issuersService.getIssuerConfiguration(issuerId)).thenReturn(credentialIssuerConfigurationResponse);
 
 

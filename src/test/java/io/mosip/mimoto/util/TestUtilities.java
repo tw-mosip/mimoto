@@ -89,13 +89,24 @@ public class TestUtilities {
         return credentialIssuerWellKnownResponse;
     }
 
-    public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String,CredentialsSupportedResponse> credentialsSupportedResponses){
-        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = new AuthorizationServerWellKnownResponse();
-        authorizationServerWellKnownResponse.setAuthorizationEndpoint("https://dev/authorize");
-        authorizationServerWellKnownResponse.setTokenEndpoint("https://dev/token");
-        authorizationServerWellKnownResponse.setGrantTypesSupported(List.of("authorization_code"));
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/"+issuerName,List.of("https://dev.net"),"https://dev/issuance/credential",credentialsSupportedResponses,authorizationServerWellKnownResponse);
+    public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> ignoreFields) {
+        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(ignoreFields);
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://dev.net"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
         return credentialIssuerConfigurationResponse;
+    }
+
+    public static AuthorizationServerWellKnownResponse getAuthServerWellknownResponseDto(List<String> ignoreFields) {
+        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = new AuthorizationServerWellKnownResponse();
+        if (!ignoreFields.contains("authorization_endpoint")) {
+            authorizationServerWellKnownResponse.setAuthorizationEndpoint("https://dev/authorize");
+        }
+        if (!ignoreFields.contains("token_endpoint")) {
+            authorizationServerWellKnownResponse.setTokenEndpoint("https://dev/token");
+        }
+        if (!ignoreFields.contains("grant_types_supported")) {
+            authorizationServerWellKnownResponse.setGrantTypesSupported(List.of("authorization_code"));
+        }
+        return authorizationServerWellKnownResponse;
     }
 
     public static IssuerDTO getIssuerDTO(String issuerName) {
@@ -183,7 +194,47 @@ public class TestUtilities {
                 + "}";
     }
 
-    public static PresentationRequestDTO getPresentationRequestDTO(){
+    public static String getExpectedIssuersConfigJson() {
+        return "{"
+                + "\"credential_issuer\": \"Issuer1\","
+                + "\"credential_endpoint\": \"/credential_endpoint\","
+                + "\"credential_configurations_supported\": {"
+                + "\"CredentialType1\": {"
+                + "\"format\": \"ldp_vc\","
+                + "\"scope\": \"CredentialType1_vc_ldp\","
+                + "\"display\": [{"
+                + "\"logo\": {"
+                + "\"url\": \"/logo\","
+                + "\"alt_text\": \"logo-url\""
+                + "},"
+                + "\"name\": \"CredentialType1\","
+                + "\"locale\": \"en\","
+                + "\"text_color\": \"#FFFFFF\","
+                + "\"background_color\": \"#B34622\""
+                + "}],"
+                + "\"proof_types_supported\": {},"
+                + "\"credential_definition\": {"
+                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
+                + "\"credentialSubject\": {"
+                + "\"name\": {"
+                + "\"display\": [{"
+                + "\"name\": \"Given Name\","
+                + "\"locale\": \"en\""
+                + "}]"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "},"
+                + "\"authorization\": {"
+                + "\"authorization_endpoint\": \"https://dev/authorize,\","
+                + "\"grant_types_supported\": [\"authorization_code\"],"
+                + "\"token_endpoint\": \"https://dev/token\""
+                + "}"
+                + "}";
+    }
+
+    public static PresentationRequestDTO getPresentationRequestDTO() {
         return PresentationRequestDTO.builder()
                 .presentationDefinition(getPresentationDefinitionDTO())
                 .clientId("test_client_id")

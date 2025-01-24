@@ -7,7 +7,9 @@ import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.service.AuthorizationServerService;
 import io.mosip.mimoto.util.RestApiClient;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,17 +37,16 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     public AuthorizationServerWellKnownResponse getWellknown(String authorizationServerHostUrl) throws AuthorizationServerWellknownResponseException {
         URI uri;
         try {
+            if (authorizationServerHostUrl == null) {
+                throw new Exception("Authorization Server host url cannot be null");
+            }
             String wellknownEndpoint = authorizationServerHostUrl + "/.well-known/oauth-authorization-server";
             log.info("fetching Authorization Server Wellknown by calling :: " + wellknownEndpoint);
             uri = URI.create(wellknownEndpoint);
-        } catch (Exception e) {
-            throw new AuthorizationServerWellknownResponseException(e.getMessage());
-        }
-        String wellknownResponse = restApiClient.getApi(uri, String.class);
-        if (wellknownResponse == null) {
-            throw new AuthorizationServerWellknownResponseException("Authorization Server wellknown api is not accessible");
-        }
-        try {
+            String wellknownResponse = restApiClient.getApi(uri, String.class);
+            if (wellknownResponse == null) {
+                throw new Exception("well-known api is not accessible");
+            }
             AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = objectMapper.readValue(wellknownResponse, AuthorizationServerWellKnownResponse.class);
             validate(authorizationServerWellKnownResponse);
 
@@ -55,8 +56,10 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
         }
     }
 
-    public void validate(AuthorizationServerWellKnownResponse response) throws AuthorizationServerWellknownResponseException {
+    public void validate(AuthorizationServerWellKnownResponse response) throws Exception {
         try {
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
             Set<ConstraintViolation<AuthorizationServerWellKnownResponse>> violations = validator.validate(response);
             if (!violations.isEmpty()) {
                 StringBuilder sb = new StringBuilder("Validation failed:");
@@ -64,10 +67,10 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
                     sb.append("\n").append(violation.getPropertyPath()).append(": ").append(violation.getMessage());
                 }
 
-                throw new AuthorizationServerWellknownResponseException(sb.toString());
+                throw new Exception(sb.toString());
             }
         } catch (Exception e) {
-            throw new AuthorizationServerWellknownResponseException(e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
 }
