@@ -84,6 +84,21 @@ public class CredentialIssuerWellknownResponseValidatorTest {
     }
 
     @Test
+    public void shouldThrowExceptionWhenAuthorizationServersIsNull() {
+        response.setCredentialIssuer("https://valid.url/credential");
+        response.setAuthorizationServers(null);
+
+        CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
+        InvalidWellknownResponseException invalidWellknownResponseException = assertThrows(InvalidWellknownResponseException.class, () ->
+                credentialIssuerWellknownResponseValidator.validate(response, validator));
+        assertEquals("RESIDENT-APP-041", invalidWellknownResponseException.getErrorCode());
+        assertEquals("""
+                RESIDENT-APP-041 --> Invalid Wellknown from Issuer
+                Validation failed:
+                authorizationServers: must not be empty""", invalidWellknownResponseException.getMessage(), "Exception message should indicate 'authorizationServers' cannot be empty");
+    }
+
+    @Test
     public void shouldThrowExceptionWhenFormatIsMissingInCredentialsSupported() {
         CredentialsSupportedResponse credentialsSupportedResponse = getCredentialSupportedResponse("CredentialType1");
         credentialsSupportedResponse.setFormat(null);
