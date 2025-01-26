@@ -86,7 +86,7 @@ public class TestUtilities {
             credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
         }
         if (!nullFields.contains("authorization_servers")) {
-            credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net"));
+            credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net/authorize"));
         }
         if (!nullFields.contains("credential_endpoint")) {
             credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
@@ -99,7 +99,7 @@ public class TestUtilities {
 
     public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> nullFields) {
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(nullFields);
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://dev.net"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://dev.net/authorize"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
         return credentialIssuerConfigurationResponse;
     }
 
@@ -171,7 +171,7 @@ public class TestUtilities {
         return "{"
                 + "\"credential_issuer\": \"Issuer1\","
                 + "\"credential_endpoint\": \"/credential_endpoint\","
-                + "\"authorization_servers\": [\"https://dev.net\"],"
+                + "\"authorization_servers\": [\"https://dev.net/authorize\"],"
                 + "\"credential_configurations_supported\": {"
                 + "\"CredentialType1\": {"
                 + "\"format\": \"ldp_vc\","

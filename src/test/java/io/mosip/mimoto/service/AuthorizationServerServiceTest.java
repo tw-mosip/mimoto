@@ -2,9 +2,9 @@ package io.mosip.mimoto.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.mimoto.dto.mimoto.AuthorizationServerWellKnownResponse;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.service.impl.AuthorizationServerServiceImpl;
 import io.mosip.mimoto.util.RestApiClient;
-import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.List;
 import static io.mosip.mimoto.util.TestUtilities.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 @Slf4j
 @RunWith(MockitoJUnitRunner.class)
@@ -35,65 +36,62 @@ public class AuthorizationServerServiceTest {
 
     String authorizationServerHostUrl;
 
+    String exceptionMsgPrefix;
+    
     @Before
     public void setUp() {
         authorizationServerWellknownUrl = URI.create("https://dev/authorize/.well-known/oauth-authorization-server");
         authorizationServerHostUrl = "https://dev/authorize";
+        exceptionMsgPrefix = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n";
     }
 
     @Test
-    public void shouldThrowExceptionIfResponseIsNullWhenGettingAuthServerWellknownConfig() {
-        String expectedExceptionMessage = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n" + "well-known api is not accessible";
-        String actualExceptionMessage;
-        try {
-            Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(null);
+    public void shouldThrowExceptionIfResponseIsNullWhenGettingAuthServerWellknownConfig() throws Exception {
+        String expectedExceptionMessage = exceptionMsgPrefix + "well-known api is not accessible";
+        Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(null);
 
+        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown(authorizationServerHostUrl);
-        } catch (Exception e) {
-            actualExceptionMessage = e.getMessage();
-            assertEquals(expectedExceptionMessage, actualExceptionMessage);
-        }
+        });
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
     }
 
     @Test
     public void shouldThrowExceptionIfAuthServerHostUrlIsNullWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n" + "Authorization Server host url cannot be null";
-        String actualExceptionMessage;
-        try {
+        String expectedExceptionMessage = exceptionMsgPrefix + "Authorization Server host url cannot be null";
+
+        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown(null);
-        } catch (Exception e) {
-            actualExceptionMessage = e.getMessage();
-            assertEquals(expectedExceptionMessage, actualExceptionMessage);
-        }
+        });
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
     }
 
     @Test
     public void shouldThrowExceptionIfAuthServerHostUrlIsInvalidWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n" + "Illegal character in authority at index 8: https:// dev/authorize/.well-known/oauth-authorization-server";
-        String actualExceptionMessage;
-        try {
+        String expectedExceptionMessage = exceptionMsgPrefix + "Illegal character in authority at index 8: https:// dev/authorize/.well-known/oauth-authorization-server";
+
+        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown("https:// dev/authorize");
-        } catch (Exception e) {
-            actualExceptionMessage = e.getMessage();
-            assertEquals(expectedExceptionMessage, actualExceptionMessage);
-        }
+        });
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
     }
 
     @Test
-    public void shouldThrowExceptionIfAuthorizationEndpointIsMissingInAuthServerWellknownResponse() {
-        String expectedExceptionMessage = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n" + "Validation failed:\n" + "authorizationEndpoint: must not be blank";
-        String actualExceptionMessage;
-        try {
-            AuthorizationServerWellKnownResponse expectedAuthorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(List.of("authorization_endpoint"));
-            String expectedIssuersConfigJson = getExpectedIssuersConfigJson();
-            Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(expectedIssuersConfigJson);
-            Mockito.when(objectMapper.readValue(expectedIssuersConfigJson, AuthorizationServerWellKnownResponse.class)).thenReturn(expectedAuthorizationServerWellKnownResponse);
+    public void shouldThrowExceptionIfAuthorizationEndpointIsMissingInAuthServerWellknownResponse() throws Exception {
+        String expectedExceptionMessage = exceptionMsgPrefix + "Validation failed:\n" + "authorizationEndpoint: must not be blank";
+        AuthorizationServerWellKnownResponse expectedAuthorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(List.of("authorization_endpoint"));
+        String expectedIssuersConfigJson = getExpectedIssuersConfigJson();
+        Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(expectedIssuersConfigJson);
+        Mockito.when(objectMapper.readValue(expectedIssuersConfigJson, AuthorizationServerWellKnownResponse.class)).thenReturn(expectedAuthorizationServerWellKnownResponse);
 
+        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown(authorizationServerHostUrl);
-        } catch (Exception e) {
-            actualExceptionMessage = e.getMessage();
-            assertEquals(expectedExceptionMessage, actualExceptionMessage);
-        }
+        });
+
+        assertEquals(expectedExceptionMessage, actualException.getMessage());
     }
 
     @Test
