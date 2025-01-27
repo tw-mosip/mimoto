@@ -130,16 +130,20 @@ public class TestUtilities {
         IssuerDTO issuer = new IssuerDTO();
         issuer.setIssuer_id(issuerName + "id");
         issuer.setCredential_issuer(issuerName + "id");
-        issuer.setCredential_issuer_host("https://injicertify-mock.dev1.mosip.net");
+        issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
-        if (issuerName.equals("Issuer1")) issuer.setWellknown_endpoint("/well-known-proxy");
-        else {
+        if (!issuerName.equals("Issuer2")) {
+            issuer.setWellknown_endpoint("/well-known-proxy");
+            issuer.setAuthorization_audience("/well-known-proxy");
+            issuer.setProxy_token_endpoint("/well-known-proxy");
+        } else {
             issuer.setRedirect_uri(null);
             issuer.setToken_endpoint(null);
         }
         return issuer;
     }
+
     public static IssuerDTO getIssuerConfigDTO(String issuerName, List<String> nullFields) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("/logo");
@@ -153,12 +157,15 @@ public class TestUtilities {
         IssuerDTO issuer = new IssuerDTO();
         issuer.setIssuer_id(issuerName + "id");
         issuer.setCredential_issuer(issuerName + "id");
-        issuer.setCredential_issuer_host("https://injicertify-mock.dev1.mosip.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         issuer.setEnabled("true");
-        if (issuerName.equals("Issuer1")) issuer.setWellknown_endpoint("/well-known-proxy");
-        else {
+        if (!issuerName.equals("Issuer2")) {
+            issuer.setWellknown_endpoint("/well-known-proxy");
+            issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
+            issuer.setAuthorization_audience("https://dev/token");
+            issuer.setProxy_token_endpoint("https://dev/token");
+        } else {
             if (!nullFields.contains("redirect_uri"))
                 issuer.setRedirect_uri("/redirection");
             if (!nullFields.contains("token_endpoint"))

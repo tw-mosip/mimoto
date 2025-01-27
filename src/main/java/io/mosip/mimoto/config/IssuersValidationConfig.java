@@ -2,6 +2,8 @@ package io.mosip.mimoto.config;
 
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
+import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import io.mosip.mimoto.service.IssuersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ public class IssuersValidationConfig implements ApplicationRunner {
     private final String VALIDATION_ERROR_MSG = "\n\nValidation failed in Mimoto-issuers-config.json:";
 
     @Override
-    public void run(ApplicationArguments args) throws ApiNotAccessibleException, IOException {
+    public void run(ApplicationArguments args) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         log.info("Validation for mimoto-issuers-config.json STARTED");
         IssuersDTO issuerDTOList = issuersService.getAllIssuersWithAllFields();
 

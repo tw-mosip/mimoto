@@ -2,6 +2,7 @@ package io.mosip.mimoto.controller;
 
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
+import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import org.hamcrest.Matchers;
@@ -50,7 +51,7 @@ public class IssuersControllerTest {
     @Test
     public void getAllIssuersTest() throws Exception {
         IssuersDTO issuers = new IssuersDTO();
-        issuers.setIssuers((List.of(getIssuerDTO("Issuer1"), getIssuerDTO("Issuer2"))));
+        issuers.setIssuers((List.of(getIssuerDTO("Issuer1"), getIssuerDTO("Issuer3"))));
         Mockito.when(issuersService.getAllIssuers(null))
                 .thenReturn(issuers)
                 .thenThrow(new ApiNotAccessibleException());
@@ -73,6 +74,8 @@ public class IssuersControllerTest {
                                 Matchers.hasKey("display"),
                                 Matchers.hasKey("client_id"),
                                 Matchers.hasKey("wellknown_endpoint"),
+                                Matchers.hasKey("proxy_token_endpoint"),
+                                Matchers.hasKey("authorization_audience"),
                                 Matchers.not(Matchers.hasKey("redirect_url")),
                                 Matchers.not(Matchers.hasKey("authorization_endpoint")),
                                 Matchers.not(Matchers.hasKey("token_endpoint")),
@@ -93,6 +96,8 @@ public class IssuersControllerTest {
                                 Matchers.hasKey("display"),
                                 Matchers.hasKey("client_id"),
                                 Matchers.hasKey("wellknown_endpoint"),
+                                Matchers.hasKey("proxy_token_endpoint"),
+                                Matchers.hasKey("authorization_audience"),
                                 Matchers.not(Matchers.hasKey("redirect_url")),
                                 Matchers.not(Matchers.hasKey("authorization_endpoint")),
                                 Matchers.not(Matchers.hasKey("token_endpoint")),
@@ -135,6 +140,23 @@ public class IssuersControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
                 .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+    }
+
+    @Test
+    public void getIssuerWellknownTest() throws Exception {
+        String issuerId = "id1";
+        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedWellknown.json");
+        String expectedCredentialIssuerWellknownResponse = new String(Files.readAllBytes(file.toPath()));
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")),List.of());
+        Mockito.when(issuersService.getIssuerWellknown(issuerId)).thenReturn(credentialIssuerWellKnownResponse);
+
+
+        String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/well-known-proxy").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        JSONAssert.assertEquals(new JSONObject(expectedCredentialIssuerWellknownResponse), new JSONObject(actualResponse), JSONCompareMode.LENIENT);
     }
 
     @Test

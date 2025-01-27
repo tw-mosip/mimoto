@@ -5,11 +5,11 @@ import io.mosip.mimoto.core.http.ResponseWrapper;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.IssuersDTO;
-import io.mosip.mimoto.dto.mimoto.AuthorizationServerWellKnownResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
-import io.mosip.mimoto.service.AuthorizationServerService;
+import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
+import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class IssuersController {
         ResponseWrapper<IssuersDTO> responseWrapper = new ResponseWrapper<>();
         try {
             responseWrapper.setResponse(issuersService.getAllIssuers(search));
-        } catch (ApiNotAccessibleException | IOException e) {
+        } catch (ApiNotAccessibleException | IOException | AuthorizationServerWellknownResponseException | InvalidWellknownResponseException e) {
             log.error("Exception occurred while fetching issuers ", e);
             responseWrapper.setErrors(List.of(new ErrorDTO(API_NOT_ACCESSIBLE_EXCEPTION.getCode(), API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);

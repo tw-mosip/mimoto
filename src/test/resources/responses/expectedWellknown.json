@@ -1,4 +1,4 @@
-﻿{
+{
   "credential_issuer": "https://dev/id1",
   "authorization_servers": ["https://dev.net/authorize"],
   "credential_endpoint": "https://dev/issuance/credential",
@@ -39,9 +39,5 @@
         }
       ]
     }
-  },
-  "authorization": {
-    "authorization_endpoint": "https://dev/authorize",
-    "grant_types_supported": ["authorization_code"]
   }
 }

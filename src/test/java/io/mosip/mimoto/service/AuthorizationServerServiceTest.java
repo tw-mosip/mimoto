@@ -42,7 +42,7 @@ public class AuthorizationServerServiceTest {
     public void setUp() {
         authorizationServerWellknownUrl = URI.create("https://dev/authorize/.well-known/oauth-authorization-server");
         authorizationServerHostUrl = "https://dev/authorize";
-        exceptionMsgPrefix = "RESIDENT-APP-042 --> Failed to fetch Authorization Server well-known due to:\n";
+        exceptionMsgPrefix = "RESIDENT-APP-042 --> Invalid Authorization Server well-known from server:\n";
     }
 
     @Test
