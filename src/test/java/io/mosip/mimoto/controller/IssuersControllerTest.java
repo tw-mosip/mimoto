@@ -185,4 +185,16 @@ public class IssuersControllerTest {
                     JSONAssert.assertEquals(finalExpectedJsonString, actualResponse, JSONCompareMode.LENIENT);
                 });
     }
+
+    @Test
+    public void shouldReturnExceptionInResponseOnGetIssuerConfigIfAnyExceptionOccurredWhenFetchingIssuerWellknown() throws Exception {
+        String issuerId = "id1";
+        Mockito.when(issuersService.getIssuerConfiguration(issuerId)).thenThrow(new ApiNotAccessibleException());
+
+        mockMvc.perform(get("/issuers/" + issuerId + "/configuration")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(API_NOT_ACCESSIBLE_EXCEPTION.getMessage())));
+    }
 }
