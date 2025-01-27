@@ -1,6 +1,6 @@
-﻿{
+{
   "credential_issuer": "https://dev/id1",
-  "authorization_servers": ["https://dev.net"],
+  "authorization_servers": ["https://dev.net/authorize"],
   "credential_endpoint": "https://dev/issuance/credential",
   "credential_configurations_supported": {
     "CredentialType1": {
