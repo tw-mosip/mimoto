@@ -94,14 +94,20 @@ public class IssuersController {
 
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_CONFIGURATION_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUER_CONFIGURATION_DESCRIPTION)
     @GetMapping(value = "/{issuer-id}/configuration", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CredentialIssuerConfigurationResponse> getIssuerConfiguration(@PathVariable("issuer-id") String issuerId) {
+    public ResponseEntity<ResponseWrapper<CredentialIssuerConfigurationResponse>> getIssuerConfiguration(@PathVariable("issuer-id") String issuerId) {
+        ResponseWrapper<CredentialIssuerConfigurationResponse> responseWrapper = new ResponseWrapper<>();
+        CredentialIssuerConfigurationResponse issuerConfigurationResponse;
         try {
-            CredentialIssuerConfigurationResponse issuerConfigurationResponse = issuersService.getIssuerConfiguration(issuerId);
-
-            return ResponseEntity.status(HttpStatus.OK).body(issuerConfigurationResponse);
+            issuerConfigurationResponse = issuersService.getIssuerConfiguration(issuerId);
+            responseWrapper.setResponse(issuerConfigurationResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
         } catch (Exception exception) {
             log.error("Exception occurred while fetching issuers configurations - " + exception);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            String[] errorObj = Utilities.handleExceptionWithErrorCode(exception);
+            List<ErrorDTO> errors = Utilities.getErrors(errorObj[0], errorObj[1]);
+            responseWrapper.setResponse(null);
+            responseWrapper.setErrors(errors);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
         }
     }
 }

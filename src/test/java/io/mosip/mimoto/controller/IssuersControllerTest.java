@@ -5,6 +5,7 @@ import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
+import io.mosip.mimoto.util.Utilities;
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -47,6 +48,8 @@ public class IssuersControllerTest {
     @MockBean
     private IssuersServiceImpl issuersService;
 
+    @MockBean
+    private Utilities utilities;
 
     @Test
     public void getAllIssuersTest() throws Exception {
@@ -162,21 +165,24 @@ public class IssuersControllerTest {
     @Test
     public void getIssuerConfigurationTest() throws Exception {
         String issuerId = "id1";
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json");
-        String expectedCredentialIssuerWellknownResponse = new String(Files.readAllBytes(file.toPath()));
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")), List.of());
-        Mockito.when(issuersService.getIssuerConfiguration(issuerId)).thenReturn(credentialIssuerConfigurationResponse);
+        String expectedJsonString = new String(Files.readAllBytes(ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json").toPath())).trim();
+        if (expectedJsonString.startsWith("\uFEFF")) {
+            expectedJsonString = expectedJsonString.substring(1); // Remove BOM if present
+        }
+        String finalExpectedJsonString = expectedJsonString;
+        CredentialIssuerConfigurationResponse expectedResponse = getCredentialIssuerConfigurationResponseDto(
+                issuerId,
+                Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")),
+                List.of()
+        );
+        Mockito.when(issuersService.getIssuerConfiguration(issuerId)).thenReturn(expectedResponse);
 
-
-        String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/configuration").accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/issuers/" + issuerId + "/configuration")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-
-        JSONAssert.assertEquals(new JSONObject(expectedCredentialIssuerWellknownResponse), new JSONObject(actualResponse), JSONCompareMode.LENIENT);
-
+                .andExpect(result -> {
+                    String actualResponse = result.getResponse().getContentAsString().trim();
+                    JSONAssert.assertEquals(finalExpectedJsonString, actualResponse, JSONCompareMode.LENIENT);
+                });
     }
-
 }
