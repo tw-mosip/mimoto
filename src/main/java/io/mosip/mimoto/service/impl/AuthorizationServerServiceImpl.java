@@ -52,7 +52,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
 
             return authorizationServerWellKnownResponse;
         } catch (Exception e) {
-            throw new AuthorizationServerWellknownResponseException(e.getMessage());
+            throw new AuthorizationServerWellknownResponseException(e.toString());
         }
     }
 
@@ -70,7 +70,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
                 throw new Exception(sb.toString());
             }
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception(e.toString());
         }
     }
 }

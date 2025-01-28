@@ -25,7 +25,7 @@ public class AuthorizationServerServiceTest {
 
     @InjectMocks
     AuthorizationServerServiceImpl authorizationServerService = new AuthorizationServerServiceImpl();
-    
+
     @Mock
     RestApiClient restApiClient;
 
@@ -37,7 +37,7 @@ public class AuthorizationServerServiceTest {
     String authorizationServerHostUrl;
 
     String exceptionMsgPrefix;
-    
+
     @Before
     public void setUp() {
         authorizationServerWellknownUrl = URI.create("https://dev/authorize/.well-known/oauth-authorization-server");
@@ -47,7 +47,7 @@ public class AuthorizationServerServiceTest {
 
     @Test
     public void shouldThrowExceptionIfResponseIsNullWhenGettingAuthServerWellknownConfig() throws Exception {
-        String expectedExceptionMessage = exceptionMsgPrefix + "well-known api is not accessible";
+        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.Exception: well-known api is not accessible";
         Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(null);
 
         AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
@@ -59,7 +59,7 @@ public class AuthorizationServerServiceTest {
 
     @Test
     public void shouldThrowExceptionIfAuthServerHostUrlIsNullWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = exceptionMsgPrefix + "Authorization Server host url cannot be null";
+        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.Exception: Authorization Server host url cannot be null";
 
         AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown(null);
@@ -70,7 +70,7 @@ public class AuthorizationServerServiceTest {
 
     @Test
     public void shouldThrowExceptionIfAuthServerHostUrlIsInvalidWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = exceptionMsgPrefix + "Illegal character in authority at index 8: https:// dev/authorize/.well-known/oauth-authorization-server";
+        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.IllegalArgumentException: Illegal character in authority at index 8: https:// dev/authorize/.well-known/oauth-authorization-server";
 
         AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             authorizationServerService.getWellknown("https:// dev/authorize");
@@ -81,7 +81,7 @@ public class AuthorizationServerServiceTest {
 
     @Test
     public void shouldThrowExceptionIfAuthorizationEndpointIsMissingInAuthServerWellknownResponse() throws Exception {
-        String expectedExceptionMessage = exceptionMsgPrefix + "Validation failed:\n" + "authorizationEndpoint: must not be blank";
+        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.Exception: java.lang.Exception: Validation failed:\n" + "authorizationEndpoint: must not be blank";
         AuthorizationServerWellKnownResponse expectedAuthorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(List.of("authorization_endpoint"));
         String expectedIssuersConfigJson = getExpectedIssuersConfigJson();
         Mockito.when(restApiClient.getApi(authorizationServerWellknownUrl, String.class)).thenReturn(expectedIssuersConfigJson);
