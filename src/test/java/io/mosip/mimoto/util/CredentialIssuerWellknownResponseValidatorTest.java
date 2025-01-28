@@ -36,7 +36,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
         response = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")),List.of());
+                Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         CredentialsSupportedResponse credentialsSupportedResponse = getCredentialSupportedResponse("CredentialType1");
         credentialsSupportedResponse.setFormat(null);
         response = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                Map.of("CredentialType1", credentialsSupportedResponse),List.of());
+                Map.of("CredentialType1", credentialsSupportedResponse));
 
 
         CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
@@ -233,7 +233,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         @Test
         public void shouldDetectMissingMandatoryFieldsCredentialDefinitionOfCredentialSupportedResponse() {
             CredentialIssuerWellKnownResponse response = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")),List.of());
+                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
             response.getCredentialConfigurationsSupported().get("CredentialType1").setCredentialDefinition(null);
             CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
 
@@ -248,7 +248,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         @Test
         public void shouldDetectMissingMandatoryFieldsOfCredentialDefinitionInWellknownResponse() {
             CredentialIssuerWellKnownResponse response = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")),List.of());
+                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
             CredentialDefinitionResponseDto credentialDefinitionResponseDto = new CredentialDefinitionResponseDto();
             credentialDefinitionResponseDto.setCredentialSubject(null);
             credentialDefinitionResponseDto.setType(null);
@@ -269,7 +269,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         @Test
         public void shouldThrowExceptionWhenCredentialDefinitionTypeIsEmpty() {
             CredentialIssuerWellKnownResponse response = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")),List.of());
+                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
             response.getCredentialConfigurationsSupported().get("CredentialType1").getCredentialDefinition().setType(Collections.emptyList());  // Invalid empty list
 
             CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
@@ -293,7 +293,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
             CredentialsSupportedResponse credentialSupportedResponse1 = getCredentialSupportedResponse("CredentialType1", "mso_mdoc");
             credentialSupportedResponse1.setDoctype("");
             CredentialIssuerWellKnownResponse wellKnownResponseWithoutDocType = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", credentialSupportedResponse1),List.of());
+                    Map.of("CredentialType1", credentialSupportedResponse1));
 
             InvalidWellknownResponseException invalidWellknownResponseException = assertThrows(InvalidWellknownResponseException.class, () ->
                     credentialIssuerWellknownResponseValidator.validate(wellKnownResponseWithoutDocType, validator)
@@ -309,7 +309,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
             CredentialsSupportedResponse credentialSupportedResponse = getCredentialSupportedResponse("CredentialType1", "mso_mdoc");
             credentialSupportedResponse.setClaims(Map.of());
             CredentialIssuerWellKnownResponse wellKnownResponseWithoutClaims = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", credentialSupportedResponse),List.of());
+                    Map.of("CredentialType1", credentialSupportedResponse));
 
             CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
             InvalidWellknownResponseException invalidWellknownResponseException = assertThrows(InvalidWellknownResponseException.class, () ->
@@ -325,7 +325,7 @@ public class CredentialIssuerWellknownResponseValidatorTest {
         @Test
         void shouldNotThrowInvalidWellKnownResponseExceptionWhenMandatoryFieldsAreNotPresentInMsoMdocVc() {
             CredentialIssuerWellKnownResponse wellKnownResponseWithoutClaims = getCredentialIssuerWellKnownResponseDto("Issuer1",
-                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1", "mso_mdoc")),List.of());
+                    Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1", "mso_mdoc")));
 
             CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator = new CredentialIssuerWellknownResponseValidator();
 

@@ -1,5 +1,8 @@
 package io.mosip.mimoto.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -147,27 +151,32 @@ public class IssuersControllerTest {
 
     @Test
     public void getIssuerWellknownTest() throws Exception {
-        String issuerId = "id1";
-        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedWellknown.json");
-        String expectedCredentialIssuerWellknownResponse = new String(Files.readAllBytes(file.toPath()));
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("Credential1")),List.of());
+        String issuerId = "issuer1";
+        String expectedCredentialIssuerWellknownResponse = getExpectedWellKnownJson();
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
         Mockito.when(issuersService.getIssuerWellknown(issuerId)).thenReturn(credentialIssuerWellKnownResponse);
-
 
         String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/well-known-proxy").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+
         JSONAssert.assertEquals(new JSONObject(expectedCredentialIssuerWellknownResponse), new JSONObject(actualResponse), JSONCompareMode.LENIENT);
     }
 
     @Test
     public void getIssuerConfigurationTest() throws Exception {
         String issuerId = "id1";
-        String expectedJsonString = new String(Files.readAllBytes(ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json").toPath())).trim();
+
+        //get the IssuerConfig from the json file expectedIssuerConfig and wrap it inside response to test the response of configuration endpoint response wrapper
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode originalJson = objectMapper.readTree(new ClassPathResource("responses/expectedIssuerConfig.json").getInputStream());
+        ObjectNode wrappedJson = objectMapper.createObjectNode();
+        wrappedJson.set("response", originalJson);
+        String expectedJsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrappedJson);
         if (expectedJsonString.startsWith("\uFEFF")) {
-            expectedJsonString = expectedJsonString.substring(1); // Remove BOM if present
+            expectedJsonString = expectedJsonString.substring(1);
         }
         String finalExpectedJsonString = expectedJsonString;
         CredentialIssuerConfigurationResponse expectedResponse = getCredentialIssuerConfigurationResponseDto(

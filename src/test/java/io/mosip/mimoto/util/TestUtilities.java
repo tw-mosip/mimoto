@@ -9,7 +9,9 @@ import io.mosip.mimoto.dto.openid.VerifiersDTO;
 import io.mosip.mimoto.dto.openid.datashare.DataShareResponseDTO;
 import io.mosip.mimoto.dto.openid.datashare.DataShareResponseWrapperDTO;
 import io.mosip.mimoto.dto.openid.presentation.*;
-
+import org.springframework.util.ResourceUtils;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,20 +82,12 @@ public class TestUtilities {
         return credentialsSupportedResponse;
     }
 
-    public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> nullFields) {
+    public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses) {
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
-        if (!nullFields.contains("credential_issuer")) {
-            credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
-        }
-        if (!nullFields.contains("authorization_servers")) {
-            credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net/authorize"));
-        }
-        if (!nullFields.contains("credential_endpoint")) {
-            credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
-        }
-        if (!nullFields.contains("credential_configurations_supported")) {
-            credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
-        }
+        credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
+        credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net/authorize"));
+        credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
+        credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
         return credentialIssuerWellKnownResponse;
     }
 
@@ -161,7 +155,7 @@ public class TestUtilities {
         issuer.setClient_id("123");
         issuer.setEnabled("true");
         if (!issuerName.equals("Issuer2")) {
-            issuer.setWellknown_endpoint("/well-known-proxy");
+            issuer.setWellknown_endpoint("https://issuer.dev1.mosip.net/.well-known/openid-credential-issuer");
             issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
             issuer.setAuthorization_audience("https://dev/token");
             issuer.setProxy_token_endpoint("https://dev/token");
@@ -174,115 +168,12 @@ public class TestUtilities {
         return issuer;
     }
 
-    public static String getExpectedWellKnownJson() {
-        return "{"
-                + "\"credential_issuer\": \"Issuer1\","
-                + "\"credential_endpoint\": \"/credential_endpoint\","
-                + "\"authorization_servers\": [\"https://dev.net/authorize\"],"
-                + "\"credential_configurations_supported\": {"
-                + "\"CredentialType1\": {"
-                + "\"format\": \"ldp_vc\","
-                + "\"scope\": \"CredentialType1_vc_ldp\","
-                + "\"display\": [{"
-                + "\"logo\": {"
-                + "\"url\": \"/logo\","
-                + "\"alt_text\": \"logo-url\""
-                + "},"
-                + "\"name\": \"CredentialType1\","
-                + "\"locale\": \"en\","
-                + "\"text_color\": \"#FFFFFF\","
-                + "\"background_color\": \"#B34622\""
-                + "}],"
-                + "\"proof_types_supported\": {},"
-                + "\"credential_definition\": {"
-                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
-                + "\"credentialSubject\": {"
-                + "\"name\": {"
-                + "\"display\": [{"
-                + "\"name\": \"Given Name\","
-                + "\"locale\": \"en\""
-                + "}]"
-                + "}"
-                + "}"
-                + "}"
-                + "}"
-                + "}"
-                + "}";
+    public static String getExpectedWellKnownJson() throws IOException {
+        return new String(Files.readAllBytes(ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedWellknown.json").toPath())).trim();
     }
 
-    public static String getExpectedWellKnownJsonWithoutAuthorizationServersField() {
-        return "{"
-                + "\"credential_issuer\": \"Issuer1\","
-                + "\"credential_endpoint\": \"/credential_endpoint\","
-                + "\"credential_configurations_supported\": {"
-                + "\"CredentialType1\": {"
-                + "\"format\": \"ldp_vc\","
-                + "\"scope\": \"CredentialType1_vc_ldp\","
-                + "\"display\": [{"
-                + "\"logo\": {"
-                + "\"url\": \"/logo\","
-                + "\"alt_text\": \"logo-url\""
-                + "},"
-                + "\"name\": \"CredentialType1\","
-                + "\"locale\": \"en\","
-                + "\"text_color\": \"#FFFFFF\","
-                + "\"background_color\": \"#B34622\""
-                + "}],"
-                + "\"proof_types_supported\": {},"
-                + "\"credential_definition\": {"
-                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
-                + "\"credentialSubject\": {"
-                + "\"name\": {"
-                + "\"display\": [{"
-                + "\"name\": \"Given Name\","
-                + "\"locale\": \"en\""
-                + "}]"
-                + "}"
-                + "}"
-                + "}"
-                + "}"
-                + "}"
-                + "}";
-    }
-
-    public static String getExpectedIssuersConfigJson() {
-        return "{"
-                + "\"credential_issuer\": \"Issuer1\","
-                + "\"credential_endpoint\": \"/credential_endpoint\","
-                + "\"credential_configurations_supported\": {"
-                + "\"CredentialType1\": {"
-                + "\"format\": \"ldp_vc\","
-                + "\"scope\": \"CredentialType1_vc_ldp\","
-                + "\"display\": [{"
-                + "\"logo\": {"
-                + "\"url\": \"/logo\","
-                + "\"alt_text\": \"logo-url\""
-                + "},"
-                + "\"name\": \"CredentialType1\","
-                + "\"locale\": \"en\","
-                + "\"text_color\": \"#FFFFFF\","
-                + "\"background_color\": \"#B34622\""
-                + "}],"
-                + "\"proof_types_supported\": {},"
-                + "\"credential_definition\": {"
-                + "\"type\": [\"VerifiableCredential\", \"CredentialType1\"],"
-                + "\"credentialSubject\": {"
-                + "\"name\": {"
-                + "\"display\": [{"
-                + "\"name\": \"Given Name\","
-                + "\"locale\": \"en\""
-                + "}]"
-                + "}"
-                + "}"
-                + "}"
-                + "}"
-                + "},"
-                + "\"authorization\": {"
-                + "\"authorization_endpoint\": \"https://dev/authorize,\","
-                + "\"grant_types_supported\": [\"authorization_code\"],"
-                + "\"token_endpoint\": \"https://dev/token\""
-                + "}"
-                + "}";
+    public static String getExpectedIssuersConfigJson() throws IOException {
+        return new String(Files.readAllBytes(ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "responses/expectedIssuerConfig.json").toPath())).trim();
     }
 
     public static PresentationRequestDTO getPresentationRequestDTO() {
