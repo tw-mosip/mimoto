@@ -184,7 +184,7 @@ public class IssuersServiceImpl implements IssuersService {
             if (credentialIssuerHost == null) {
                 throw new InvalidWellknownResponseException("credential_issuer_host cannot be null for issuer " + issuerId);
             }
-
+            issuerDTO.setWellknown_endpoint(credentialIssuerHost + "/.well-known/openid-credential-issuer");
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknownWithUrl(credentialIssuerHost);
             addIssuersMissingConfig(issuerDTO, credentialIssuerWellKnownResponse);
 
