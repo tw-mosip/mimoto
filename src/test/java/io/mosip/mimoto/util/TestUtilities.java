@@ -162,7 +162,7 @@ public class TestUtilities {
         issuer.setEnabled("true");
         if (!issuerName.equals("Issuer2")) {
             issuer.setWellknown_endpoint("/well-known-proxy");
-            issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net/v1/issuer/issuance");
+            issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
             issuer.setAuthorization_audience("https://dev/token");
             issuer.setProxy_token_endpoint("https://dev/token");
         } else {

@@ -17,7 +17,6 @@
       "protocol": "OpenId4VCI",
       "client_id": "wallet-demo",
       "client_alias": "wallet-demo-client",
-      "wellknown_endpoint": "https://injicertify-insurance.collab.mosip.net/v1/certify/issuance/.well-known/openid-credential-issuer",
       "redirect_uri": "io.mosip.residentapp.inji://oauthredirect",
       "token_endpoint": "https://localhost:8099/v1/mimoto/get-token/StayProtected",
       "qr_code_type": "OnlineSharing",
