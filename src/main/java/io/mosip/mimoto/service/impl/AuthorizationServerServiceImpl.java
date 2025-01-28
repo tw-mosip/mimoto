@@ -41,7 +41,7 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
                 throw new Exception("Authorization Server host url cannot be null");
             }
             String wellknownEndpoint = authorizationServerHostUrl + "/.well-known/oauth-authorization-server";
-            log.info("fetching Authorization Server Wellknown by calling :: " + wellknownEndpoint);
+            log.debug("fetching Authorization Server Wellknown by calling :: " + wellknownEndpoint);
             uri = URI.create(wellknownEndpoint);
             String wellknownResponse = restApiClient.getApi(uri, String.class);
             if (wellknownResponse == null) {
