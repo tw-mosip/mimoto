@@ -121,7 +121,7 @@ public class IssuersServiceImpl implements IssuersService {
             if (credentialIssuerHost == null) {
                 throw new InvalidWellknownResponseException("credential_issuer_host cannot be null for issuer " + issuerId);
             }
-            String wellknownEndpoint = credentialIssuerHost + "/issuance/.well-known/openid-credential-issuer";
+            String wellknownEndpoint = credentialIssuerHost + "/.well-known/openid-credential-issuer";
             String wellknownResponse = restApiClient.getApi(wellknownEndpoint, String.class);
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = objectMapper.readValue(wellknownResponse, CredentialIssuerWellKnownResponse.class);
             credentialIssuerWellknownResponseValidator.validate(credentialIssuerWellKnownResponse, validator);
@@ -134,7 +134,7 @@ public class IssuersServiceImpl implements IssuersService {
 
     public CredentialIssuerWellKnownResponse getIssuerWellknownWithUrl(String credentialIssuerHost) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         try {
-            String issuerWellknownEndpoint = credentialIssuerHost + "/issuance/.well-known/openid-credential-issuer";
+            String issuerWellknownEndpoint = credentialIssuerHost + "/.well-known/openid-credential-issuer";
             String wellknownResponse = restApiClient.getApi(issuerWellknownEndpoint, String.class);
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = objectMapper.readValue(wellknownResponse, CredentialIssuerWellKnownResponse.class);
             credentialIssuerWellknownResponseValidator.validate(credentialIssuerWellKnownResponse, validator);

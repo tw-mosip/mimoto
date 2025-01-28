@@ -76,7 +76,7 @@ public class IssuersServiceTest {
 
         issuers.setIssuers(List.of(getIssuerConfigDTO("Issuer1", Collections.emptyList()), getIssuerConfigDTO("Issuer3", Collections.emptyList())));
         Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(new Gson().toJson(issuers));
-        wellKnownUrl = "https://issuer.dev1.mosip.net/issuance/.well-known/openid-credential-issuer";
+        wellKnownUrl = "https://issuer.dev1.mosip.net/v1/issuer/issuance/.well-known/openid-credential-issuer";
         issuerId = "Issuer1id";
         expectedCredentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto("Issuer1", Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")), List.of());
         CredentialIssuerWellKnownResponse expextedCredentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto("Issuer1",
