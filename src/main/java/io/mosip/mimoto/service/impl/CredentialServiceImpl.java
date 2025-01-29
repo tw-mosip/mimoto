@@ -48,10 +48,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -122,7 +119,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public ByteArrayInputStream downloadCredentialAsPDF(String issuerId, String credentialType, TokenResponseDTO response, String credentialValidity, String locale) throws Exception {
-        IssuerDTO issuerConfig = issuerService.getIssuerConfig(issuerId);
+       IssuerDTO issuerConfig = issuerService.getIssuerConfig(issuerId);
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerService.getIssuerWellknown(issuerId);
         CredentialsSupportedResponse credentialsSupportedResponse = issuerService.getIssuerWellknownForCredentialType(issuerId, credentialType);
         VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerConfig, credentialIssuerWellKnownResponse,  credentialsSupportedResponse, response.getAccess_token());
@@ -130,7 +127,7 @@ public class CredentialServiceImpl implements CredentialService {
         boolean verificationStatus = issuerId.toLowerCase().contains("mock") || verifyCredential(vcCredentialResponse);
         if(verificationStatus) {
             String dataShareUrl =  QRCodeType.OnlineSharing.equals(issuerConfig.getQr_code_type()) ? dataShareService.storeDataInDataShare(objectMapper.writeValueAsString(vcCredentialResponse), credentialValidity) : "";
-            return generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, dataShareUrl, credentialValidity, locale);
+            return generatePdfForVerifiableCredentials(credentialType, vcCredentialResponse, issuerConfig, credentialsSupportedResponse, dataShareUrl, credentialValidity, locale);
         }
         throw new VCVerificationException(SIGNATURE_VERIFICATION_EXCEPTION.getErrorCode(),
                 SIGNATURE_VERIFICATION_EXCEPTION.getErrorMessage());
@@ -159,10 +156,23 @@ public class CredentialServiceImpl implements CredentialService {
                 .build();
     }
 
-    public ByteArrayInputStream generatePdfForVerifiableCredentials(VCCredentialResponse vcCredentialResponse, IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String dataShareUrl, String credentialValidity, String locale) throws Exception {
+    public ByteArrayInputStream generatePdfForVerifiableCredentials(String credentialType, VCCredentialResponse vcCredentialResponse, IssuerDTO issuerDTO, CredentialsSupportedResponse credentialsSupportedResponse, String dataShareUrl, String credentialValidity, String locale) throws Exception {
         LinkedHashMap<String, Object> displayProperties = loadDisplayPropertiesFromWellknown(vcCredentialResponse, credentialsSupportedResponse, locale);
-        Map<String, Object> data = getPdfResourceFromVcProperties(displayProperties, credentialsSupportedResponse,  vcCredentialResponse, issuerDTO, dataShareUrl, credentialValidity, locale);
-        return renderVCInCredentialTemplate(data);
+        Map<String, Object> data = loadMap();//getPdfResourceFromVcProperties(displayProperties, credentialsSupportedResponse,  vcCredentialResponse, issuerDTO, dataShareUrl, credentialValidity, locale);
+
+        return renderVCInCredentialTemplate(data, issuerDTO.getIssuer_id(), credentialType);
+
+
+    }
+    public Map<String, Object> loadMap() {
+        try {
+            // Read the JSON from the file and convert it back into a Map
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(new File("map_dump.json"), Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyMap();
+        }
     }
 
     public Boolean verifyCredential(VCCredentialResponse vcCredentialResponse) throws VCVerificationException, JsonProcessingException {
@@ -194,7 +204,7 @@ public class CredentialServiceImpl implements CredentialService {
         List<String> fieldProperties = orderProperty == null ? new ArrayList<>(vcPropertiesFromWellKnown.keySet()) : orderProperty;
         fieldProperties.forEach(vcProperty -> {
             if(credentialProperties.get(vcProperty) != null) {
-                displayProperties.put(vcPropertiesFromWellKnown.get(vcProperty), credentialProperties.get(vcProperty));
+                displayProperties.put(vcProperty,Map.of(vcPropertiesFromWellKnown.get(vcProperty), credentialProperties.get(vcProperty)));
             }
         });
         return displayProperties;
@@ -212,21 +222,49 @@ public class CredentialServiceImpl implements CredentialService {
 
         displayProperties.entrySet().stream()
                 .forEachOrdered(entry -> {
-                    if(entry.getValue() instanceof Map) {
-                        rowProperties.put(entry.getKey(), ((Map<?, ?>) entry.getValue()).get("value"));
-                    } else if(entry.getValue() instanceof List) {
+                    Object entryValue = entry.getValue();
+                    String originalKey = entry.getKey(); // Store the original key
+
+                    if (entryValue instanceof Map) {
+                        ((Map<?, ?>) entryValue).entrySet().stream().forEachOrdered(innerEntry -> {
+                            String propertyKey = innerEntry.getKey().toString(); // Declare propertyKey INSIDE the lambda
+                            Object currentValue = innerEntry.getValue(); // Declare currentValue inside lambda
+
+                            if (currentValue instanceof Map) {
+                                rowProperties.put(originalKey, Map.of(propertyKey, ((Map<?, ?>) currentValue).get("value")));
+                            } else if (currentValue instanceof List) {
+                                String value = "";
+                                if (((List<?>) currentValue).get(0) instanceof String) {
+                                    value = ((List<String>) currentValue).stream().reduce((field1, field2) -> field1 + ", " + field2).orElse("");
+                                } else if (((List<?>) currentValue).get(0) instanceof Map) {
+                                    Optional<Map<?, ?>> valueMapInList = ((List<Map<?, ?>>) currentValue).stream()
+                                            .filter(obj -> obj.containsKey("language") && obj.get("language").equals("eng"))
+                                            .findFirst();
+                                    value = valueMapInList.map(obj -> obj.get("value").toString()).orElse("");
+                                }
+                                rowProperties.put(originalKey, Map.of(propertyKey, value));
+                            } else {
+                                rowProperties.put(originalKey, Map.of(propertyKey, currentValue));
+                            }
+                        });
+                    } else if (entryValue instanceof List) { // Handle direct Lists in displayProperties
+                        String propertyKey = originalKey; //Use originalKey here
                         String value = "";
-                        if( ((List<?>) entry.getValue()).get(0) instanceof String) {
-                            value = ((List<String>) entry.getValue()).stream().reduce((field1, field2) -> field1 + ", " + field2 ).get();
-                        } else {
-                            Optional<Map<?, ?>> valueMap = ((List<Map<?, ?>>) entry.getValue()).stream().filter(obj -> obj.get("language").equals(locale)).findFirst();
-                            value = valueMap.isPresent() ? valueMap.get().get("value").toString() : "" ;
+                        if (((List<?>) entryValue).get(0) instanceof String) {
+                            value = ((List<String>) entryValue).stream().reduce((field1, field2) -> field1 + ", " + field2).orElse("");
+                        } else if (((List<?>) entryValue).get(0) instanceof Map) {
+                            Optional<Map<?, ?>> valueMap = ((List<Map<?, ?>>) entryValue).stream()
+                                    .filter(obj -> obj.containsKey("language") && obj.get("language").equals("eng"))
+                                    .findFirst();
+                            value = valueMap.map(obj -> obj.get("value").toString()).orElse("");
                         }
-                        rowProperties.put(entry.getKey(), value);
+                        rowProperties.put(originalKey, Map.of(propertyKey, value)); //Use propertyKey here
                     } else {
-                        rowProperties.put(entry.getKey(), entry.getValue());
+                        rowProperties.put(originalKey, Map.of(originalKey, entryValue)); //Use originalKey here
                     }
                 });
+
+
 
         String qrCodeImage = QRCodeType.OnlineSharing.equals(issuerDTO.getQr_code_type()) ? constructQRCodeWithAuthorizeRequest(vcCredentialResponse, dataShareUrl) :
                 QRCodeType.EmbeddedVC.equals(issuerDTO.getQr_code_type()) ? constructQRCodeWithVCData(vcCredentialResponse) : "";
@@ -243,8 +281,8 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @NotNull
-    private ByteArrayInputStream renderVCInCredentialTemplate(Map<String, Object> data) throws IOException {
-        String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
+    private ByteArrayInputStream renderVCInCredentialTemplate(Map<String, Object> data, String issuerId, String credentialType) throws IOException {
+        String  credentialTemplate = utilities.getCredentialSupportedTemplateString(issuerId, credentialType);
         Properties props = new Properties();
         props.setProperty("resource.loader", "class");
         props.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
