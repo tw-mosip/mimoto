@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class TestUtilities {
 
-    public static CredentialsSupportedResponse getCredentialSupportedResponse(String credentialSupportedName){
+    public static CredentialsSupportedResponse getCredentialSupportedResponse(String credentialSupportedName) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("https://logo");
         logo.setAlt_text("logo-url");
@@ -41,18 +41,18 @@ public class TestUtilities {
         credentialDefinitionResponseDto.setCredentialSubject(Map.of("name", credentialDisplayResponseDto));
         CredentialsSupportedResponse credentialsSupportedResponse = new CredentialsSupportedResponse();
         credentialsSupportedResponse.setFormat("ldp_vc");
-        credentialsSupportedResponse.setScope(credentialSupportedName+"_vc_ldp");
+        credentialsSupportedResponse.setScope(credentialSupportedName + "_vc_ldp");
         credentialsSupportedResponse.setDisplay(Collections.singletonList(credentialSupportedDisplay));
-        HashMap<String,ProofTypesSupported> proofTypesSupportedHashMap=new HashMap<>();
+        HashMap<String, ProofTypesSupported> proofTypesSupportedHashMap = new HashMap<>();
         ProofTypesSupported proofTypesSupported = new ProofTypesSupported();
         proofTypesSupported.setProofSigningAlgValuesSupported(List.of("RS256"));
-        proofTypesSupportedHashMap.put("jwt",proofTypesSupported);
+        proofTypesSupportedHashMap.put("jwt", proofTypesSupported);
         credentialsSupportedResponse.setProofTypesSupported(proofTypesSupportedHashMap);
         credentialsSupportedResponse.setCredentialDefinition(credentialDefinitionResponseDto);
         return credentialsSupportedResponse;
     }
 
-    public static CredentialsSupportedResponse getCredentialSupportedResponse(String credentialSupportedName, String format){
+    public static CredentialsSupportedResponse getCredentialSupportedResponse(String credentialSupportedName, String format) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("https://logo");
         logo.setAlt_text("logo-url");
@@ -70,15 +70,15 @@ public class TestUtilities {
         credentialDisplayResponseDto.setDisplay(Collections.singletonList(credentialIssuerDisplayResponse));
         CredentialsSupportedResponse credentialsSupportedResponse = new CredentialsSupportedResponse();
         credentialsSupportedResponse.setFormat(format);
-        credentialsSupportedResponse.setScope(credentialSupportedName+"_vc_"+format);
+        credentialsSupportedResponse.setScope(credentialSupportedName + "_vc_" + format);
         credentialsSupportedResponse.setDisplay(Collections.singletonList(credentialSupportedDisplay));
-        HashMap<String,ProofTypesSupported> proofTypesSupportedHashMap=new HashMap<>();
+        HashMap<String, ProofTypesSupported> proofTypesSupportedHashMap = new HashMap<>();
         ProofTypesSupported proofTypesSupported = new ProofTypesSupported();
         proofTypesSupported.setProofSigningAlgValuesSupported(List.of("RS256"));
         proofTypesSupportedHashMap.put("jwt", proofTypesSupported);
         credentialsSupportedResponse.setProofTypesSupported(proofTypesSupportedHashMap);
         credentialsSupportedResponse.setDoctype("org.iso.18018");
-        credentialsSupportedResponse.setClaims(Map.of("org.iso.18018", Map.of("given_name",Map.of("display", List.of(Map.of("name","Given Name","locale","en"))))));
+        credentialsSupportedResponse.setClaims(Map.of("org.iso.18018", Map.of("given_name", Map.of("display", List.of(Map.of("name", "Given Name", "locale", "en"))))));
         return credentialsSupportedResponse;
     }
 
@@ -154,7 +154,12 @@ public class TestUtilities {
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         issuer.setEnabled("true");
-        if (!issuerName.equals("Issuer2")) {
+        //use this for testing getIssuersConfig
+        if (issuerName.equals("Issuer1") || issuerName.equals("Issuer2")) {
+            issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
+            issuer.setCredential_issuer_host("https://issuer.env.net");
+            issuer.setProxy_token_endpoint("https://dev/token");
+        } else if (issuerName.equals("Issuer3") || issuerName.equals("Issuer4")) { // use this for testing getWellknown
             issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
             issuer.setCredential_issuer_host("https://issuer.env.net");
             issuer.setAuthorization_audience("https://dev/token");
@@ -185,7 +190,7 @@ public class TestUtilities {
                 .redirectUri("test_redirect_uri").build();
     }
 
-    public static VCCredentialProperties getVCCredentialPropertiesDTO(String type){
+    public static VCCredentialProperties getVCCredentialPropertiesDTO(String type) {
 
         ArrayList<String> contextList = new ArrayList<>();
         contextList.add("context-1");
@@ -199,7 +204,7 @@ public class TestUtilities {
         credentialSubject.put("key1", "value1");
         credentialSubject.put("key2", "value2");
 
-        VCCredentialResponseProof  vcCredentialResponseProof = VCCredentialResponseProof.builder()
+        VCCredentialResponseProof vcCredentialResponseProof = VCCredentialResponseProof.builder()
                 .type(type)
                 .proofPurpose("test-proofPurpose")
                 .proofValue("test-proofValue")
@@ -217,13 +222,13 @@ public class TestUtilities {
                 .credentialSubject(credentialSubject).build();
     }
 
-    public static VCCredentialResponse getVCCredentialResponseDTO(String type){
+    public static VCCredentialResponse getVCCredentialResponseDTO(String type) {
         return VCCredentialResponse.builder()
                 .credential(getVCCredentialPropertiesDTO(type))
                 .format("ldp_vc").build();
     }
 
-    public static io.mosip.mimoto.dto.idp.TokenResponseDTO getTokenResponseDTO(){
+    public static io.mosip.mimoto.dto.idp.TokenResponseDTO getTokenResponseDTO() {
         return io.mosip.mimoto.dto.idp.TokenResponseDTO.builder()
                 .id_token("test-id-token")
                 .access_token("test-accesstoken")
@@ -233,12 +238,12 @@ public class TestUtilities {
                 .build();
     }
 
-    public static PresentationDefinitionDTO getPresentationDefinitionDTO(){
+    public static PresentationDefinitionDTO getPresentationDefinitionDTO() {
         FilterDTO filterDTO = FilterDTO.builder().type("String").pattern("test-credential").build();
         FieldDTO fieldDTO = FieldDTO.builder().path(new String[]{"$.type"}).filter(filterDTO).build();
         ConstraintsDTO constraintsDTO = ConstraintsDTO.builder().fields(new FieldDTO[]{fieldDTO}).build();
         Map<String, List<String>> proofTypes = Map.of("proofTypes", Collections.singletonList("Ed25519Signature2020"));
-        Map<String, Map<String, List<String>>> format = Map.of("ldpVc", proofTypes );
+        Map<String, Map<String, List<String>>> format = Map.of("ldpVc", proofTypes);
         InputDescriptorDTO inputDescriptorDTO = InputDescriptorDTO.builder().id("test-input-id").format(format).constraints(constraintsDTO).build();
 
         return PresentationDefinitionDTO.builder()
@@ -246,7 +251,7 @@ public class TestUtilities {
                 .id("test-id").build();
     }
 
-    public static VerifiablePresentationDTO getVerifiablePresentationDTO(){
+    public static VerifiablePresentationDTO getVerifiablePresentationDTO() {
         List<String> contextList = new ArrayList<>();
         contextList.add("https://www.w3.org/2018/credentials/v1");
 
@@ -274,7 +279,7 @@ public class TestUtilities {
         return objectMapper.writeValueAsString(object);
     }
 
-    public static DataShareResponseWrapperDTO getDataShareResponseWrapperDTO(){
+    public static DataShareResponseWrapperDTO getDataShareResponseWrapperDTO() {
         ErrorDTO errorDTO = ErrorDTO.builder().errorCode("test-errorCode").errorMessage("test-errorMessage").build();
         DataShareResponseDTO dataShareResponseDTO = DataShareResponseDTO.builder()
                 .url("https://test-url")
