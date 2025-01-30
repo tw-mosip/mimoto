@@ -24,11 +24,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -152,9 +149,11 @@ public class IssuersControllerTest {
     @Test
     public void getIssuerWellknownTest() throws Exception {
         String issuerId = "issuer1";
+        String credentialIssuerHostUrl = "https://issuer.env.net";
         String expectedCredentialIssuerWellknownResponse = getExpectedWellKnownJson();
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
-        Mockito.when(issuersService.getIssuerWellknown(issuerId)).thenReturn(credentialIssuerWellKnownResponse);
+        Mockito.when(issuersService.getIssuerConfig(issuerId)).thenReturn(getIssuerDTO(issuerId));
+        Mockito.when(issuersService.getIssuerWellknown(credentialIssuerHostUrl)).thenReturn(credentialIssuerWellKnownResponse);
 
         String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/well-known-proxy").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

@@ -13,8 +13,6 @@ import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.net.URI;
 import java.util.Set;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -35,15 +33,10 @@ public class AuthorizationServerServiceImpl implements AuthorizationServerServic
     @Override
     @Cacheable(value = "authServerWellknown", key = "{#authorizationServerHostUrl}")
     public AuthorizationServerWellKnownResponse getWellknown(String authorizationServerHostUrl) throws AuthorizationServerWellknownResponseException {
-        URI uri;
         try {
-            if (authorizationServerHostUrl == null) {
-                throw new Exception("Authorization Server host url cannot be null");
-            }
             String wellknownEndpoint = authorizationServerHostUrl + "/.well-known/oauth-authorization-server";
             log.debug("fetching Authorization Server Wellknown by calling :: " + wellknownEndpoint);
-            uri = URI.create(wellknownEndpoint);
-            String wellknownResponse = restApiClient.getApi(uri, String.class);
+            String wellknownResponse = restApiClient.getApi(wellknownEndpoint, String.class);
             if (wellknownResponse == null) {
                 throw new Exception("well-known api is not accessible");
             }

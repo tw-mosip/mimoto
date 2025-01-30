@@ -32,7 +32,7 @@ public class AuthorizationServerServiceTest {
     @Mock
     ObjectMapper objectMapper;
 
-    URI authorizationServerWellknownUrl;
+    String authorizationServerWellknownUrl;
 
     String authorizationServerHostUrl;
 
@@ -40,7 +40,7 @@ public class AuthorizationServerServiceTest {
 
     @Before
     public void setUp() {
-        authorizationServerWellknownUrl = URI.create("https://dev/authorize/.well-known/oauth-authorization-server");
+        authorizationServerWellknownUrl = "https://dev/authorize/.well-known/oauth-authorization-server";
         authorizationServerHostUrl = "https://dev/authorize";
         exceptionMsgPrefix = "RESIDENT-APP-042 --> Invalid Authorization Server well-known from server:\n";
     }
@@ -56,29 +56,7 @@ public class AuthorizationServerServiceTest {
 
         assertEquals(expectedExceptionMessage, actualException.getMessage());
     }
-
-    @Test
-    public void shouldThrowExceptionIfAuthServerHostUrlIsNullWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.Exception: Authorization Server host url cannot be null";
-
-        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
-            authorizationServerService.getWellknown(null);
-        });
-
-        assertEquals(expectedExceptionMessage, actualException.getMessage());
-    }
-
-    @Test
-    public void shouldThrowExceptionIfAuthServerHostUrlIsInvalidWhenGettingItsWellknownConfig() {
-        String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.IllegalArgumentException: Illegal character in authority at index 8: https:// dev/authorize/.well-known/oauth-authorization-server";
-
-        AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
-            authorizationServerService.getWellknown("https:// dev/authorize");
-        });
-
-        assertEquals(expectedExceptionMessage, actualException.getMessage());
-    }
-
+    
     @Test
     public void shouldThrowExceptionIfAuthorizationEndpointIsMissingInAuthServerWellknownResponse() throws Exception {
         String expectedExceptionMessage = exceptionMsgPrefix + "java.lang.Exception: java.lang.Exception: Validation failed:\n" + "authorizationEndpoint: must not be blank";

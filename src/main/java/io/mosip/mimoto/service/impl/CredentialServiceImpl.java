@@ -119,7 +119,8 @@ public class CredentialServiceImpl implements CredentialService {
     @Override
     public ByteArrayInputStream downloadCredentialAsPDF(String issuerId, String credentialType, TokenResponseDTO response, String credentialValidity, String locale) throws Exception {
         IssuerDTO issuerConfig = issuerService.getIssuerConfig(issuerId);
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerService.getIssuerWellknown(issuerId);
+        String credentialIssuerHost = issuerConfig.getCredential_issuer_host();
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerService.getIssuerWellknown(credentialIssuerHost);
         CredentialsSupportedResponse credentialsSupportedResponse = issuerService.getIssuerWellknownForCredentialType(issuerId, credentialType);
         VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerConfig, credentialIssuerWellKnownResponse,  credentialsSupportedResponse, response.getAccess_token());
         VCCredentialResponse vcCredentialResponse = downloadCredential(credentialIssuerWellKnownResponse.getCredentialEndPoint(), vcCredentialRequest, response.getAccess_token());

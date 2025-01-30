@@ -1603,7 +1603,7 @@
                 "tags": [
                     "Trusted Issuers"
                 ],
-                "description": "This API provides the complete configuration details for the specific issuers passed in the path variable",
+                "description": "This API provides the complete configuration details for the specific issuers passed in the path variable. Since version 0.16.0, this endpoint is deprecated and will be removed in a future release.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2225,8 +2225,468 @@
                             "application/json": {
                                 "schema": {
                                     "type": "object",
-                                    "errors": {
-                                        "type": "null"
+                                    "x-examples": {
+                                        "Example 1": {
+                                            "id": null,
+                                            "version": null,
+                                            "str": null,
+                                            "responsetime": null,
+                                            "metadata": null,
+                                            "response": {
+                                                "credential_issuer": "https://injicertify-insurance.dev1.mosip.net",
+                                                "authorization_servers": [
+                                                    "https://esignet-insurance.dev1.mosip.net"
+                                                ],
+                                                "credential_endpoint": "https://injicertify-insurance.dev1.mosip.net/v1/certify/issuance/credential",
+                                                "credential_configurations_supported": {
+                                                    "InsuranceCredential": {
+                                                        "format": "ldp_vc",
+                                                        "scope": "sunbird_rc_insurance_vc_ldp",
+                                                        "order": [
+                                                            "fullName",
+                                                            "policyName",
+                                                            "policyExpiresOn",
+                                                            "policyIssuedOn",
+                                                            "policyNumber",
+                                                            "mobile",
+                                                            "dob",
+                                                            "gender",
+                                                            "benefits",
+                                                            "email"
+                                                        ],
+                                                        "proof_types_supported": {
+                                                            "jwt": {
+                                                                "proof_signing_alg_values_supported": [
+                                                                    "RS256",
+                                                                    "PS256"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "credential_definition": {
+                                                            "type": [
+                                                                "VerifiableCredential",
+                                                                "InsuranceCredential"
+                                                            ],
+                                                            "credentialSubject": {
+                                                                "fullName": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Name",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "mobile": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Phone Number",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "dob": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Date of Birth",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "gender": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Gender",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "benefits": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Benefits",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "email": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Email Id",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyIssuedOn": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Issued On",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyExpiresOn": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Expires On",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyName": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Name",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyNumber": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Number",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "display": [
+                                                            {
+                                                                "name": "Health Insurance",
+                                                                "locale": "en",
+                                                                "logo": {
+                                                                    "url": "https://raw.githubusercontent.com/tw-mosip/file-server/master/StayProtectedInsurance.png",
+                                                                    "alt_text": "a square logo of a Veridonia"
+                                                                },
+                                                                "background_image": {
+                                                                    "uri": "https://api.dev1.mosip.net/inji/veridonia-logo.png"
+                                                                },
+                                                                "background_color": "#FDFAF9",
+                                                                "text_color": "#7C4616"
+                                                            }
+                                                        ]
+                                                    },
+                                                    "LifeInsuranceCredential": {
+                                                        "format": "ldp_vc",
+                                                        "scope": "life_insurance_vc_ldp",
+                                                        "order": [
+                                                            "fullName",
+                                                            "policyName",
+                                                            "policyExpiresOn",
+                                                            "policyIssuedOn",
+                                                            "policyNumber",
+                                                            "mobile",
+                                                            "dob",
+                                                            "gender",
+                                                            "benefits",
+                                                            "email"
+                                                        ],
+                                                        "proof_types_supported": {
+                                                            "jwt": {
+                                                                "proof_signing_alg_values_supported": [
+                                                                    "RS256",
+                                                                    "ES256"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "credential_definition": {
+                                                            "type": [
+                                                                "VerifiableCredential",
+                                                                "LifeInsuranceCredential"
+                                                            ],
+                                                            "credentialSubject": {
+                                                                "fullName": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Name",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "mobile": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Phone Number",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "dob": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Date of Birth",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "gender": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Gender",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "benefits": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Benefits",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "email": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Email Id",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyIssuedOn": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Issued On",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyExpiresOn": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Expires On",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyName": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Name",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "policyNumber": {
+                                                                    "display": [
+                                                                        {
+                                                                            "name": "Policy Number",
+                                                                            "locale": "en"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "display": [
+                                                            {
+                                                                "name": "Life Insurance",
+                                                                "locale": "en",
+                                                                "logo": {
+                                                                    "url": "https://raw.githubusercontent.com/tw-mosip/file-server/master/StayProtectedInsurance.png",
+                                                                    "alt_text": "a square logo of a Veridonia"
+                                                                },
+                                                                "background_image": {
+                                                                    "uri": "https://api.dev1.mosip.net/inji/veridonia-logo.png"
+                                                                },
+                                                                "background_color": "#FDFAF9",
+                                                                "text_color": "#7C4616"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "authorization": {
+                                                    "authorization_endpoint": "https://esignet-insurance.dev1.mosip.net/authorize",
+                                                    "grant_types_supported": [
+                                                        "authorization_code"
+                                                    ]
+                                                }
+                                            },
+                                            "errors": []
+                                        }
+                                    },
+                                    "properties": {
+                                        "version": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "id": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "responsetime": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "metadata": {
+                                            "type": "string",
+                                            "nullable": true
+                                        },
+                                        "response": {
+                                            "type": "object",
+                                            "properties": {
+                                                "credential_issuer": {
+                                                    "type": "string",
+                                                    "format": "uri"
+                                                },
+                                                "authorization_servers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "format": "uri"
+                                                    }
+                                                },
+                                                "credential_endpoint": {
+                                                    "type": "string",
+                                                    "format": "uri"
+                                                },
+                                                "credential_configurations_supported": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "InsuranceCredential": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "format": {
+                                                                    "type": "string"
+                                                                },
+                                                                "scope": {
+                                                                    "type": "string"
+                                                                },
+                                                                "order": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "proof_types_supported": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "jwt": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "proof_signing_alg_values_supported": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "credential_definition": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "type": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "credentialSubject": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "fullName": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "mobile": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "dob": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "gender": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "benefits": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "email": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "policyIssuedOn": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "policyExpiresOn": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "policyName": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                },
+                                                                                "policyNumber": {
+                                                                                    "$ref": "#/components/schemas/StringNode"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "display": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "name": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "locale": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "logo": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "url": {
+                                                                                        "type": "string",
+                                                                                        "format": "uri"
+                                                                                    },
+                                                                                    "alt_text": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "background_image": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "uri": {
+                                                                                        "type": "string",
+                                                                                        "format": "uri"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "background_color": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "text_color": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "authorization": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "authorization_endpoint": {
+                                                            "type": "string",
+                                                            "format": "uri"
+                                                        },
+                                                        "grant_types_supported": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
                                     }
                                 },
                                 "examples": {
@@ -2364,133 +2824,6 @@
                                                             "text_color": "#7C4616"
                                                         }
                                                     ]
-                                                },
-                                                "LifeInsuranceCredential": {
-                                                    "format": "ldp_vc",
-                                                    "scope": "life_insurance_vc_ldp",
-                                                    "order": [
-                                                        "fullName",
-                                                        "policyName",
-                                                        "policyExpiresOn",
-                                                        "policyIssuedOn",
-                                                        "policyNumber",
-                                                        "mobile",
-                                                        "dob",
-                                                        "gender",
-                                                        "benefits",
-                                                        "email"
-                                                    ],
-                                                    "proof_types_supported": {
-                                                        "jwt": {
-                                                            "proof_signing_alg_values_supported": [
-                                                                "RS256",
-                                                                "ES256"
-                                                            ]
-                                                        }
-                                                    },
-                                                    "credential_definition": {
-                                                        "type": [
-                                                            "VerifiableCredential",
-                                                            "LifeInsuranceCredential"
-                                                        ],
-                                                        "credentialSubject": {
-                                                            "fullName": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Name",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "mobile": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Phone Number",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "dob": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Date of Birth",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "gender": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Gender",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "benefits": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Benefits",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "email": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Email Id",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "policyIssuedOn": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Policy Issued On",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "policyExpiresOn": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Policy Expires On",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "policyName": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Policy Name",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            },
-                                                            "policyNumber": {
-                                                                "display": [
-                                                                    {
-                                                                        "name": "Policy Number",
-                                                                        "locale": "en"
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }
-                                                    },
-                                                    "display": [
-                                                        {
-                                                            "name": "Life Insurance",
-                                                            "locale": "en",
-                                                            "logo": {
-                                                                "url": "https://raw.githubusercontent.com/tw-mosip/file-server/master/StayProtectedInsurance.png",
-                                                                "alt_text": "a square logo of a Veridonia"
-                                                            },
-                                                            "background_image": {
-                                                                "uri": "https://api.dev1.mosip.net/inji/veridonia-logo.png"
-                                                            },
-                                                            "background_color": "#FDFAF9",
-                                                            "text_color": "#7C4616"
-                                                        }
-                                                    ]
                                                 }
                                             },
                                             "authorization": {
@@ -2537,7 +2870,8 @@
                                                     "errorCode": "RESIDENT-APP-026",
                                                     "errorMessage": "Api not accessible failure"
                                                 }
-                                            ]
+                                            ],
+                                            "response": null
                                         }
                                     },
                                     "FailureResponse2": {
@@ -2548,7 +2882,8 @@
                                                     "errorCode": "RESIDENT-APP-035",
                                                     "errorMessage": "Invalid issuer ID"
                                                 }
-                                            ]
+                                            ],
+                                            "response": null
                                         }
                                     },
                                     "FailureResponse3": {
@@ -2559,7 +2894,8 @@
                                                     "errorCode": "RESIDENT-APP-042",
                                                     "errorMessage": "Invalid Authorization Server well-known from server:\nAuthorization Server host url cannot be null"
                                                 }
-                                            ]
+                                            ],
+                                            "response": null
                                         }
                                     }
                                 }
@@ -2842,6 +3178,9 @@
             },
             "JsonNode": {
                 "type": "object"
+            },
+            "StringNode": {
+                "type": "string"
             },
             "Event": {
                 "type": "object",

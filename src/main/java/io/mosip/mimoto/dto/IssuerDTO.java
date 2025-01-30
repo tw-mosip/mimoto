@@ -64,7 +64,7 @@ public class IssuerDTO {
     @Expose
     @JsonInclude(NON_NULL)
     @NotBlank
-    @Schema(description = "Toggler to Enable / Disable the Issuer", defaultValue = "false")
+    @Schema(description = "Toggle to Enable / Disable the Issuer", defaultValue = "false")
     String enabled;
     @Expose
     @NotBlank

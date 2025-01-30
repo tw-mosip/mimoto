@@ -85,7 +85,7 @@ public class TestUtilities {
     public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses) {
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
         credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
-        credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://dev.net/authorize"));
+        credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://auth-server.env.net"));
         credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
         credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
         return credentialIssuerWellKnownResponse;
@@ -93,7 +93,7 @@ public class TestUtilities {
 
     public static CredentialIssuerConfigurationResponse getCredentialIssuerConfigurationResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses, List<String> nullFields) {
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthServerWellknownResponseDto(nullFields);
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://dev.net/authorize"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = new CredentialIssuerConfigurationResponse("https://dev/" + issuerName, List.of("https://auth-server.env.net"), "https://dev/issuance/credential", credentialsSupportedResponses, authorizationServerWellKnownResponse);
         return credentialIssuerConfigurationResponse;
     }
 
@@ -124,7 +124,7 @@ public class TestUtilities {
         IssuerDTO issuer = new IssuerDTO();
         issuer.setIssuer_id(issuerName + "id");
         issuer.setCredential_issuer(issuerName + "id");
-        issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
+        issuer.setCredential_issuer_host("https://issuer.env.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         if (!issuerName.equals("Issuer2")) {
@@ -155,8 +155,8 @@ public class TestUtilities {
         issuer.setClient_id("123");
         issuer.setEnabled("true");
         if (!issuerName.equals("Issuer2")) {
-            issuer.setWellknown_endpoint("https://issuer.dev1.mosip.net/.well-known/openid-credential-issuer");
-            issuer.setCredential_issuer_host("https://issuer.dev1.mosip.net");
+            issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
+            issuer.setCredential_issuer_host("https://issuer.env.net");
             issuer.setAuthorization_audience("https://dev/token");
             issuer.setProxy_token_endpoint("https://dev/token");
         } else {

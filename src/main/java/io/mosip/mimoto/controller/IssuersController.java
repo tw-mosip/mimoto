@@ -59,7 +59,9 @@ public class IssuersController {
     @GetMapping(value = "/{issuer-id}/well-known-proxy", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CredentialIssuerWellKnownResponse> getIssuerWellknown(@PathVariable("issuer-id") String issuerId) {
         try {
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
+            IssuerDTO issuerDTO = issuersService.getIssuerConfig(issuerId);
+            String credentialIssuerHost = issuerDTO.getCredential_issuer_host();
+            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(credentialIssuerHost);
             return ResponseEntity.status(HttpStatus.OK).body(credentialIssuerWellKnownResponse);
         } catch (Exception exception) {
             log.error("Exception occurred while fetching issuers wellknown ", exception);
@@ -67,6 +69,10 @@ public class IssuersController {
         }
     }
 
+    /**
+     * @deprecated Since version 0.16.0, this endpoint is deprecated and will be removed in a future release.
+     */
+    @Deprecated(since = "0.16.0", forRemoval = true)
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_SPECIFIC_ISSUER_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_SPECIFIC_ISSUER_DESCRIPTION)
     @GetMapping(value = "/{issuer-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseWrapper<IssuerDTO>> getIssuerConfig(@PathVariable("issuer-id") String issuerId) {

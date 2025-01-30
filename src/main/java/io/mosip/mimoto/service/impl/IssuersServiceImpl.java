@@ -23,6 +23,7 @@ import io.mosip.mimoto.util.Utilities;
 import jakarta.validation.Validator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -74,8 +75,7 @@ public class IssuersServiceImpl implements IssuersService {
                     .collect(Collectors.toList());
             issuers.setIssuers(filteredIssuers);
         }
-        IssuersDTO issuersWithMissingFields = updateAndValidateIssuersConfig(issuers);
-        return issuersWithMissingFields;
+        return updateAndValidateIssuersConfig(issuers);
     }
 
     @Override
@@ -87,8 +87,7 @@ public class IssuersServiceImpl implements IssuersService {
         }
         Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().create();
         issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
-        IssuersDTO issuersWithMissingFields = updateAndValidateIssuersConfig(issuers);
-        return issuersWithMissingFields;
+        return updateAndValidateIssuersConfig(issuers);
     }
 
 
@@ -109,18 +108,13 @@ public class IssuersServiceImpl implements IssuersService {
             throw new InvalidIssuerIdException();
         IssuersDTO issuersDTO = new IssuersDTO();
         issuersDTO.setIssuers(Arrays.asList(issuerDTO));
-        IssuersDTO issuersWithMissingFields = updateAndValidateIssuersConfig(issuersDTO);
-        return issuersWithMissingFields.getIssuers().getFirst();
+        return updateAndValidateIssuersConfig(issuersDTO).getIssuers().getFirst();
     }
 
     @Override
-    public CredentialIssuerWellKnownResponse getIssuerWellknown(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
+    @Cacheable(value = "issuerWellknown", key = "{#credentialIssuerHost}")
+    public CredentialIssuerWellKnownResponse getIssuerWellknown(String credentialIssuerHost) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         try {
-            IssuerDTO issuerDTO = getIssuerConfig(issuerId);
-            String credentialIssuerHost = issuerDTO.getCredential_issuer_host();
-            if (credentialIssuerHost == null) {
-                throw new InvalidWellknownResponseException("credential_issuer_host cannot be null for issuer " + issuerId);
-            }
             String wellknownEndpoint = credentialIssuerHost + "/.well-known/openid-credential-issuer";
             String wellknownResponse = restApiClient.getApi(wellknownEndpoint, String.class);
             CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = objectMapper.readValue(wellknownResponse, CredentialIssuerWellKnownResponse.class);
@@ -132,22 +126,10 @@ public class IssuersServiceImpl implements IssuersService {
         }
     }
 
-    public CredentialIssuerWellKnownResponse getIssuerWellknownWithUrl(String credentialIssuerHost) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        try {
-            String issuerWellknownEndpoint = credentialIssuerHost + "/.well-known/openid-credential-issuer";
-            String wellknownResponse = restApiClient.getApi(issuerWellknownEndpoint, String.class);
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = objectMapper.readValue(wellknownResponse, CredentialIssuerWellKnownResponse.class);
-            credentialIssuerWellknownResponseValidator.validate(credentialIssuerWellKnownResponse, validator);
-            return credentialIssuerWellKnownResponse;
-        } catch (JsonProcessingException | ApiNotAccessibleException |
-                 InvalidWellknownResponseException e) {
-            throw e;
-        }
-    }
-
     @Override
     public CredentialsSupportedResponse getIssuerWellknownForCredentialType(String issuerId, String credentialId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(issuerId);
+        String credentialIssuerHost = getCredentialIssuerHost(issuerId);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(credentialIssuerHost);
         CredentialsSupportedResponse credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported().get(credentialId);
         if (credentialsSupportedResponse == null) {
             throw new ApiNotAccessibleException();
@@ -157,7 +139,8 @@ public class IssuersServiceImpl implements IssuersService {
 
     @Override
     public CredentialIssuerConfigurationResponse getIssuerConfiguration(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(issuerId);
+        String credentialIssuerHost = getCredentialIssuerHost(issuerId);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(credentialIssuerHost);
         String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(oauthServerUrl);
 
@@ -174,19 +157,20 @@ public class IssuersServiceImpl implements IssuersService {
         return authorizationServerService.getWellknown(oauthServerUrl);
     }
 
+    public String getCredentialIssuerHost(String issuerId) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
+        IssuerDTO issuerDTO = getIssuerConfig(issuerId);
+        return issuerDTO.getCredential_issuer_host();
+    }
+
     public IssuersDTO updateAndValidateIssuersConfig(IssuersDTO issuersDTO) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
         List<String> errors = new ArrayList<>();
 
         for (IssuerDTO issuerDTO : issuersDTO.getIssuers()) {
             String issuerId = issuerDTO.getIssuer_id();
             String credentialIssuerHost = issuerDTO.getCredential_issuer_host();
-
-            if (credentialIssuerHost == null) {
-                throw new InvalidWellknownResponseException("credential_issuer_host cannot be null for issuer " + issuerId);
-            }
             issuerDTO.setWellknown_endpoint(credentialIssuerHost + "/.well-known/openid-credential-issuer");
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknownWithUrl(credentialIssuerHost);
-            addIssuersMissingConfig(issuerDTO, credentialIssuerWellKnownResponse);
+            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getIssuerWellknown(credentialIssuerHost);
+            updateIssuerWithAuthServerConfig(issuerDTO, credentialIssuerWellKnownResponse);
 
             Map<String, String> fieldsMap = Map.of(
                     "authorization_audience", issuerDTO.getAuthorization_audience(),
@@ -203,8 +187,7 @@ public class IssuersServiceImpl implements IssuersService {
         return issuersDTO;
     }
 
-
-    public IssuerDTO addIssuersMissingConfig(IssuerDTO issuerDTO, CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponses) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException {
+    public IssuerDTO updateIssuerWithAuthServerConfig(IssuerDTO issuerDTO, CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponses) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException {
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(credentialIssuerWellKnownResponses.getAuthorizationServers().get(0));
         String tokenEndpoint = authorizationServerWellKnownResponse.getTokenEndpoint();
         issuerDTO.setAuthorization_audience(tokenEndpoint);

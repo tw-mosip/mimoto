@@ -68,7 +68,7 @@ public class IssuersServiceTest {
     List<String> issuerConfigRelatedFields11 = List.of("additional_headers", "authorization_endpoint", "authorization_audience", "token_endpoint", "proxy_token_endpoint", "credential_endpoint", "credential_audience", "redirect_uri");
     List<String> issuerConfigRelatedFields = List.of("additional_headers", "authorization_endpoint", "authorization_audience", "credential_endpoint", "credential_audience");
 
-    String wellKnownUrl, issuerId;
+    String issuerWellKnownUrl, issuerId, credentialIssuerHostUrl, authServerWellknownUrl;
     CredentialIssuerConfigurationResponse expectedCredentialIssuerConfigurationResponse;
     IssuersDTO issuers = new IssuersDTO();
 
@@ -78,16 +78,18 @@ public class IssuersServiceTest {
     public void setUp() throws Exception {
         issuers.setIssuers(List.of(getIssuerConfigDTO("Issuer1", Collections.emptyList()), getIssuerConfigDTO("Issuer3", Collections.emptyList())));
         Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(new Gson().toJson(issuers));
-        wellKnownUrl = "https://issuer.dev1.mosip.net/.well-known/openid-credential-issuer";
+        issuerWellKnownUrl = "https://issuer.env.net/.well-known/openid-credential-issuer";
+        authServerWellknownUrl = "https://auth-server.env.net";
         issuerId = "Issuer1id";
+        credentialIssuerHostUrl = "https://issuer.env.net";
         expectedCredentialIssuerConfigurationResponse = getCredentialIssuerConfigurationResponseDto("Issuer1", Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")), List.of());
         expectedCredentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto("Issuer1",
                 Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
         String expectedWellknownJson = getExpectedWellKnownJson();
-        Mockito.when(restApiClient.getApi(wellKnownUrl, String.class))
+        Mockito.when(restApiClient.getApi(issuerWellKnownUrl, String.class))
                 .thenReturn(expectedWellknownJson);
         Mockito.when(objectMapper.readValue(expectedWellknownJson, CredentialIssuerWellKnownResponse.class)).thenReturn(expectedCredentialIssuerWellKnownResponse);
-        Mockito.when(authorizationServerService.getWellknown("https://dev.net/authorize")).thenReturn(expectedCredentialIssuerConfigurationResponse.getAuthorizationServerWellKnownResponse());
+        Mockito.when(authorizationServerService.getWellknown(authServerWellknownUrl)).thenReturn(expectedCredentialIssuerConfigurationResponse.getAuthorizationServerWellKnownResponse());
     }
 
     @Test
@@ -104,22 +106,6 @@ public class IssuersServiceTest {
         IssuersDTO filteredIssuers = issuersService.getAllIssuers("Issuer1");
         assertEquals(expectedIssuers, allIssuers);
         assertEquals(expectedFilteredIssuers, filteredIssuers);
-    }
-
-    @Test
-    public void shouldThrowExceptionIfCredentialIssuerHostIsNullForAnyIssuerWhenFetchingAllIssuersConfig() {
-        IssuersDTO expectedIssuers = new IssuersDTO();
-        List<IssuerDTO> expectedIssuersList = new ArrayList<>(List.of(getIssuerConfigDTO("Issuer1", issuerConfigRelatedFields), getIssuerConfigDTO("Issuer2", issuerConfigRelatedFields)));
-        expectedIssuers.setIssuers(expectedIssuersList);
-        issuers.setIssuers(List.of(getIssuerConfigDTO("Issuer1", Collections.emptyList()), getIssuerConfigDTO("Issuer2", Collections.emptyList())));
-        Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(new Gson().toJson(issuers));
-
-        InvalidWellknownResponseException actualException = assertThrows(InvalidWellknownResponseException.class, () -> {
-            issuersService.getAllIssuers(null);
-        });
-
-        assertEquals("RESIDENT-APP-041 --> Invalid Wellknown from Issuer\n" +
-                "credential_issuer_host cannot be null for issuer Issuer2id", actualException.getMessage());
     }
 
     @Test(expected = ApiNotAccessibleException.class)
@@ -142,10 +128,10 @@ public class IssuersServiceTest {
     public void shouldReturnIssuerWellknownForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         lenient().when(validator.validate(expectedCredentialIssuerWellKnownResponse)).thenReturn(Collections.emptySet());
 
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(issuerId);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(credentialIssuerHostUrl);
 
         assertEquals(expectedCredentialIssuerWellKnownResponse, credentialIssuerWellKnownResponse);
-        verify(restApiClient, times(2)).getApi(wellKnownUrl, String.class);
+        verify(restApiClient, times(1)).getApi(issuerWellKnownUrl, String.class);
     }
 
     @Test
@@ -211,7 +197,7 @@ public class IssuersServiceTest {
 
     @Test
     public void issuersConfigShouldThrowExceptionIfAnyErrorOccurredWhileFetchingIssuersAuthorizationServerWellknown() throws IOException, AuthorizationServerWellknownResponseException {
-        Mockito.when(authorizationServerService.getWellknown("https://dev.net/authorize")).thenThrow(new AuthorizationServerWellknownResponseException("well-known api is not accessible"));
+        Mockito.when(authorizationServerService.getWellknown(authServerWellknownUrl)).thenThrow(new AuthorizationServerWellknownResponseException("well-known api is not accessible"));
 
         AuthorizationServerWellknownResponseException actualException = assertThrows(AuthorizationServerWellknownResponseException.class, () -> {
             issuersService.getIssuerConfiguration("Issuer1id");
@@ -219,6 +205,6 @@ public class IssuersServiceTest {
 
         assertEquals("RESIDENT-APP-042 --> Invalid Authorization Server well-known from server:\n" +
                 "well-known api is not accessible", actualException.getMessage());
-        verify(authorizationServerService, times(1)).getWellknown("https://dev.net/authorize");
+        verify(authorizationServerService, times(1)).getWellknown(authServerWellknownUrl);
     }
 }
