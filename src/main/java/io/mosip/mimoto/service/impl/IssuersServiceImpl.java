@@ -15,9 +15,11 @@ import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.exception.InvalidWellknownResponseException;
+import io.mosip.mimoto.model.QRCodeType;
 import io.mosip.mimoto.service.AuthorizationServerService;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.CredentialIssuerWellknownResponseValidator;
+import io.mosip.mimoto.util.QRCodeTypeDeserializer;
 import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import jakarta.validation.Validator;
@@ -60,7 +62,8 @@ public class IssuersServiceImpl implements IssuersService {
         if (issuersConfigJsonValue == null) {
             throw new ApiNotAccessibleException();
         }
-        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
         issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
         List<IssuerDTO> enabledIssuers = issuers.getIssuers().stream()
                 .filter(issuer -> "true".equals(issuer.getEnabled()))
@@ -75,7 +78,8 @@ public class IssuersServiceImpl implements IssuersService {
                     .collect(Collectors.toList());
             issuers.setIssuers(filteredIssuers);
         }
-        return updateAndValidateIssuersConfig(issuers);
+        Gson gson = new Gson();
+        return gsonWithIssuerDataOnlyFilter.fromJson(gson.toJson(updateAndValidateIssuersConfig(issuers)), IssuersDTO.class);
     }
 
     @Override
@@ -85,7 +89,7 @@ public class IssuersServiceImpl implements IssuersService {
         if (issuersConfigJsonValue == null) {
             throw new ApiNotAccessibleException();
         }
-        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().create();
+        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
         issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
         return updateAndValidateIssuersConfig(issuers);
     }
@@ -98,7 +102,8 @@ public class IssuersServiceImpl implements IssuersService {
         if (issuersConfigJsonValue == null) {
             throw new ApiNotAccessibleException();
         }
-        IssuersDTO issuers = new Gson().fromJson(issuersConfigJsonValue, IssuersDTO.class);
+        Gson gson = new GsonBuilder().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
+        IssuersDTO issuers = gson.fromJson(issuersConfigJsonValue, IssuersDTO.class);
         Optional<IssuerDTO> issuerConfigResp = issuers.getIssuers().stream()
                 .filter(issuer -> issuer.getIssuer_id().equals(issuerId))
                 .findFirst();

@@ -60,6 +60,8 @@ public class IssuerDTO {
     @NotBlank
     @Schema(description = "Client Alias of the Issuer in the keyStore file")
     String client_alias;
+    @Expose
+    @Schema(description = "QR code type of issuer is used to decide whether the downloaded Verifiable Credential is allowed for online sharing or not")
     QRCodeType qr_code_type;
     @Expose
     @JsonInclude(NON_NULL)
