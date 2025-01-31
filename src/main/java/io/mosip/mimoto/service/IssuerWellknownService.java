@@ -8,5 +8,5 @@ import io.mosip.mimoto.exception.InvalidWellknownResponseException;
 import java.io.IOException;
 
 public interface IssuerWellknownService {
-    CredentialIssuerWellKnownResponse getWellknown(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException;
+    CredentialIssuerWellKnownResponse getWellknown(String credentialIssuerHost) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException;
 }

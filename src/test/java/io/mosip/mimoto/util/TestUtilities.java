@@ -83,11 +83,11 @@ public class TestUtilities {
     }
 
     public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses) {
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse();
-        credentialIssuerWellKnownResponse.setCredentialIssuer("https://dev/" + issuerName);
-        credentialIssuerWellKnownResponse.setAuthorizationServers(List.of("https://auth-server.env.net"));
-        credentialIssuerWellKnownResponse.setCredentialEndPoint("https://dev/issuance/credential");
-        credentialIssuerWellKnownResponse.setCredentialConfigurationsSupported(credentialsSupportedResponses);
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse(
+            "https://dev/" + issuerName,
+            List.of("https://auth-server.env.net"),
+            "https://dev/issuance/credential",
+            credentialsSupportedResponses);
         return credentialIssuerWellKnownResponse;
     }
 

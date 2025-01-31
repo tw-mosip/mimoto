@@ -1,7 +1,7 @@
 package io.mosip.mimoto.service.impl;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.mimoto.dto.IssuerDTO;
@@ -9,7 +9,6 @@ import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.AuthorizationServerWellKnownResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
-import io.mosip.mimoto.dto.mimoto.CredentialsSupportedResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
@@ -37,97 +36,101 @@ public class IssuersServiceImpl implements IssuersService {
     private Utilities utilities;
 
     @Autowired
-    AuthorizationServerService authorizationServerService;
+    private AuthorizationServerService authorizationServerService;
 
-     @Autowired
-     private IssuerWellknownService issuerWellknownService;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private IssuerWellknownService issuerWellknownService;
 
     @Override
-    public IssuersDTO getAllIssuers(String search) throws ApiNotAccessibleException, AuthorizationServerWellknownResponseException, IOException, InvalidWellknownResponseException {
-        IssuersDTO issuers;
-        String issuersConfigJsonValue = utilities.getIssuersConfigJsonValue();
-        if (issuersConfigJsonValue == null) {
-            throw new ApiNotAccessibleException();
+    public IssuersDTO getIssuers(String search) throws ApiNotAccessibleException, AuthorizationServerWellknownResponseException, IOException, InvalidWellknownResponseException {
+        IssuersDTO issuersDTO = getAllIssuers();
+        getAllEnabledIssuers(issuersDTO);
+        getFilteredIssuers(issuersDTO, search);
+
+        //validate Issuers Auth server config
+        List<String> errors = new ArrayList<>();
+        for (IssuerDTO issuerDTO : issuersDTO.getIssuers()) {
+            String validationErrorMsg = validateField(issuerDTO);
+            if (!validationErrorMsg.isEmpty()) errors.add(validationErrorMsg);
         }
 
-        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
-        issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
-        List<IssuerDTO> enabledIssuers = issuers.getIssuers().stream()
+        if (!errors.isEmpty()) {
+            throw new AuthorizationServerWellknownResponseException("Validations Failed : " + String.join(", ", errors));
+        }
+
+        for (int i = 0; i < issuersDTO.getIssuers().size(); i++) {
+            IssuerDTO issuerDTO = issuersDTO.getIssuers().get(i);
+            Map<String, Object> map = objectMapper.convertValue(issuerDTO, Map.class);
+            map.remove("authorization_audience");
+            IssuerDTO updatedIssuer = objectMapper.convertValue(map, IssuerDTO.class);
+            issuersDTO.getIssuers().set(i, updatedIssuer);
+        }
+
+        return issuersDTO;
+    }
+
+    @Override
+    public IssuerDTO getIssuerDetails(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
+        IssuersDTO issuersDTO = getAllIssuers();
+        getAllEnabledIssuers(issuersDTO);
+
+        Optional<IssuerDTO> issuerConfigResp = issuersDTO.getIssuers().stream()
+                .filter(issuer -> issuer.getIssuer_id().equals(issuerId))
+                .findFirst();
+
+        if (issuerConfigResp.isPresent()) {
+            IssuerDTO issuerDTO = issuerConfigResp.get();
+            String validationErrorMsg = validateField(issuerDTO);
+            if (!validationErrorMsg.isEmpty()) {
+                throw new AuthorizationServerWellknownResponseException("Validations Failed : " + String.join(", ", validationErrorMsg));
+            }
+            return issuerDTO;
+        } else {
+            throw new InvalidIssuerIdException();
+        }
+    }
+
+    public void getAllEnabledIssuers(IssuersDTO issuersDTO) {
+        List<IssuerDTO> enabledIssuers = issuersDTO.getIssuers().stream()
                 .filter(issuer -> "true".equals(issuer.getEnabled()))
                 .collect(Collectors.toList());
-        issuers.setIssuers(enabledIssuers);
+        issuersDTO.setIssuers(enabledIssuers);
+    }
 
-        // Filter issuers list with search string
+    public void getFilteredIssuers(IssuersDTO issuersDTO, String search) {
         if (!StringUtils.isEmpty(search)) {
-            List<IssuerDTO> filteredIssuers = issuers.getIssuers().stream()
+            List<IssuerDTO> filteredIssuers = issuersDTO.getIssuers().stream()
                     .filter(issuer -> issuer.getDisplay().stream()
                             .anyMatch(displayDTO -> displayDTO.getTitle().toLowerCase().contains(search.toLowerCase())))
                     .collect(Collectors.toList());
-            issuers.setIssuers(filteredIssuers);
+            issuersDTO.setIssuers(filteredIssuers);
         }
-        Gson gson = new Gson();
-        return gsonWithIssuerDataOnlyFilter.fromJson(gson.toJson(updateAndValidateIssuersConfig(issuers)), IssuersDTO.class);
     }
 
     @Override
-    public IssuersDTO getAllIssuersWithAllFields() throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        IssuersDTO issuers;
+    public IssuersDTO getAllIssuers() throws ApiNotAccessibleException, AuthorizationServerWellknownResponseException, IOException, InvalidWellknownResponseException {
+        IssuersDTO issuersDTO;
         String issuersConfigJsonValue = utilities.getIssuersConfigJsonValue();
         if (issuersConfigJsonValue == null) {
             throw new ApiNotAccessibleException();
         }
-        Gson gsonWithIssuerDataOnlyFilter = new GsonBuilder().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
-        issuers = gsonWithIssuerDataOnlyFilter.fromJson(issuersConfigJsonValue, IssuersDTO.class);
-        return updateAndValidateIssuersConfig(issuers);
-    }
 
-
-    @Override
-    public IssuerDTO getIssuerConfig(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        IssuerDTO issuerDTO = null;
-        String issuersConfigJsonValue = utilities.getIssuersConfigJsonValue();
-        if (issuersConfigJsonValue == null) {
-            throw new ApiNotAccessibleException();
-        }
         Gson gson = new GsonBuilder().registerTypeAdapter(QRCodeType.class, new QRCodeTypeDeserializer()).create();
-        IssuersDTO issuers = gson.fromJson(issuersConfigJsonValue, IssuersDTO.class);
-        Optional<IssuerDTO> issuerConfigResp = issuers.getIssuers().stream()
-                .filter(issuer -> issuer.getIssuer_id().equals(issuerId))
-                .findFirst();
-        if (issuerConfigResp.isPresent())
-            issuerDTO = issuerConfigResp.get();
-        else
-            throw new InvalidIssuerIdException();
-        IssuersDTO issuersDTO = new IssuersDTO();
-        issuersDTO.setIssuers(Arrays.asList(issuerDTO));
-        return updateAndValidateIssuersConfig(issuersDTO).getIssuers().getFirst();
-    }
-
-    @Override
-    @Cacheable(value = "issuerWellknown", key = "{#credentialIssuerHost}")
-    public CredentialIssuerWellKnownResponse getIssuerWellknown(String credentialIssuerHost) throws ApiNotAccessibleException, IOException, InvalidWellknownResponseException, AuthorizationServerWellknownResponseException {
-        try {
-            return issuerWellknownService.getWellknown(credentialIssuerHost);
-        } catch (JsonProcessingException | ApiNotAccessibleException |
-                 InvalidWellknownResponseException e) {
-            throw e;
+        issuersDTO = gson.fromJson(issuersConfigJsonValue, IssuersDTO.class);
+        for (IssuerDTO issuerDTO : issuersDTO.getIssuers()) {
+            updateIssuerWithAuthServerConfig(issuerDTO);
         }
+
+        return issuersDTO;
     }
 
     @Override
-    public CredentialsSupportedResponse getIssuerWellknownForCredentialType(String issuerId, String credentialId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        String credentialIssuerHost = getCredentialIssuerHost(issuerId);
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerWellknownService.getWellknown(credentialIssuerHost);
-        CredentialsSupportedResponse credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported().get(credentialId);
-        if (credentialsSupportedResponse == null) {
-            throw new ApiNotAccessibleException();
-        }
-        return credentialsSupportedResponse;
-    }
-
-    @Override
+    @Cacheable(value = "credentialIssuerConfig", key = "{#issuerId}")
     public CredentialIssuerConfigurationResponse getIssuerConfiguration(String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        String credentialIssuerHost = getCredentialIssuerHost(issuerId);
+        String credentialIssuerHost = getIssuerDetails(issuerId).getCredential_issuer_host();
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerWellknownService.getWellknown(credentialIssuerHost);
         String oauthServerUrl = credentialIssuerWellKnownResponse.getAuthorizationServers().get(0);
         AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(oauthServerUrl);
@@ -145,58 +148,32 @@ public class IssuersServiceImpl implements IssuersService {
         return authorizationServerService.getWellknown(oauthServerUrl);
     }
 
-    public String getCredentialIssuerHost(String issuerId) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
-        IssuerDTO issuerDTO = getIssuerConfig(issuerId);
-        return issuerDTO.getCredential_issuer_host();
-    }
-
-    public IssuersDTO updateAndValidateIssuersConfig(IssuersDTO issuersDTO) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
-        List<String> errors = new ArrayList<>();
-
-        for (IssuerDTO issuerDTO : issuersDTO.getIssuers()) {
-            String issuerId = issuerDTO.getIssuer_id();
-            String credentialIssuerHost = issuerDTO.getCredential_issuer_host();
-            issuerDTO.setWellknown_endpoint(credentialIssuerHost + "/.well-known/openid-credential-issuer");
-            CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerWellknownService.getWellknown(credentialIssuerHost);
-            updateIssuerWithAuthServerConfig(issuerDTO, credentialIssuerWellKnownResponse);
-
-            Map<String, String> fieldsMap = Map.of(
-                    "authorization_audience", issuerDTO.getAuthorization_audience(),
-                    "proxy_token_endpoint", issuerDTO.getProxy_token_endpoint()
-            );
-
-            validateField(fieldsMap, issuerId, errors);
-        }
-
-        if (!errors.isEmpty()) {
-            throw new AuthorizationServerWellknownResponseException("Validations Failed : " + String.join(", ", errors));
-        }
-
-        return issuersDTO;
-    }
-
-    public IssuerDTO updateIssuerWithAuthServerConfig(IssuerDTO issuerDTO, CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponses) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException {
-        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(credentialIssuerWellKnownResponses.getAuthorizationServers().get(0));
+    public void updateIssuerWithAuthServerConfig(IssuerDTO issuerDTO) throws AuthorizationServerWellknownResponseException, ApiNotAccessibleException, IOException, InvalidWellknownResponseException {
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerWellknownService.getWellknown(issuerDTO.getCredential_issuer_host());
+        AuthorizationServerWellKnownResponse authorizationServerWellKnownResponse = getAuthorizationServerWellknown(credentialIssuerWellKnownResponse.getAuthorizationServers().get(0));
         String tokenEndpoint = authorizationServerWellKnownResponse.getTokenEndpoint();
         issuerDTO.setAuthorization_audience(tokenEndpoint);
         issuerDTO.setProxy_token_endpoint(tokenEndpoint);
-        return issuerDTO;
     }
 
-    private void validateField(Map<String, String> fieldsMap, String issuerId, List<String> errors) {
-        StringBuilder issuerErrors = null;
-        for (String key : fieldsMap.keySet()) {
-            String fieldName = key;
-            String fieldValue = fieldsMap.get(key);
-            if (!(fieldValue != null && !fieldValue.trim().isEmpty())) {
-                if (issuerErrors == null) {
-                    issuerErrors = new StringBuilder("Issuer ID : " + issuerId + " -> ");
+    private String validateField(IssuerDTO issuerDTO) {
+        String issuerId = issuerDTO.getIssuer_id();
+        Map<String, String> validationFieldsMap = Map.of(
+                "authorization_audience", issuerDTO.getAuthorization_audience(),
+                "proxy_token_endpoint", issuerDTO.getProxy_token_endpoint()
+        );
+
+        StringBuilder issuerErrors = new StringBuilder();
+
+        validationFieldsMap.forEach((key, value) -> {
+            if (value == null || value.trim().isEmpty()) {
+                if (issuerErrors.length() == 0) {
+                    issuerErrors.append("Issuer ID : ").append(issuerId).append(" -> ");
                 }
-                issuerErrors.append(fieldName + " cannot be empty or contain only whitespace" + "\n");
+                issuerErrors.append(key).append(" cannot be empty or contain only whitespace\n");
             }
-        }
-        if (issuerErrors != null) {
-            errors.add(issuerErrors.toString());
-        }
+        });
+
+        return issuerErrors.toString();
     }
 }

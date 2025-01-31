@@ -33,7 +33,7 @@ public class IssuersValidationConfig implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         log.info("Validation for mimoto-issuers-config.json STARTED");
-        IssuersDTO issuerDTOList = issuersService.getAllIssuersWithAllFields();
+        IssuersDTO issuerDTOList = issuersService.getAllIssuers();
 
         AtomicReference<Errors> errors = new AtomicReference<>();
         AtomicReference<String> fieldErrors = new AtomicReference<>("");

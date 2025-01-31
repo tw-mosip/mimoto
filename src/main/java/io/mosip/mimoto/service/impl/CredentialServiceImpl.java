@@ -65,7 +65,7 @@ public class CredentialServiceImpl implements CredentialService {
     private RestApiClient restApiClient;
 
     @Autowired
-    IssuersService issuerService;
+    IssuersService issuersService;
 
     @Autowired
     DataShareServiceImpl dataShareService;
@@ -105,8 +105,8 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public TokenResponseDTO getTokenResponse(Map<String, String> params, String issuerId) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        IssuerDTO issuerDTO = issuerService.getIssuerConfig(issuerId);
-        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuerService.getIssuerConfiguration(issuerId);
+        IssuerDTO issuerDTO = issuersService.getIssuerDetails(issuerId);
+        CredentialIssuerConfigurationResponse credentialIssuerConfigurationResponse = issuersService.getIssuerConfiguration(issuerId);
         String tokenEndpoint = idpService.getTokenEndpoint(credentialIssuerConfigurationResponse);
         HttpEntity<MultiValueMap<String, String>> request = idpService.constructGetTokenRequest(params, issuerDTO, tokenEndpoint);
         TokenResponseDTO response = restTemplate.postForObject(tokenEndpoint, request, TokenResponseDTO.class);
@@ -118,16 +118,20 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public ByteArrayInputStream downloadCredentialAsPDF(String issuerId, String credentialType, TokenResponseDTO response, String credentialValidity, String locale) throws Exception {
-        IssuerDTO issuerConfig = issuerService.getIssuerConfig(issuerId);
-        String credentialIssuerHost = issuerConfig.getCredential_issuer_host();
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = issuerService.getIssuerWellknown(credentialIssuerHost);
-        CredentialsSupportedResponse credentialsSupportedResponse = issuerService.getIssuerWellknownForCredentialType(issuerId, credentialType);
-        VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerConfig, credentialIssuerWellKnownResponse,  credentialsSupportedResponse, response.getAccess_token());
+        IssuerDTO issuerDTO = issuersService.getIssuerDetails(issuerId);
+        CredentialIssuerConfigurationResponse issuerConfigurationResponse = issuersService.getIssuerConfiguration(issuerDTO.getCredential_issuer_host());
+        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse(
+                issuerConfigurationResponse.getCredentialIssuer(),
+                issuerConfigurationResponse.getAuthorizationServers(),
+                issuerConfigurationResponse.getCredentialEndPoint(),
+                issuerConfigurationResponse.getCredentialConfigurationsSupported());
+        CredentialsSupportedResponse credentialsSupportedResponse = credentialIssuerWellKnownResponse.getCredentialConfigurationsSupported().get(credentialType);
+        VCCredentialRequest vcCredentialRequest = generateVCCredentialRequest(issuerDTO, credentialIssuerWellKnownResponse, credentialsSupportedResponse, response.getAccess_token());
         VCCredentialResponse vcCredentialResponse = downloadCredential(credentialIssuerWellKnownResponse.getCredentialEndPoint(), vcCredentialRequest, response.getAccess_token());
         boolean verificationStatus = issuerId.toLowerCase().contains("mock") || verifyCredential(vcCredentialResponse);
-        if(verificationStatus) {
-            String dataShareUrl =  QRCodeType.OnlineSharing.equals(issuerConfig.getQr_code_type()) ? dataShareService.storeDataInDataShare(objectMapper.writeValueAsString(vcCredentialResponse), credentialValidity) : "";
-            return generatePdfForVerifiableCredentials(vcCredentialResponse, issuerConfig, credentialsSupportedResponse, dataShareUrl, credentialValidity, locale);
+        if (verificationStatus) {
+            String dataShareUrl = QRCodeType.OnlineSharing.equals(issuerDTO.getQr_code_type()) ? dataShareService.storeDataInDataShare(objectMapper.writeValueAsString(vcCredentialResponse), credentialValidity) : "";
+            return generatePdfForVerifiableCredentials(vcCredentialResponse, issuerDTO, credentialsSupportedResponse, dataShareUrl, credentialValidity, locale);
         }
         throw new VCVerificationException(SIGNATURE_VERIFICATION_EXCEPTION.getErrorCode(),
                 SIGNATURE_VERIFICATION_EXCEPTION.getErrorMessage());
@@ -198,7 +202,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
 
-    private Map<String, Object> getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse  vcCredentialResponse, IssuerDTO issuerDTO, String dataShareUrl, String credentialValidity, String locale) throws IOException, WriterException {
+    private Map<String, Object> getPdfResourceFromVcProperties(LinkedHashMap<String, Object> displayProperties, CredentialsSupportedResponse credentialsSupportedResponse, VCCredentialResponse vcCredentialResponse, IssuerDTO issuerDTO, String dataShareUrl, String credentialValidity, String locale) throws IOException, WriterException {
         Map<String, Object> data = new HashMap<>();
         LinkedHashMap<String, Object> rowProperties = new LinkedHashMap<>();
         String backgroundColor = credentialsSupportedResponse.getDisplay().get(0).getBackgroundColor();
@@ -241,7 +245,7 @@ public class CredentialServiceImpl implements CredentialService {
 
     @NotNull
     private ByteArrayInputStream renderVCInCredentialTemplate(Map<String, Object> data) throws IOException {
-        String  credentialTemplate = utilities.getCredentialSupportedTemplateString();
+        String credentialTemplate = utilities.getCredentialSupportedTemplateString();
         Properties props = new Properties();
         props.setProperty("resource.loader", "class");
         props.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
@@ -273,11 +277,12 @@ public class CredentialServiceImpl implements CredentialService {
 
     private String constructQRCodeWithVCData(VCCredentialResponse vcCredentialResponse) throws JsonProcessingException, WriterException {
         String qrData = pixelPass.generateQRData(objectMapper.writeValueAsString(vcCredentialResponse.getCredential()), "");
-        if(allowedQRDataSizeLimit > qrData.length()){
+        if (allowedQRDataSizeLimit > qrData.length()) {
             return constructQRCode(qrData);
         }
-       return "";
+        return "";
     }
+
     private String constructQRCodeWithAuthorizeRequest(VCCredentialResponse vcCredentialResponse, String dataShareUrl) throws WriterException, JsonProcessingException {
         PresentationDefinitionDTO presentationDefinitionDTO = presentationService.constructPresentationDefinition(vcCredentialResponse);
         String presentationString = objectMapper.writeValueAsString(presentationDefinitionDTO);

@@ -7,6 +7,7 @@ import io.mosip.mimoto.dto.IssuersDTO;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerConfigurationResponse;
 import io.mosip.mimoto.dto.mimoto.CredentialIssuerWellKnownResponse;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
+import io.mosip.mimoto.service.IssuerWellknownService;
 import io.mosip.mimoto.service.impl.IssuersServiceImpl;
 import io.mosip.mimoto.util.Utilities;
 import org.hamcrest.Matchers;
@@ -52,11 +53,14 @@ public class IssuersControllerTest {
     @MockBean
     private Utilities utilities;
 
+    @MockBean
+    private IssuerWellknownService issuerWellknownService;
+
     @Test
-    public void getAllIssuersTest() throws Exception {
+    public void getIssuersTest() throws Exception {
         IssuersDTO issuers = new IssuersDTO();
         issuers.setIssuers((List.of(getIssuerDTO("Issuer1"), getIssuerDTO("Issuer3"))));
-        Mockito.when(issuersService.getAllIssuers(null))
+        Mockito.when(issuersService.getIssuers(null))
                 .thenReturn(issuers)
                 .thenThrow(new ApiNotAccessibleException());
 
@@ -65,7 +69,7 @@ public class IssuersControllerTest {
                         .anyMatch(displayDTO -> displayDTO.getTitle().toLowerCase().contains("Issuer1".toLowerCase())))
                 .collect(Collectors.toList()));
 
-        Mockito.when(issuersService.getAllIssuers("Issuer1"))
+        Mockito.when(issuersService.getIssuers("Issuer1"))
                 .thenReturn(filteredIssuers)
                 .thenThrow(new ApiNotAccessibleException());
 
@@ -126,11 +130,11 @@ public class IssuersControllerTest {
     }
 
     @Test
-    public void getIssuerConfigTest() throws Exception {
-        Mockito.when(issuersService.getIssuerConfig("id1"))
+    public void getIssuerDetailsTest() throws Exception {
+        Mockito.when(issuersService.getIssuerDetails("id1"))
                 .thenReturn(getIssuerDTO("Issuer1"))
                 .thenThrow(new ApiNotAccessibleException());
-        Mockito.when(issuersService.getIssuerConfig("invalidId")).thenReturn(null);
+        Mockito.when(issuersService.getIssuerDetails("invalidId")).thenReturn(null);
 
         mockMvc.perform(get("/issuers/id1").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
@@ -152,8 +156,8 @@ public class IssuersControllerTest {
         String credentialIssuerHostUrl = "https://issuer.env.net";
         String expectedCredentialIssuerWellknownResponse = getExpectedWellKnownJson();
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
-        Mockito.when(issuersService.getIssuerConfig(issuerId)).thenReturn(getIssuerDTO(issuerId));
-        Mockito.when(issuersService.getIssuerWellknown(credentialIssuerHostUrl)).thenReturn(credentialIssuerWellKnownResponse);
+        Mockito.when(issuersService.getIssuerDetails(issuerId)).thenReturn(getIssuerDTO(issuerId));
+        Mockito.when(issuerWellknownService.getWellknown(credentialIssuerHostUrl)).thenReturn(credentialIssuerWellKnownResponse);
 
         String actualResponse = mockMvc.perform(get("/issuers/" + issuerId + "/well-known-proxy").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

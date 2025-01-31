@@ -98,8 +98,8 @@ public class IssuersServiceTest {
         List<IssuerDTO> filteredIssuersList = new ArrayList<>(List.of(getIssuerConfigDTO("Issuer1", issuerConfigRelatedFields)));
         expectedFilteredIssuers.setIssuers(filteredIssuersList);
 
-        IssuersDTO allIssuers = issuersService.getAllIssuers(null);
-        IssuersDTO filteredIssuers = issuersService.getAllIssuers("Issuer1");
+        IssuersDTO allIssuers = issuersService.getIssuers(null);
+        IssuersDTO filteredIssuers = issuersService.getIssuers("Issuer1");
         assertEquals(expectedIssuers, allIssuers);
         assertEquals(expectedFilteredIssuers, filteredIssuers);
     }
@@ -108,27 +108,16 @@ public class IssuersServiceTest {
     public void shouldThrowApiNotAccessibleExceptionWhenIssuersJsonStringIsNullForGettingAllIssuers() throws IOException, ApiNotAccessibleException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(null);
 
-        issuersService.getAllIssuers(null);
+        issuersService.getIssuers(null);
     }
 
     @Test
     public void shouldReturnIssuerDataAndConfigForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException, InvalidIssuerIdException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         IssuerDTO expectedIssuer = getIssuerConfigDTO("Issuer3", issuerConfigRelatedFields);
 
-        IssuerDTO issuer = issuersService.getIssuerConfig("Issuer3id");
+        IssuerDTO issuer = issuersService.getIssuerDetails("Issuer3id");
 
         assertEquals(expectedIssuer, issuer);
-    }
-
-    @Test
-    public void shouldReturnIssuerWellknownForTheIssuerIdIfExist() throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = getCredentialIssuerWellKnownResponseDto(issuerId, Map.of("CredentialType1", getCredentialSupportedResponse("CredentialType1")));
-        Mockito.when(issuerWellknownService.getWellknown(credentialIssuerHostUrl))
-                .thenReturn(credentialIssuerWellKnownResponse);
-
-        credentialIssuerWellKnownResponse = issuersService.getIssuerWellknown(credentialIssuerHostUrl);
-
-        assertEquals(expectedCredentialIssuerWellKnownResponse, credentialIssuerWellKnownResponse);
     }
 
     @Test
@@ -137,21 +126,21 @@ public class IssuersServiceTest {
         List<IssuerDTO> issuers = new ArrayList<>(List.of(getIssuerConfigDTO("Issuer3", new ArrayList<>()), getIssuerConfigDTO("Issuer4", new ArrayList<>())));
         expectedIssuers.setIssuers(issuers);
 
-        IssuersDTO issuersDTO = issuersService.getAllIssuersWithAllFields();
+        IssuersDTO issuersDTO = issuersService.getAllIssuers();
 
         assertEquals(expectedIssuers, issuersDTO);
     }
 
     @Test(expected = InvalidIssuerIdException.class)
     public void shouldThrowExceptionIfTheIssuerIdNotExists() throws ApiNotAccessibleException, IOException, InvalidIssuerIdException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
-        issuersService.getIssuerConfig("Issuer5id");
+        issuersService.getIssuerDetails("Issuer5id");
     }
 
     @Test(expected = ApiNotAccessibleException.class)
     public void shouldThrowApiNotAccessibleExceptionWhenIssuersJsonStringIsNullForGettingIssuerConfig() throws IOException, ApiNotAccessibleException, InvalidIssuerIdException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         Mockito.when(utilities.getIssuersConfigJsonValue()).thenReturn(null);
 
-        issuersService.getIssuerConfig("Issuers1id");
+        issuersService.getIssuerDetails("Issuers1id");
     }
 
     @Test
@@ -165,7 +154,7 @@ public class IssuersServiceTest {
         IssuersDTO expectedIssuersDTO = new IssuersDTO();
         expectedIssuersDTO.setIssuers(List.of(enabledIssuer));
 
-        IssuersDTO actualIssuersDTO = issuersService.getAllIssuers("");
+        IssuersDTO actualIssuersDTO = issuersService.getIssuers("");
 
         assertEquals(expectedIssuersDTO, actualIssuersDTO);
         assertEquals(actualIssuersDTO.getIssuers().get(0).getEnabled(), "true");
