@@ -84,10 +84,10 @@ public class TestUtilities {
 
     public static CredentialIssuerWellKnownResponse getCredentialIssuerWellKnownResponseDto(String issuerName, Map<String, CredentialsSupportedResponse> credentialsSupportedResponses) {
         CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = new CredentialIssuerWellKnownResponse(
-            "https://dev/" + issuerName,
-            List.of("https://auth-server.env.net"),
-            "https://dev/issuance/credential",
-            credentialsSupportedResponses);
+                "https://dev/" + issuerName,
+                List.of("https://auth-server.env.net"),
+                "https://dev/issuance/credential",
+                credentialsSupportedResponses);
         return credentialIssuerWellKnownResponse;
     }
 
@@ -127,13 +127,10 @@ public class TestUtilities {
         issuer.setCredential_issuer_host("https://issuer.env.net");
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
-        if (!issuerName.equals("Issuer2")) {
-            issuer.setWellknown_endpoint("/well-known-proxy");
+        issuer.setWellknown_endpoint("/well-known-proxy");
+        issuer.setProxy_token_endpoint("/well-known-proxy");
+        if (!(issuerName.equals("Issuer2") || issuerName.equals("Issuer4"))) { //use it for testing /issuers or /issuers?search=issuer2 endpoints
             issuer.setAuthorization_audience("/well-known-proxy");
-            issuer.setProxy_token_endpoint("/well-known-proxy");
-        } else {
-            issuer.setRedirect_uri(null);
-            issuer.setToken_endpoint(null);
         }
         return issuer;
     }
