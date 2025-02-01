@@ -35,7 +35,7 @@ public class IssuerDTO {
     @Schema(description = "Redirect URI configured while creating the OIDC Client")
     String redirect_uri;
     @JsonInclude(NON_NULL)
-    @URL
+    @NotBlank
     @Schema(description = "Authorization Audience for retrieving Token from token endpoint")
     String authorization_audience;
     @Schema(description = "Mimoto Token Endpoint Fetching the Token From Authorization Server with Client Assertion")
