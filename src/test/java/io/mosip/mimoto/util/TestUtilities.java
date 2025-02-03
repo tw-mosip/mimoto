@@ -135,7 +135,7 @@ public class TestUtilities {
         return issuer;
     }
 
-    public static IssuerDTO getIssuerConfigDTO(String issuerName, List<String> nullFields) {
+    public static IssuerDTO getIssuerConfigDTO(String issuerName) {
         LogoDTO logo = new LogoDTO();
         logo.setUrl("/logo");
         logo.setAlt_text("logo-url");
@@ -151,22 +151,10 @@ public class TestUtilities {
         issuer.setDisplay(Collections.singletonList(display));
         issuer.setClient_id("123");
         issuer.setEnabled("true");
-        //use this for testing getIssuersConfig
-        if (issuerName.equals("Issuer1") || issuerName.equals("Issuer2")) {
-            issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
-            issuer.setCredential_issuer_host("https://issuer.env.net");
-            issuer.setProxy_token_endpoint("https://dev/token");
-        } else if (issuerName.equals("Issuer3") || issuerName.equals("Issuer4")) { // use this for testing getWellknown
-            issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
-            issuer.setCredential_issuer_host("https://issuer.env.net");
-            issuer.setAuthorization_audience("https://dev/token");
-            issuer.setProxy_token_endpoint("https://dev/token");
-        } else {
-            if (!nullFields.contains("redirect_uri"))
-                issuer.setRedirect_uri("/redirection");
-            if (!nullFields.contains("token_endpoint"))
-                issuer.setToken_endpoint("/token_endpoint");
-        }
+        issuer.setWellknown_endpoint("https://issuer.env.net/.well-known/openid-credential-issuer");
+        issuer.setCredential_issuer_host("https://issuer.env.net");
+        issuer.setAuthorization_audience("https://dev/token");
+        issuer.setProxy_token_endpoint("https://dev/token");
         return issuer;
     }
 
