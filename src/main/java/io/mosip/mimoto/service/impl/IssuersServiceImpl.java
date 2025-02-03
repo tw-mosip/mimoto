@@ -48,14 +48,6 @@ public class IssuersServiceImpl implements IssuersService {
         getAllEnabledIssuers(issuersDTO);
         getFilteredIssuers(issuersDTO, search);
 
-        for (int i = 0; i < issuersDTO.getIssuers().size(); i++) {
-            IssuerDTO issuerDTO = issuersDTO.getIssuers().get(i);
-            Map<String, Object> issuer = objectMapper.convertValue(issuerDTO, Map.class);
-            issuer.remove("authorization_audience");
-            IssuerDTO updatedIssuer = objectMapper.convertValue(issuer, IssuerDTO.class);
-            issuersDTO.getIssuers().set(i, updatedIssuer);
-        }
-
         return issuersDTO;
     }
 
@@ -77,14 +69,14 @@ public class IssuersServiceImpl implements IssuersService {
         return issuerDTO;
     }
 
-    public void getAllEnabledIssuers(IssuersDTO issuersDTO) {
+    private void getAllEnabledIssuers(IssuersDTO issuersDTO) {
         List<IssuerDTO> enabledIssuers = issuersDTO.getIssuers().stream()
                 .filter(issuer -> "true".equals(issuer.getEnabled()))
                 .collect(Collectors.toList());
         issuersDTO.setIssuers(enabledIssuers);
     }
 
-    public void getFilteredIssuers(IssuersDTO issuersDTO, String search) {
+     private void getFilteredIssuers(IssuersDTO issuersDTO, String search) {
         if (!StringUtils.isEmpty(search)) {
             List<IssuerDTO> filteredIssuers = issuersDTO.getIssuers().stream()
                     .filter(issuer -> issuer.getDisplay().stream()

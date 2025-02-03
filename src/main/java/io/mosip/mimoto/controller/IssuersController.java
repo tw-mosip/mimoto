@@ -11,7 +11,6 @@ import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidIssuerIdException;
 import io.mosip.mimoto.exception.InvalidWellknownResponseException;
-import io.mosip.mimoto.service.AuthorizationServerService;
 import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.util.Utilities;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,9 +38,6 @@ public class IssuersController {
 
     @Autowired
     Utilities utilities;
-
-    @Autowired
-    AuthorizationServerService authorizationServerService;
 
     @Operation(summary = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_SUMMARY, description = SwaggerLiteralConstants.ISSUERS_GET_ISSUERS_DESCRIPTION)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
