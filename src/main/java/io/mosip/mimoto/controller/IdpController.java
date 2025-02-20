@@ -109,19 +109,24 @@ public class IdpController {
             responseWrapper = joseUtil.addThumbprintAndKeyId(internalResponse);
             return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
         } catch (Exception e) {
+<<<<<<< HEAD
             log.error("Wallet binding error occurred for transaction id " + requestDTO.getRequest().getIndividualId(), e);
             String[] errorObj = Utilities.handleExceptionWithErrorCode(e, PlatformErrorMessages.MIMOTO_WALLET_BINDING_EXCEPTION.getCode());
             List<ErrorDTO> errors = Utilities.getErrors(errorObj[0], errorObj[1]);
             responseWrapper.setResponse(null);
             responseWrapper.setErrors(errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseWrapper);
+=======
+            log.error("Wallet binding error occured for tranaction id " + requestDTO.getRequest().getIndividualId(), e);
+            return Utilities.handleErrorResponse(e, PlatformErrorMessages.MIMOTO_WALLET_BINDING_EXCEPTION.getCode(), HttpStatus.BAD_REQUEST);
+>>>>>>> bd5a6da4 ([INJIWEB-1370] refactor handleExceptionWithErroCode to return the response entity directly with the receieved status and error details)
         }
     }
 
     @Operation(summary = SwaggerLiteralConstants.IDP_GET_TOKEN_SUMMARY, description = SwaggerLiteralConstants.IDP_GET_TOKEN_DESCRIPTION)
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = TokenResponseDTO.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = ResponseWrapper.class), mediaType = "application/json") }) })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = TokenResponseDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ResponseWrapper.class), mediaType = "application/json")})})
     @PostMapping(value = {"/get-token/{issuer}"}, consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getToken(@RequestParam Map<String, String> params, @PathVariable(required = true, name= "issuer") String issuer) {
         log.info("Reached the getToken Controller for Issuer " + issuer);
