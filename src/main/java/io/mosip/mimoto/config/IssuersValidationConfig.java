@@ -24,12 +24,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class IssuersValidationConfig implements ApplicationRunner {
     @Autowired
     IssuersService issuersService;
-
     @Autowired
     private Validator validator;
-
     private final String VALIDATION_ERROR_MSG = "\n\nValidation failed in Mimoto-issuers-config.json:";
-
     @Override
     public void run(ApplicationArguments args) throws ApiNotAccessibleException, IOException, AuthorizationServerWellknownResponseException, InvalidWellknownResponseException {
         log.info("Validation for mimoto-issuers-config.json STARTED");
