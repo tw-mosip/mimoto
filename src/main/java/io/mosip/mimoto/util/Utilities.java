@@ -216,7 +216,7 @@ public class Utilities {
         return new String[]{errorCode, errorMessage};
     }
 
-    public static ResponseEntity<ErrorDTO> getErrorResponseEntityWithoutWrapper(
+    public static <T> ResponseEntity<T> getErrorResponseEntityWithoutWrapper(
             Exception exception, String flowErrorCode, HttpStatus status, MediaType contentType) {
         String errorMessage = exception.getMessage();
         String errorCode = flowErrorCode;
@@ -231,7 +231,7 @@ public class Utilities {
         if (contentType != null) {
             responseEntity.contentType(contentType);
         }
-        return responseEntity.body(new ErrorDTO(errorCode, errorMessage));
+        return (ResponseEntity<T>) responseEntity.body(new ErrorDTO(errorCode, errorMessage));
     }
 
     public static List<ErrorDTO> getErrors(String errorCode, String errorMessage) {
