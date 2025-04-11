@@ -64,6 +64,7 @@ public class WalletsController {
             String walletKey = walletService.getWalletKey((String) httpSession.getAttribute("userId"), walletId, wallet.getWalletPin());
             if(null != walletKey) {
                 httpSession.setAttribute("wallet_key", walletKey);
+                httpSession.setAttribute("wallet_id", walletId);
                 WalletResponseDto response = new WalletResponseDto(walletId);
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             }
