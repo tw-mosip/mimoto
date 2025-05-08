@@ -1,6 +1,7 @@
 package io.mosip.mimoto.config;
 
 import io.mosip.mimoto.exception.OAuth2AuthenticationException;
+import io.mosip.mimoto.security.oauth2.CustomOidcUserService;
 import io.mosip.mimoto.security.oauth2.OAuth2AuthenticationFailureHandler;
 import io.mosip.mimoto.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import io.mosip.mimoto.service.LogoutService;
@@ -19,6 +20,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.session.SessionRepository;
@@ -29,6 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import static io.mosip.mimoto.exception.ErrorConstants.LOGIN_SESSION_INVALIDATE_EXCEPTION;
 
 @Configuration
@@ -57,7 +61,17 @@ public class Config {
     private String injiWebUrl;
 
     @Autowired
+    private DefaultAuthorizationCodeTokenResponseClient tokenResponseClient;
+
+    @Autowired
     private LogoutService logoutService;
+
+    @Autowired
+    private OAuth2AuthorizationRequestResolver authorizationRequestResolver;
+
+    @Autowired
+    private CustomOidcUserService customOidcUserService;
+
 
     @Bean
     @ConfigurationProperties(prefix = "mosip.inji")
@@ -78,8 +92,7 @@ public class Config {
         }
 
         if (isCORSEnable) {
-            http.cors(corsCustomizer -> corsCustomizer
-                    .configurationSource(corsConfigurationSource()));
+            http.cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()));
         }
         http.headers(headersEntry -> {
             headersEntry.cacheControl(Customizer.withDefaults());
@@ -92,9 +105,7 @@ public class Config {
                 exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         );
 
-
         return http.build();
-
     }
 
     private void setupOauth2Config(HttpSecurity http, SessionRepository sessionRepository) throws Exception {
@@ -107,8 +118,13 @@ public class Config {
     private void configureOAuth2Login(HttpSecurity http) throws Exception {
         http.oauth2Login(oauth2Login -> oauth2Login
                 .loginPage(injiWebUrl + "/login")
-                .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorize"))
+                .authorizationEndpoint(authorization -> authorization
+                        .baseUri("/oauth2/authorize")
+                        .authorizationRequestResolver(authorizationRequestResolver)
+                )
                 .redirectionEndpoint(redirect -> redirect.baseUri("/oauth2/callback/*"))
+                .tokenEndpoint(token -> token.accessTokenResponseClient(tokenResponseClient))
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(customOidcUserService))
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
         );
