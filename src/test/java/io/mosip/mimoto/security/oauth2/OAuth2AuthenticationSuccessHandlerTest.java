@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -81,6 +82,24 @@ public class OAuth2AuthenticationSuccessHandlerTest {
         assertEquals(DISPLAY_NAME, dto.getDisplayName());
         assertEquals(PROFILE_PICTURE_URL, dto.getProfilePictureUrl());
         assertEquals(EMAIL, dto.getEmail());
+    }
+
+    @Test
+    public void testOnAuthenticationSuccessWithRedirectTo() throws Exception {
+        String redirectTo = "https://example.com/redirect";
+        when(oauth2Token.getAuthorizedClientRegistrationId()).thenReturn(CLIENT_REGISTRATION_ID);
+        when(oauth2Token.getPrincipal()).thenReturn(oauth2User);
+        when(oauth2User.getAttribute("name")).thenReturn(DISPLAY_NAME);
+        when(oauth2User.getAttribute("picture")).thenReturn(PROFILE_PICTURE_URL);
+        when(oauth2User.getAttribute("email")).thenReturn(EMAIL);
+        when(oauth2User.getAttribute("userId")).thenReturn(USER_ID);
+        try (MockedStatic<CustomAuthorizationRequestRepository> mocked = mockStatic(CustomAuthorizationRequestRepository.class)) {
+            mocked.when(() -> CustomAuthorizationRequestRepository.getRedirectToFromSession(request)).thenReturn(redirectTo);
+
+            successHandler.onAuthenticationSuccess(request, response, oauth2Token);
+
+            verify(response).sendRedirect(AUTH_SUCCESS_REDIRECT_URL + "?redirectTo=" + redirectTo);
+        }
     }
 
     @Test

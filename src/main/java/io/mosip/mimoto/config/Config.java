@@ -1,6 +1,7 @@
 package io.mosip.mimoto.config;
 
 import io.mosip.mimoto.exception.OAuth2AuthenticationException;
+import io.mosip.mimoto.security.oauth2.CustomAuthorizationRequestRepository;
 import io.mosip.mimoto.security.oauth2.CustomOAuth2UserService;
 import io.mosip.mimoto.security.oauth2.OAuth2AuthenticationFailureHandler;
 import io.mosip.mimoto.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -30,6 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 import static io.mosip.mimoto.exception.ErrorConstants.LOGIN_SESSION_INVALIDATE_EXCEPTION;
 
 @Configuration
@@ -75,6 +77,9 @@ public class Config {
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
+    @Autowired
+    private CustomAuthorizationRequestRepository customAuthorizationRequestRepository;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, SessionRepository sessionRepository) throws Exception {
         if (!isCSRFEnable) {
@@ -111,7 +116,10 @@ public class Config {
     private void configureOAuth2Login(HttpSecurity http) throws Exception {
         http.oauth2Login(oauth2Login -> oauth2Login
                 .loginPage(injiWebUrl + "/")
-                .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorize"))
+                .authorizationEndpoint(authorization -> authorization
+                        .baseUri("/oauth2/authorize")
+                        .authorizationRequestRepository(customAuthorizationRequestRepository)
+                )
                 .redirectionEndpoint(redirect -> redirect.baseUri("/oauth2/callback/*"))
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 .successHandler(oAuth2AuthenticationSuccessHandler)

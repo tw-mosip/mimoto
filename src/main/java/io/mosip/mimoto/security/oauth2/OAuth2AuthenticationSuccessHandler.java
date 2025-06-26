@@ -47,6 +47,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userId = oAuth2User.getAttribute("userId");
         session.setAttribute(SessionKeys.USER_ID, userId);
 
-        response.sendRedirect(authenticationSuccessRedirectUrl);
+        String redirectTo = CustomAuthorizationRequestRepository.getRedirectToFromSession(request);
+
+        if (redirectTo == null || redirectTo.isBlank()) {
+            response.sendRedirect(authenticationSuccessRedirectUrl);
+        } else {
+            response.sendRedirect(authenticationSuccessRedirectUrl + "?redirectTo=" + redirectTo);
+        }
+
     }
 }
