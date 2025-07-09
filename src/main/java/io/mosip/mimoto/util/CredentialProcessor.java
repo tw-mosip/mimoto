@@ -2,20 +2,23 @@ package io.mosip.mimoto.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.mimoto.model.CredentialMetadata;
-import io.mosip.mimoto.model.VerifiableCredential;
-
 import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.IssuerConfig;
 import io.mosip.mimoto.dto.mimoto.VCCredentialRequest;
 import io.mosip.mimoto.dto.mimoto.VCCredentialResponse;
 import io.mosip.mimoto.dto.mimoto.VerifiableCredentialResponseDTO;
-import io.mosip.mimoto.exception.*;
+import io.mosip.mimoto.exception.CredentialProcessingException;
+import io.mosip.mimoto.exception.ExternalServiceUnavailableException;
+import io.mosip.mimoto.exception.InvalidRequestException;
+import io.mosip.mimoto.exception.VCVerificationException;
+import io.mosip.mimoto.model.CredentialMetadata;
+import io.mosip.mimoto.model.VerifiableCredential;
 import io.mosip.mimoto.repository.WalletCredentialsRepository;
 import io.mosip.mimoto.service.CredentialRequestService;
 import io.mosip.mimoto.service.CredentialService;
 import io.mosip.mimoto.service.CredentialVerifierService;
 import io.mosip.mimoto.service.IssuersService;
+import io.mosip.vciclient.credentialResponse.CredentialResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +85,7 @@ public class CredentialProcessor {
             log.error("Invalid token response: null or missing access token");
             throw new InvalidRequestException(INVALID_REQUEST.getErrorCode(), "Token response or access token cannot be null");
         }
-        if (StringUtils.isBlank(credentialConfigurationId )) {
+        if (StringUtils.isBlank(credentialConfigurationId)) {
             log.error("Invalid credential type: null or blank");
             throw new InvalidRequestException(INVALID_REQUEST.getErrorCode(), "Credential type cannot be null or blank");
         }
@@ -177,8 +180,32 @@ public class CredentialProcessor {
                     "Unable to encrypt credential data", e);
         }
 
-        VerifiableCredential savedCredential =  saveCredential(walletId, encryptedCredentialData, issuerId, credentialConfigurationId);
+        VerifiableCredential savedCredential = saveCredential(walletId, encryptedCredentialData, issuerId, credentialConfigurationId);
         return VerifiableCredentialResponseDTO.fromIssuerConfig(issuerConfig, locale, savedCredential.getId());
+    }
+
+    public String getProofJwt(
+            String accessToken, String credentialConfigurationId, String walletId,
+            String base64Key, String issuerId)
+            throws Exception {
+
+        // Fetch issuer configuration
+        IssuerConfig issuerConfig;
+        try {
+            issuerConfig = issuersService.getIssuerConfig(issuerId, credentialConfigurationId);
+        } catch (Exception e) {
+            log.error("Failed to fetch issuer config for issuerId: {}", issuerId, e);
+            throw new CredentialProcessingException(
+                    CREDENTIAL_DOWNLOAD_EXCEPTION.getErrorCode(),
+                    "Unable to fetch issuer configuration", e);
+        }
+
+        // Generate JWT
+        String proofJWT = credentialRequestService.generateProofJWT(issuerConfig.getIssuerDTO(),
+                issuerConfig.getWellKnownResponse(), issuerConfig.getCredentialsSupportedResponse(),
+                accessToken, walletId, base64Key, true);
+
+        return proofJWT;
     }
 
     /**
@@ -209,6 +236,43 @@ public class CredentialProcessor {
             throw new CredentialProcessingException(
                     CREDENTIAL_DOWNLOAD_EXCEPTION.getErrorCode(),
                     "Unable to save credential to database", e);
+        }
+    }
+
+    public VerifiableCredentialResponseDTO storeCredential(CredentialResponse vcCredentialResponse, String issuerId, String credentialConfigurationId, String walletId, String locale, String base64Key) throws Exception {
+        // Fetch issuer configuration
+        IssuerConfig issuerConfig;
+        try {
+            issuerConfig = issuersService.getIssuerConfig(issuerId, credentialConfigurationId);
+        } catch (Exception e) {
+            log.error("Failed to fetch issuer config for issuerId: {}", issuerId, e);
+            throw new CredentialProcessingException(
+                    CREDENTIAL_DOWNLOAD_EXCEPTION.getErrorCode(),
+                    "Unable to fetch issuer configuration", e);
+        }
+
+        // Serialize and store credential
+        String vcResponseAsJsonString;
+        try {
+            vcResponseAsJsonString = objectMapper.writeValueAsString(vcCredentialResponse);
+
+            String encryptedCredentialData;
+            try {
+                encryptedCredentialData = encryptionDecryptionUtil.encryptCredential(vcResponseAsJsonString, base64Key);
+            } catch (Exception e) {
+                log.error("Failed to encrypt credential for issuerId: {}, credentialConfigurationId: {}", issuerId, credentialConfigurationId, e);
+                throw new CredentialProcessingException(
+                        CREDENTIAL_DOWNLOAD_EXCEPTION.getErrorCode(),
+                        "Unable to encrypt credential data", e);
+            }
+
+            VerifiableCredential savedCredential = saveCredential(walletId, encryptedCredentialData, issuerId, credentialConfigurationId);
+            return VerifiableCredentialResponseDTO.fromIssuerConfig(issuerConfig, locale, savedCredential.getId());
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize credential response for issuerId: {}, credentialConfigurationId: {}", issuerId, credentialConfigurationId, e);
+            throw new CredentialProcessingException(
+                    CREDENTIAL_DOWNLOAD_EXCEPTION.getErrorCode(),
+                    "Unable to serialize credential response", e);
         }
     }
 }

@@ -15,4 +15,6 @@ public interface CredentialRequestService {
             String base64EncodedWalletKey,
             Boolean isLoginFlow
     ) throws Exception;
+
+    String generateProofJWT(IssuerDTO issuerDTO, CredentialIssuerWellKnownResponse wellKnownResponse, CredentialsSupportedResponse credentialsSupportedResponse, String accessToken, String walletId, String base64EncodedWalletKey, boolean isLoginFlow) throws Exception;
 }

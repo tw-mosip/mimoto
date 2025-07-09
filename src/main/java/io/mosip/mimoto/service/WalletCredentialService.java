@@ -4,6 +4,7 @@ import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.VerifiableCredentialResponseDTO;
 import io.mosip.mimoto.dto.resident.WalletCredentialResponseDTO;
 import io.mosip.mimoto.exception.*;
+import io.mosip.vciclient.credentialResponse.CredentialResponse;
 
 import java.util.List;
 
@@ -29,6 +30,11 @@ public interface WalletCredentialService {
                                                            String locale, String walletId, String base64Key)
             throws CredentialProcessingException, ExternalServiceUnavailableException;
 
+    String getProofJWT(String issuerId, String credentialConfigurationId,
+                       String accessToken,
+                       String walletId, String base64Key)
+            throws Exception;
+
     /**
      * Fetches all credentials for a wallet.
      *
@@ -38,6 +44,9 @@ public interface WalletCredentialService {
      * @return List of credential responses.
      */
     List<VerifiableCredentialResponseDTO> fetchAllCredentialsForWallet(String walletId, String base64Key, String locale);
+
+    VerifiableCredentialResponseDTO saveCredential(CredentialResponse credentialResponse, String base64Key,
+                                                   String issuerId, String credentialConfigurationId, String walletId, String locale) throws Exception;
 
     /**
      * Fetches a single verifiable credential by ID.

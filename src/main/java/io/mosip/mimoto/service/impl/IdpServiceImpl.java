@@ -52,7 +52,7 @@ public class IdpServiceImpl implements IdpService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        String clientAssertion = joseUtil.getJWT(issuerDTO.getClient_id(), keyStorePath, fileName, issuerDTO.getClient_alias(), cyptoPassword, authorizationAudience);
+        String clientAssertion = getProofJwt(issuerDTO, authorizationAudience);
         map.add("code", params.get("code"));
         map.add("client_id", issuerDTO.getClient_id());
         map.add("grant_type", params.get("grant_type"));
@@ -62,6 +62,10 @@ public class IdpServiceImpl implements IdpService {
         map.add("code_verifier", params.get("code_verifier"));
 
         return new HttpEntity<>(map, headers);
+    }
+
+    private String getProofJwt(IssuerDTO issuerDTO, String authorizationAudience) throws IOException {
+        return joseUtil.getJWT(issuerDTO.getClient_id(), keyStorePath, fileName, issuerDTO.getClient_alias(), cyptoPassword, authorizationAudience);
     }
 
     @Override

@@ -1,10 +1,11 @@
 package io.mosip.mimoto.controller;
 
+import io.micrometer.tracing.Tracer;
+import io.mosip.mimoto.bridge.VCIClientBridge;
 import io.mosip.mimoto.constant.SwaggerExampleConstants;
 import io.mosip.mimoto.constant.SwaggerLiteralConstants;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.VerifiableCredentialRequestDTO;
-import io.mosip.mimoto.dto.idp.TokenResponseDTO;
 import io.mosip.mimoto.dto.mimoto.VerifiableCredentialResponseDTO;
 import io.mosip.mimoto.dto.resident.WalletCredentialResponseDTO;
 import io.mosip.mimoto.exception.*;
@@ -12,6 +13,10 @@ import io.mosip.mimoto.service.WalletCredentialService;
 import io.mosip.mimoto.service.IdpService;
 import io.mosip.mimoto.util.Utilities;
 import io.mosip.mimoto.util.WalletUtil;
+import io.mosip.vciclient.clientMetadata.ClientMetadata;
+import io.mosip.vciclient.constants.CredentialFormat;
+import io.mosip.vciclient.credentialResponse.CredentialResponse;
+import io.mosip.vciclient.issuerMetadata.IssuerMetadata;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,14 +26,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import kotlin.ParameterName;
+import kotlin.jvm.functions.Function4;
+import kotlinx.coroutines.BuildersKt;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -37,11 +46,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-import static io.mosip.mimoto.exception.ErrorConstants.CREDENTIAL_DOWNLOAD_EXCEPTION;
 import static io.mosip.mimoto.util.WalletUtil.validateWalletId;
 
 /**
@@ -55,12 +61,14 @@ public class WalletCredentialsController {
 
     private final WalletCredentialService walletCredentialService;
     private final IdpService idpService;
+    private final Tracer tracer;
 
     @Autowired
     public WalletCredentialsController(WalletCredentialService walletCredentialService,
-                                       IdpService idpService) {
+                                       IdpService idpService, Tracer tracer) {
         this.walletCredentialService = walletCredentialService;
         this.idpService = idpService;
+        this.tracer = tracer;
     }
 
     /**
@@ -109,39 +117,87 @@ public class WalletCredentialsController {
             @RequestHeader(value = "Accept-Language", required = false, defaultValue = "en") @Pattern(regexp = "^[a-z]{2}$", message = "Locale must be a 2-letter code") String locale,
             @PathVariable("walletId") @NotBlank(message = "Wallet ID cannot be blank") String walletId,
             @RequestBody @Valid VerifiableCredentialRequestDTO verifiableCredentialRequest,
-            HttpSession httpSession) throws InvalidRequestException {
+            HttpSession httpSession) throws Exception {
 
         validateWalletId(httpSession, walletId);
         String base64EncodedWalletKey = WalletUtil.getSessionWalletKey(httpSession);
+
+        int result = VCIClientBridge.Companion.calculateSync(x -> x * 10);
+        System.out.println("Result = " + result); // Result = 20
+        int calculated = VCIClientBridge.Companion.calculate2Sync((x, y) -> x * y, x -> x * 10);
+        log.info("Calculated = " + calculated);
 
         String issuerId = verifiableCredentialRequest.getIssuer();
         String credentialConfigurationId = verifiableCredentialRequest.getCredentialConfigurationId();
 
         log.info("Initiating token call for issuer: {}", issuerId);
-        TokenResponseDTO tokenResponse;
-        try {
-            tokenResponse = idpService.getTokenResponse(verifiableCredentialRequest);
-        } catch (ApiNotAccessibleException | IOException | AuthorizationServerWellknownResponseException |
-                 InvalidWellknownResponseException e) {
-            log.error("Error fetching token response for issuer: {}", issuerId, e);
-            return Utilities.getErrorResponseEntityFromPlatformErrorMessage(
-                    CREDENTIAL_DOWNLOAD_EXCEPTION, HttpStatus.SERVICE_UNAVAILABLE, MediaType.APPLICATION_JSON);
-        }
 
-        log.info("Fetching and storing Verifiable Credential for walletId: {}", walletId);
+        String traceId = tracer.currentSpan().context().traceId();
 
-        try {
-            VerifiableCredentialResponseDTO credentialResponseDTO = walletCredentialService.downloadVCAndStoreInDB(
-                    issuerId, credentialConfigurationId, tokenResponse, locale, walletId, base64EncodedWalletKey);
-            return ResponseEntity.status(HttpStatus.OK).body(credentialResponseDTO);
-        } catch (ExternalServiceUnavailableException e) {
-            return Utilities.getErrorResponseEntityWithoutWrapper(
-                    e, e.getErrorCode(), HttpStatus.SERVICE_UNAVAILABLE, MediaType.APPLICATION_JSON);
-        } catch (CredentialProcessingException e) {
-            log.error("Error processing credential download for walletId: {}", walletId, e);
-            return Utilities.getErrorResponseEntityWithoutWrapper(
-                    e, e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR, MediaType.APPLICATION_JSON);
-        }
+
+        log.info("Initiating token call for issuer: {}", issuerId);
+        log.info("tracId : {}", traceId);
+        IssuerMetadata issuerMetadata = new IssuerMetadata(
+                "https://injicertify-mock.released.mosip.net/v1/certify/issuance/credential",
+                "https://injicertify-mock.released.mosip.net/v1/certify/issuance/credential",
+                List.of("VerifiableCredential", "MockVerifiableCredential"),
+                List.of("https://www.w3.org/2018/credentials/v1", "https://api.released.mosip.net/.well-known/mosip-ida-context.json"),
+                CredentialFormat.LDP_VC,
+                null,
+                null,
+                List.of("https://esignet-mock.released.mosip.net"),
+                "https://api.qa-inji1.mosip.net/v1/mimoto/get-token/Mock",
+                "mock_identity_vc_ldp"
+        );
+
+        ClientMetadata clientMetadata = new ClientMetadata("mpartner-default-mimoto-mock-oidc", "io.mosip.residentapp.inji://oauthredirect");
+        VCIClientBridge.Companion.CredentialProofJwtFunction getProofJwt = (accessToken, cNonce, issuerMetadata1, credentialConfigurationId1) -> {
+            try {
+                return walletCredentialService.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        kotlin.jvm.functions.Function1<String, String> getAuthCode = (authorizationEndpoint) -> verifiableCredentialRequest.getCode();
+
+//        CredentialResponse credentialResponse = VCIClientBridge.Companion.requestCredentialFromTrustedIssuerBridge(traceId, issuerMetadata, clientMetadata, getProofJwt, getAuthCode, 10000);
+        Function4<String, String, Map<String, ?>, String, String> getProofJwtCallback = (accessToken, cNonce, issuerMetadata1, credentialConfigurationId1) -> {
+            try {
+                return walletCredentialService.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
+            } catch (Exception e) {
+                log.error("Error generating proof JWT for issuer: {}, credentialConfigurationId: {}, walletId: {}", issuerId, credentialConfigurationId, walletId, e);
+                throw new RuntimeException(e);
+            }
+        };
+        CredentialResponse credentialResponse = VCIClientBridge.Companion.requestCredentialFromTrustedIssuerBridgeCaller(traceId, issuerMetadata, clientMetadata, getProofJwtCallback, getAuthCode, 10000);
+
+        VerifiableCredentialResponseDTO verifiableCredentialResponseDTO = walletCredentialService.saveCredential(credentialResponse, base64EncodedWalletKey, issuerId, credentialConfigurationId, walletId, locale);
+
+//        TokenResponseDTO tokenResponse;
+//        try {
+//            tokenResponse = idpService.getTokenResponse(verifiableCredentialRequest);
+//        } catch (ApiNotAccessibleException | IOException | AuthorizationServerWellknownResponseException |
+//                 InvalidWellknownResponseException e) {
+//            log.error("Error fetching token response for issuer: {}", issuerId, e);
+//            return Utilities.getErrorResponseEntityFromPlatformErrorMessage(
+//                    CREDENTIAL_DOWNLOAD_EXCEPTION, HttpStatus.SERVICE_UNAVAILABLE, MediaType.APPLICATION_JSON);
+//        }
+//
+//        log.info("Fetching and storing Verifiable Credential for walletId: {}", walletId);
+//
+//        try {
+//            VerifiableCredentialResponseDTO credentialResponseDTO = walletCredentialService.downloadVCAndStoreInDB(
+//                    issuerId, credentialConfigurationId, tokenResponse, locale, walletId, base64EncodedWalletKey);
+//            return ResponseEntity.status(HttpStatus.OK).body(credentialResponseDTO);
+//        } catch (ExternalServiceUnavailableException e) {
+//            return Utilities.getErrorResponseEntityWithoutWrapper(
+//                    e, e.getErrorCode(), HttpStatus.SERVICE_UNAVAILABLE, MediaType.APPLICATION_JSON);
+//        } catch (CredentialProcessingException e) {
+//            log.error("Error processing credential download for walletId: {}", walletId, e);
+//            return Utilities.getErrorResponseEntityWithoutWrapper(
+//                    e, e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR, MediaType.APPLICATION_JSON);
+//        }
+        return ResponseEntity.status(HttpStatus.OK).body(verifiableCredentialResponseDTO);
     }
 
     /**
@@ -175,6 +231,8 @@ public class WalletCredentialsController {
         String base64EncodedWalletKey = WalletUtil.getSessionWalletKey(httpSession);
 
         log.info("Fetching all credentials for walletId: {}", walletId);
+        String traceId = tracer.currentSpan().context().traceId();
+        log.warn("traceId in the controller : {}", traceId);
 
         List<VerifiableCredentialResponseDTO> credentials = walletCredentialService.fetchAllCredentialsForWallet(
                 walletId, base64EncodedWalletKey, locale);
@@ -261,14 +319,13 @@ public class WalletCredentialsController {
      * @return ResponseEntity with HTTP status 200 if successful, 404 if credential not found, or 500 for other errors
      */
     @Operation(summary = SwaggerLiteralConstants.WALLET_CREDENTIALS_DELETE_SUMMARY, description = SwaggerLiteralConstants.WALLET_CREDENTIALS_DELETE_DESCRIPTION)
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Credential successfully deleted"),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class), examples = {
-                    @ExampleObject(name = "Invalid Wallet Id", value = "{\"errorCode\": \"invalid_request\", \"errorMessage\": \"Invalid Wallet ID. Session and request Wallet ID do not match\"}"),
-                    @ExampleObject(name = "Wallet ID not found in session", value = "{\"errorCode\": \"wallet_locked\", \"errorMessage\": \"Wallet is locked\"}"),
-            })),
-            @ApiResponse(responseCode = "404", description = "Credential not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(mediaType = "application/json")})})
+    @ApiResponse(responseCode = "200", description = "Credential successfully deleted")
+    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class), examples = {
+            @ExampleObject(name = "Invalid Wallet Id", value = "{\"errorCode\": \"invalid_request\", \"errorMessage\": \"Invalid Wallet ID. Session and request Wallet ID do not match\"}"),
+            @ExampleObject(name = "Wallet ID not found in session", value = "{\"errorCode\": \"wallet_locked\", \"errorMessage\": \"Wallet is locked\"}"),
+    }))
+    @ApiResponse(responseCode = "404", description = "Credential not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(mediaType = "application/json")})
     @DeleteMapping("/{credentialId}")
     public ResponseEntity<?> deleteCredential(@PathVariable("walletId") String walletId,
                                               @PathVariable("credentialId") String credentialId,

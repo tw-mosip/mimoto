@@ -39,14 +39,7 @@ public class CredentialRequestServiceImpl implements CredentialRequestService {
                                             String base64EncodedWalletKey,
                                             Boolean isLoginFlow) throws Exception {
 
-        SigningAlgorithm algorithm = resolveAlgorithm(credentialsSupportedResponse);
-
-        String jwt;
-        if (isLoginFlow) {
-            jwt = generateJwtFromDB(walletId, base64EncodedWalletKey, algorithm, wellKnownResponse, issuerDTO, accessToken);
-        } else {
-            jwt = joseUtil.generateJwt(wellKnownResponse.getCredentialIssuer(), issuerDTO.getClient_id(), accessToken);
-        }
+        String jwt = generateProofJWT(issuerDTO, wellKnownResponse, credentialsSupportedResponse, accessToken, walletId, base64EncodedWalletKey, isLoginFlow);
 
         List<String> credentialContext = credentialsSupportedResponse.getCredentialDefinition().getContext();
         if (credentialContext == null || credentialContext.isEmpty()) {
@@ -64,6 +57,19 @@ public class CredentialRequestServiceImpl implements CredentialRequestService {
                         .context(credentialContext)
                         .build())
                 .build();
+    }
+
+    @Override
+    public String generateProofJWT(IssuerDTO issuerDTO, CredentialIssuerWellKnownResponse wellKnownResponse, CredentialsSupportedResponse credentialsSupportedResponse, String accessToken, String walletId, String base64EncodedWalletKey, boolean isLoginFlow) throws Exception {
+        SigningAlgorithm algorithm = resolveAlgorithm(credentialsSupportedResponse);
+
+        String jwt;
+        if (isLoginFlow) {
+            jwt = generateJwtFromDB(walletId, base64EncodedWalletKey, algorithm, wellKnownResponse, issuerDTO, accessToken);
+        } else {
+            jwt = joseUtil.generateJwt(wellKnownResponse.getCredentialIssuer(), issuerDTO.getClient_id(), accessToken);
+        }
+        return jwt;
     }
 
     private SigningAlgorithm resolveAlgorithm(CredentialsSupportedResponse credentialsSupportedResponse) {

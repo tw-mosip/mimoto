@@ -5,7 +5,6 @@ import io.mosip.biometrics.util.CommonUtil;
 import io.mosip.kernel.biometrics.constant.BiometricType;
 import io.mosip.kernel.biometrics.entities.BDBInfo;
 import io.mosip.kernel.biometrics.entities.BIR;
-import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.websub.spi.PublisherClient;
 import io.mosip.mimoto.constant.*;
 import io.mosip.mimoto.dto.CryptoWithPinRequestDto;

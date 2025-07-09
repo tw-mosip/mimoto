@@ -18,6 +18,7 @@ import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.service.WalletCredentialService;
 import io.mosip.mimoto.util.CredentialProcessor;
 import io.mosip.mimoto.util.EncryptionDecryptionUtil;
+import io.mosip.vciclient.credentialResponse.CredentialResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class WalletCredentialServiceImpl implements WalletCredentialService {
                                        IssuersService issuersService,
                                        CredentialProcessor credentialProcessor,
                                        ObjectMapper objectMapper,
-                                       EncryptionDecryptionUtil encryptionDecryptionUtil,CredentialPDFGeneratorService credentialPDFGeneratorService) {
+                                       EncryptionDecryptionUtil encryptionDecryptionUtil, CredentialPDFGeneratorService credentialPDFGeneratorService) {
         this.repository = repository;
         this.issuersService = issuersService;
         this.credentialProcessor = credentialProcessor;
@@ -84,12 +85,19 @@ public class WalletCredentialServiceImpl implements WalletCredentialService {
 
         VerifiableCredentialResponseDTO credential;
 
-            credential = credentialProcessor.downloadCredentialAndStoreInDB(
-                    tokenResponse, credentialConfigurationId, walletId, base64Key, issuerId, locale);
+        credential = credentialProcessor.downloadCredentialAndStoreInDB(
+                tokenResponse, credentialConfigurationId, walletId, base64Key, issuerId, locale);
 
         log.debug("Credential stored successfully: {}", credential.getCredentialId());
         return credential;
+    }
 
+    @Override
+    public String getProofJWT(String issuerId, String credentialConfigurationId,
+                              String accessToken,
+                              String walletId, String base64Key)
+            throws Exception {
+        return credentialProcessor.getProofJwt(accessToken, credentialConfigurationId, walletId, base64Key, issuerId);
     }
 
     @Override
@@ -103,12 +111,18 @@ public class WalletCredentialServiceImpl implements WalletCredentialService {
             IssuerConfig issuerConfig = null;
             try {
                 issuerConfig = issuersService.getIssuerConfig(issuerId, credential.getCredentialMetadata().getCredentialType());
-            } catch (ApiNotAccessibleException  e) {
+            } catch (ApiNotAccessibleException e) {
                 log.error("Failed to fetch issuer details for issuerId: {}", issuerId, e);
             }
             return VerifiableCredentialResponseDTO.fromIssuerConfig(issuerConfig, locale, credential.getId());
         }).toList();
 
+    }
+
+    @Override
+    public VerifiableCredentialResponseDTO saveCredential(CredentialResponse credentialResponse, String base64Key,
+                                                          String issuerId, String credentialConfigurationId, String walletId, String locale) throws Exception {
+        return credentialProcessor.storeCredential(credentialResponse, issuerId, credentialConfigurationId, walletId, locale, base64Key);
     }
 
     @Override

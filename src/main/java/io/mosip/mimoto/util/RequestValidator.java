@@ -5,8 +5,6 @@ import io.mosip.mimoto.dto.mimoto.CredentialDownloadRequestDTO;
 import io.mosip.mimoto.exception.InvalidInputException;
 import io.mosip.mimoto.exception.PlatformErrorMessages;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
