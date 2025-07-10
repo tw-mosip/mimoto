@@ -9,22 +9,6 @@ import kotlinx.coroutines.runBlocking
 class VCIClientBridge {
 
     companion object {
-        fun calculate2Sync(
-            callback: (Int, Int) -> Int,
-            callback2: (Int) -> Int
-        ): Int = runBlocking {
-            VCIClient("kjw").calculate2Fun(
-                { x, y -> callback(x, y) },
-                { z -> callback2(z) }
-            )
-        }
-
-        fun calculateSync(callback: (Int) -> Int): Int {
-            return runBlocking {
-                VCIClient("kjw").calculate { callback(it) }
-            }
-        }
-
         fun requestCredentialFromTrustedIssuerBridgeCaller(
             traceabilityId: String,
             issuerMetadata: IssuerMetadata,

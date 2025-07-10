@@ -122,10 +122,6 @@ public class WalletCredentialsController {
         validateWalletId(httpSession, walletId);
         String base64EncodedWalletKey = WalletUtil.getSessionWalletKey(httpSession);
 
-        int result = VCIClientBridge.Companion.calculateSync(x -> x * 10);
-        System.out.println("Result = " + result); // Result = 20
-        int calculated = VCIClientBridge.Companion.calculate2Sync((x, y) -> x * y, x -> x * 10);
-        log.info("Calculated = " + calculated);
 
         String issuerId = verifiableCredentialRequest.getIssuer();
         String credentialConfigurationId = verifiableCredentialRequest.getCredentialConfigurationId();
@@ -138,7 +134,7 @@ public class WalletCredentialsController {
         log.info("Initiating token call for issuer: {}", issuerId);
         log.info("tracId : {}", traceId);
         IssuerMetadata issuerMetadata = new IssuerMetadata(
-                "https://injicertify-mock.released.mosip.net/v1/certify/issuance/credential",
+                "https://injicertify-mock.released.mosip.net/",
                 "https://injicertify-mock.released.mosip.net/v1/certify/issuance/credential",
                 List.of("VerifiableCredential", "MockVerifiableCredential"),
                 List.of("https://www.w3.org/2018/credentials/v1", "https://api.released.mosip.net/.well-known/mosip-ida-context.json"),
@@ -146,11 +142,11 @@ public class WalletCredentialsController {
                 null,
                 null,
                 List.of("https://esignet-mock.released.mosip.net"),
-                "https://api.qa-inji1.mosip.net/v1/mimoto/get-token/Mock",
+                "http://localhost:8099/v1/mimoto/get-token/Mock",
                 "mock_identity_vc_ldp"
         );
 
-        ClientMetadata clientMetadata = new ClientMetadata("mpartner-default-mimoto-mock-oidc", "io.mosip.residentapp.inji://oauthredirect");
+        ClientMetadata clientMetadata = new ClientMetadata("mpartner-default-mimoto-mock-oidc", "http://localhost:3004/redirect");
         VCIClientBridge.Companion.CredentialProofJwtFunction getProofJwt = (accessToken, cNonce, issuerMetadata1, credentialConfigurationId1) -> {
             try {
                 return walletCredentialService.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
@@ -158,12 +154,24 @@ public class WalletCredentialsController {
                 throw new RuntimeException(e);
             }
         };
-        kotlin.jvm.functions.Function1<String, String> getAuthCode = (authorizationEndpoint) -> verifiableCredentialRequest.getCode();
+        kotlin.jvm.functions.Function1<String, String> getAuthCode = (authorizationEndpoint) -> {
+            log.info("Authorization Endpoint: {}", authorizationEndpoint);
+            log.info("Auth Code: {}", verifiableCredentialRequest.getCode());
+            //TODO: Make the authorization request to the authorization endpoint here
+            /**
+             * Notes:
+             * 1. As of now, authorization is initiated by the frontend but this needs to be done by the backend.
+             * 2. How to do it as the current api structure is not designed to handle entire download request (authentication + authorization + credential request) in single api?
+             */
+            return verifiableCredentialRequest.getCode();
+        };
 
 //        CredentialResponse credentialResponse = VCIClientBridge.Companion.requestCredentialFromTrustedIssuerBridge(traceId, issuerMetadata, clientMetadata, getProofJwt, getAuthCode, 10000);
         Function4<String, String, Map<String, ?>, String, String> getProofJwtCallback = (accessToken, cNonce, issuerMetadata1, credentialConfigurationId1) -> {
             try {
-                return walletCredentialService.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
+                String proofJWT = walletCredentialService.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
+                log.debug("Generated proof JWT: {}", proofJWT);
+                return proofJWT;
             } catch (Exception e) {
                 log.error("Error generating proof JWT for issuer: {}, credentialConfigurationId: {}, walletId: {}", issuerId, credentialConfigurationId, walletId, e);
                 throw new RuntimeException(e);
