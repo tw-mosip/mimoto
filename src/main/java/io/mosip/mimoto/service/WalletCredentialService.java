@@ -45,6 +45,8 @@ public interface WalletCredentialService {
      */
     List<VerifiableCredentialResponseDTO> fetchAllCredentialsForWallet(String walletId, String base64Key, String locale);
 
+    VerifiableCredentialResponseDTO downloadCredentialData(String locale, String walletId, String issuerId, String credentialConfigurationId, String base64EncodedWalletKey, String traceId) throws Exception;
+
     VerifiableCredentialResponseDTO saveCredential(CredentialResponse credentialResponse, String base64Key,
                                                    String issuerId, String credentialConfigurationId, String walletId, String locale) throws Exception;
 

@@ -6,11 +6,16 @@ import io.mosip.mimoto.constant.SwaggerExampleConstants;
 import io.mosip.mimoto.constant.SwaggerLiteralConstants;
 import io.mosip.mimoto.dto.ErrorDTO;
 import io.mosip.mimoto.dto.VerifiableCredentialRequestDTO;
+import io.mosip.mimoto.dto.VerifiableCredentialRequestDTOV2;
 import io.mosip.mimoto.dto.mimoto.VerifiableCredentialResponseDTO;
 import io.mosip.mimoto.dto.resident.WalletCredentialResponseDTO;
-import io.mosip.mimoto.exception.*;
-import io.mosip.mimoto.service.WalletCredentialService;
+import io.mosip.mimoto.exception.CredentialNotFoundException;
+import io.mosip.mimoto.exception.CredentialProcessingException;
+import io.mosip.mimoto.exception.ErrorConstants;
+import io.mosip.mimoto.exception.InvalidRequestException;
 import io.mosip.mimoto.service.IdpService;
+import io.mosip.mimoto.service.WalletCredentialService;
+import io.mosip.mimoto.util.RestApiClient;
 import io.mosip.mimoto.util.Utilities;
 import io.mosip.mimoto.util.WalletUtil;
 import io.mosip.vciclient.clientMetadata.ClientMetadata;
@@ -32,12 +37,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import kotlin.ParameterName;
 import kotlin.jvm.functions.Function4;
-import kotlinx.coroutines.BuildersKt;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -46,7 +47,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static io.mosip.mimoto.util.WalletUtil.validateWalletId;
 
@@ -62,14 +65,34 @@ public class WalletCredentialsController {
     private final WalletCredentialService walletCredentialService;
     private final IdpService idpService;
     private final Tracer tracer;
+    private final RestApiClient restApiClient;
 
     @Autowired
     public WalletCredentialsController(WalletCredentialService walletCredentialService,
-                                       IdpService idpService, Tracer tracer) {
+                                       IdpService idpService, Tracer tracer, RestApiClient restApiClient) {
         this.walletCredentialService = walletCredentialService;
         this.idpService = idpService;
         this.tracer = tracer;
+        this.restApiClient = restApiClient;
     }
+
+    @PostMapping("/downloadCard")
+    public ResponseEntity<VerifiableCredentialResponseDTO> downloadCard(@RequestHeader(value = "Accept-Language", required = false, defaultValue = "en") @Pattern(regexp = "^[a-z]{2}$", message = "Locale must be a 2-letter code") String locale,
+                                                                        @PathVariable("walletId") @NotBlank(message = "Wallet ID cannot be blank") String walletId,
+                                                                        @RequestBody VerifiableCredentialRequestDTOV2 verifiableCredentialRequest,
+                                                                        HttpSession httpSession) throws Exception {
+        String base64EncodedWalletKey = WalletUtil.getSessionWalletKey(httpSession);
+
+        String issuerId = verifiableCredentialRequest.getIssuer();
+        String credentialConfigurationId = verifiableCredentialRequest.getCredentialConfigurationId();
+
+        String traceId = tracer.currentSpan().context().traceId();
+
+        VerifiableCredentialResponseDTO verifiableCredentialResponseDTO = walletCredentialService.downloadCredentialData(locale, walletId, issuerId, credentialConfigurationId, base64EncodedWalletKey, traceId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(verifiableCredentialResponseDTO);
+    }
+
 
     /**
      * Downloads and stores a Verifiable Credential in the specified wallet.

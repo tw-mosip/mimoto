@@ -2,6 +2,7 @@ package io.mosip.mimoto.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.mimoto.bridge.VCIClientBridge;
 import io.mosip.mimoto.model.CredentialMetadata;
 import io.mosip.mimoto.model.VerifiableCredential;
 import io.mosip.mimoto.dto.IssuerDTO;
@@ -18,7 +19,12 @@ import io.mosip.mimoto.service.IssuersService;
 import io.mosip.mimoto.service.WalletCredentialService;
 import io.mosip.mimoto.util.CredentialProcessor;
 import io.mosip.mimoto.util.EncryptionDecryptionUtil;
+import io.mosip.mimoto.util.RestApiClient;
+import io.mosip.vciclient.clientMetadata.ClientMetadata;
+import io.mosip.vciclient.constants.CredentialFormat;
 import io.mosip.vciclient.credentialResponse.CredentialResponse;
+import io.mosip.vciclient.issuerMetadata.IssuerMetadata;
+import kotlin.jvm.functions.Function4;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -52,19 +59,21 @@ public class WalletCredentialServiceImpl implements WalletCredentialService {
     private final ObjectMapper objectMapper;
     private final EncryptionDecryptionUtil encryptionDecryptionUtil;
     private final CredentialPDFGeneratorService credentialPDFGeneratorService;
+    private final RestApiClient restApiClient;
 
     @Autowired
     public WalletCredentialServiceImpl(WalletCredentialsRepository repository,
                                        IssuersService issuersService,
                                        CredentialProcessor credentialProcessor,
                                        ObjectMapper objectMapper,
-                                       EncryptionDecryptionUtil encryptionDecryptionUtil, CredentialPDFGeneratorService credentialPDFGeneratorService) {
+                                       EncryptionDecryptionUtil encryptionDecryptionUtil, CredentialPDFGeneratorService credentialPDFGeneratorService, RestApiClient restApiClient) {
         this.repository = repository;
         this.issuersService = issuersService;
         this.credentialProcessor = credentialProcessor;
         this.objectMapper = objectMapper;
         this.encryptionDecryptionUtil = encryptionDecryptionUtil;
         this.credentialPDFGeneratorService = credentialPDFGeneratorService;
+        this.restApiClient = restApiClient;
     }
 
     @Override
@@ -117,6 +126,52 @@ public class WalletCredentialServiceImpl implements WalletCredentialService {
             return VerifiableCredentialResponseDTO.fromIssuerConfig(issuerConfig, locale, credential.getId());
         }).toList();
 
+    }
+
+    @Override
+    public VerifiableCredentialResponseDTO downloadCredentialData(String locale, String walletId, String issuerId, String credentialConfigurationId, String base64EncodedWalletKey, String traceId) throws Exception {
+        IssuerMetadata issuerMetadata = new IssuerMetadata(
+                "https://injicertify-mock.released.mosip.net/",
+                "https://injicertify-mock.released.mosip.net/v1/certify/issuance/credential",
+                List.of("VerifiableCredential", "MockVerifiableCredential"),
+                List.of("https://www.w3.org/2018/credentials/v1", "https://api.released.mosip.net/.well-known/mosip-ida-context.json"),
+                CredentialFormat.LDP_VC,
+                null,
+                null,
+                List.of("https://esignet-mock.released.mosip.net"),
+                "http://localhost:8099/v1/mimoto/get-token/Mock",
+                "mock_identity_vc_ldp"
+        );
+
+        ClientMetadata clientMetadata = new ClientMetadata("mpartner-default-mimoto-mock-oidc", "http://localhost:3004/redirect");
+
+        kotlin.jvm.functions.Function1<String, String> getAuthCode = (authorizationEndpoint) -> {
+            log.info("Authorization Endpoint received: {}", authorizationEndpoint);
+            // make network call to authorization endpoint to get auth code
+            try {
+                restApiClient.postApi(authorizationEndpoint, null, null, String.class);
+                //After success auth , redirected to redirection page with code in search params
+                // get the info from the url of redirection page
+            } catch (Exception e) {
+                log.error("Failed to fetch credential data for issuerId: {}", issuerId, e);
+                throw new RuntimeException(e);
+            }
+            return "code"; // Replace with actual auth code retrieval logic
+        };
+
+        Function4<String, String, Map<String, ?>, String, String> getProofJwtCallback = (accessToken, cNonce, issuerMetadata1, credentialConfigurationId1) -> {
+            try {
+                String proofJWT = this.getProofJWT(issuerId, credentialConfigurationId, accessToken, walletId, base64EncodedWalletKey);
+                log.debug("Generated proof JWT successfully: {}", proofJWT);
+                return proofJWT;
+            } catch (Exception e) {
+                log.error("Error generating proof JWT for issuer: {}, credentialConfigurationId: {}, walletId: {}", issuerId, credentialConfigurationId, walletId, e);
+                throw new RuntimeException(e);
+            }
+        };
+        CredentialResponse credentialResponse = VCIClientBridge.Companion.requestCredentialFromTrustedIssuerBridgeCaller(traceId, issuerMetadata, clientMetadata, getProofJwtCallback, getAuthCode, 10000);
+
+        return this.saveCredential(credentialResponse, base64EncodedWalletKey, issuerId, credentialConfigurationId, walletId, locale);
     }
 
     @Override
