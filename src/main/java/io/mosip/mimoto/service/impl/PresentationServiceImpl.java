@@ -12,7 +12,13 @@ import io.mosip.mimoto.util.RestApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -66,10 +72,16 @@ public class PresentationServiceImpl implements PresentationService {
                             VerifiablePresentationDTO verifiablePresentationDTO = constructVerifiablePresentationString(vcCredentialResponse.getCredential());
                             String presentationSubmission = constructPresentationSubmission(verifiablePresentationDTO, presentationDefinitionDTO, inputDescriptorDTO);
                             String vpToken = objectMapper.writeValueAsString(verifiablePresentationDTO);
-                            return String.format(injiOvpRedirectURLPattern,
-                                    presentationRequestDTO.getRedirectUri(),
-                                    Base64.getUrlEncoder().encodeToString(vpToken.getBytes(StandardCharsets.UTF_8)),
-                                    URLEncoder.encode(presentationSubmission, StandardCharsets.UTF_8));
+                            if (StringUtils.hasText(presentationRequestDTO.getResponseBackUrl())) {
+                                log.info("Response back URL provided, posting VP token to verifier");
+                                postVPTokenToVerifier(presentationRequestDTO.getResponseBackUrl(), vpToken, presentationSubmission, presentationRequestDTO.getState());
+                                return presentationRequestDTO.getRedirectUri();
+                            } else {
+                                return String.format(injiOvpRedirectURLPattern,
+                                        presentationRequestDTO.getRedirectUri(),
+                                        Base64.getUrlEncoder().encodeToString(vpToken.getBytes(StandardCharsets.UTF_8)),
+                                        URLEncoder.encode(presentationSubmission, StandardCharsets.UTF_8));
+                            }
                         } catch (JsonProcessingException e) {
                             throw new VPNotCreatedException(ErrorConstants.INVALID_REQUEST.getErrorMessage());
                         }
@@ -122,6 +134,31 @@ public class PresentationServiceImpl implements PresentationService {
         return PresentationDefinitionDTO.builder()
                 .inputDescriptors(Collections.singletonList(inputDescriptorDTO))
                 .id(UUID.randomUUID().toString()).build();
+    }
+
+    private void postVPTokenToVerifier(String responseBackUrl, String vpToken, String presentationSubmission, String state) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("vp_token", vpToken);
+            params.add("presentation_submission", presentationSubmission);
+
+            if (StringUtils.hasText(state)) {
+                params.add("state", state);
+            }
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+            log.info("Posting VP token to verifier at: {}", responseBackUrl);
+            restApiClient.postApi(responseBackUrl, MediaType.APPLICATION_FORM_URLENCODED, request, String.class);
+            log.info("Successfully posted VP token to verifier");
+
+        } catch (Exception e) {
+            log.error("Failed to post VP token to verifier: {}", e.getMessage(), e);
+            throw new VPNotCreatedException(ErrorConstants.INTERNAL_SERVER_ERROR.getErrorMessage());
+        }
     }
 
 }

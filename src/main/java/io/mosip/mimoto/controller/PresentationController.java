@@ -59,7 +59,9 @@ public class PresentationController {
                                      @RequestParam("resource") @Schema(description = "URL Encoded Resource url of the Credential ")  String resource,
                                      @RequestParam("presentation_definition")  @Schema(description = "URL Encoded presentation definition") String presentationDefinition,
                                      @RequestParam("client_id") @Schema(description = "URL Encoded Client Id") String clientId,
-                                     @RequestParam("redirect_uri") @Schema(description = "URL Encoded Redirect URI") String redirectUri ) throws IOException {
+                                     @RequestParam("redirect_uri") @Schema(description = "URL Encoded Redirect URI") String redirectUri,
+                                     @RequestParam(value = "state", required = false) @Schema(description = "Optional state parameter") String state,
+                                     @RequestParam(value = "response_back_url", required = false) @Schema(description = "Optional verifier's callback URL") String responseBackUrl) throws IOException {
         try {
             log.info("Started Presentation Authorization in the controller.");
             verifierService.validateVerifier(clientId, redirectUri);
@@ -69,7 +71,9 @@ public class PresentationController {
                     .resource(resource)
                     .presentationDefinition(presentationDefinitionDTO)
                     .clientId(clientId)
-                    .redirectUri(redirectUri).build();
+                    .redirectUri(redirectUri)
+                    .state(state)
+                    .responseBackUrl(responseBackUrl).build();
             String redirectString = presentationService.authorizePresentation(presentationRequestDTO);
             log.info("Completed Presentation Authorization in the controller.");
             response.sendRedirect(redirectString);

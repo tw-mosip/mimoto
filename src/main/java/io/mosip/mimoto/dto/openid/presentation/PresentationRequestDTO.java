@@ -21,5 +21,8 @@ public class PresentationRequestDTO {
     String clientId;
     @JsonProperty("redirect_uri")
     String redirectUri;
+    private String state;
+    @JsonProperty("response_back_url")
+    private String responseBackUrl;
 
 }
