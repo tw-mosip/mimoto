@@ -465,7 +465,6 @@ public class TestUtilities {
         walletMetadata.setEncryptionType("symmetric");
         walletMetadata.setPasscodeControl(passcodeControl);
         walletMetadata.setLockStatus(walletStatus);
-        walletMetadata.setLockStatus(walletStatus);
         return walletMetadata;
     }
 
