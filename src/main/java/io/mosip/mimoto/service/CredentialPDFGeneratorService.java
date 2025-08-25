@@ -191,25 +191,143 @@ public class CredentialPDFGeneratorService {
         return new SelectedFace(null, null);
     }
 
+    /**
+     * Comprehensive formatValue method that handles all possible value structures
+     * for both SD-JWT and LDP-VC credential formats for PDF display
+     */
     private String formatValue(Object val, String locale) {
+        if (val == null) {
+            return "";
+        }
+
         if (val instanceof Map) {
-            return Optional.ofNullable(((Map<?, ?>) val).get("value")).map(Object::toString).orElse("");
+            return formatMapValue((Map<?, ?>) val, locale);
         } else if (val instanceof List) {
-            List<?> list = (List<?>) val;
-            if (list.isEmpty()) return "";
-            if (list.getFirst() instanceof String) {
-                return String.join(", ", (List<String>) list);
-            } else if (list.getFirst() instanceof Map<?, ?>) {
+            return formatListValue((List<?>) val, locale);
+        } else {
+            return formatPrimitiveValue(val);
+        }
+    }
+
+    /**
+     * Handle Map values - covers various structures used in credentials
+     */
+    @SuppressWarnings("unchecked")
+    private String formatMapValue(Map<?, ?> map, String locale) {
+        if (map.isEmpty()) {
+            return "";
+        }
+
+        // Case 1: Localized value structure with "value" key
+        // Common in LDP-VC: {"value": "John Doe", "language": "en"}
+        if (map.containsKey("value")) {
+            Object value = map.get("value");
+            if (value != null) {
+                return formatNestedValue(value, locale);
+            }
+            return "";
+        }
+        // Any other Map structure
+        return formatGenericMap(map, locale);
+    }
+
+    /**
+     * Get first non-empty value from a list (fallback for localized content)
+     */
+    private String getFirstNonEmptyValue(List<?> list, String locale) {
+        return list.stream()
+                .map(item -> formatNestedValue(item, locale))
+                .filter(str -> !str.trim().isEmpty())
+                .findFirst()
+                .orElse("");
+    }
+
+    /**
+     * Format generic map as key-value pairs
+     */
+    private String formatGenericMap(Map<?, ?> map, String locale) {
+        return map.entrySet().stream()
+                .map(entry -> {
+                    String key = entry.getKey().toString();
+                    String value = formatNestedValue(entry.getValue(), locale);
+                    return value.isEmpty() ? null : key + ": " + value;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Handle List values - covers arrays in both credential formats
+     */
+    @SuppressWarnings("unchecked")
+    private String formatListValue(List<?> list, String locale) {
+        if (list.isEmpty()) {
+            return "";
+        }
+
+        Object firstElement = list.get(0);
+
+        // Case 1: Simple string array
+        // ["skill1", "skill2", "skill3"]
+        if (firstElement instanceof String) {
+            return String.join(", ", (List<String>) list);
+        }
+
+        // Case 2: Localized array elements
+        // [{"value": "English", "language": "en"}, {"value": "Français", "language": "fr"}]
+        if (firstElement instanceof Map) {
+            Map<?, ?> firstMap = (Map<?, ?>) firstElement;
+
+            // Check if it's localized content
+            if (firstMap.containsKey("language") && firstMap.containsKey("value")) {
                 return list.stream()
                         .map(item -> (Map<?, ?>) item)
-                        .filter(m -> LocaleUtils.matchesLocale(m.get("language").toString(), locale))
-                        .map(m -> m.get("value").toString())
+                        .filter(m -> m.get("language") != null &&
+                                LocaleUtils.matchesLocale(m.get("language").toString(), locale))
+                        .map(m -> Optional.ofNullable(m.get("value"))
+                                .map(v -> formatNestedValue(v, locale))
+                                .orElse(""))
                         .findFirst()
-                        .orElse("");
+                        .orElse(getFirstNonEmptyValue(list, locale));
             }
+
+            // Handle array of structured objects
+            // [{"type": "email", "value": "john@example.com"}, {"type": "phone", "value": "123-456-7890"}]
+            return list.stream()
+                    .map(item -> formatMapValue((Map<?, ?>) item, locale))
+                    .filter(str -> !str.trim().isEmpty())
+                    .collect(Collectors.joining(", "));
         }
-        return val.toString();
+
+        // Case 3: Mixed array or other object types
+        return list.stream()
+                .map(item -> formatNestedValue(item, locale))
+                .filter(str -> !str.trim().isEmpty())
+                .collect(Collectors.joining(", "));
     }
+
+    /**
+     * Handle primitive values (strings, numbers, booleans)
+     */
+    private String formatPrimitiveValue(Object val) {
+        return val.toString().trim();
+    }
+
+    /**
+     * Recursively format nested values
+     */
+    private String formatNestedValue(Object value, String locale) {
+        if (value == null) {
+            return "";
+        } else if (value instanceof Map) {
+            return formatMapValue((Map<?, ?>) value, locale);
+        } else if (value instanceof List) {
+            return formatListValue((List<?>) value, locale);
+        } else {
+            return formatPrimitiveValue(value);
+        }
+    }
+
 
     private ByteArrayInputStream renderVCInCredentialTemplate(Map<String, Object> data, String issuerId, String credentialConfigurationId) {
         String credentialTemplate = utilities.getCredentialSupportedTemplateString(issuerId, credentialConfigurationId);
