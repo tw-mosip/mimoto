@@ -426,49 +426,11 @@
 						"url": "{{HOST}}/wallets/<walletId>"
 					},
 					"response": []
-				},
-				{
-					"name": "Add Trusted Verifier",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Cookie",
-								"value": "SESSION={{SESSION_TOKEN}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"verifierId\": \"mock-client\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{HOST}}/wallets/{{walletId}}/trusted-verifiers",
-							"host": [
-								"{{HOST}}"
-							],
-							"path": [
-								"wallets",
-								"{{walletId}}",
-								"trusted-verifiers"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
 		{
-			"name": "Wallet Presentations",
+			"name": "Wallet OpenID4VP",
 			"item": [
 				{
 					"name": "Create Presentation",
@@ -526,6 +488,13 @@
 					"name": "Get Matching Credentials",
 					"request": {
 						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "SESSION={{SESSION_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{HOST}}/wallets/{{walletId}}/presentations/{{presentationId}}/credentials",
 							"host": [
@@ -541,82 +510,9 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Submit Presentation",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"selectedCredentials\": [\"{{credentialId1}}\", \"{{credentialId2}}\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{HOST}}/wallets/{{walletId}}/presentations/{{presentationId}}",
-							"host": [
-								"{{HOST}}"
-							],
-							"path": [
-								"wallets",
-								"{{walletId}}",
-								"presentations",
-								"{{presentationId}}"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
-			{
-				"name": "User Reject Verifier",
-				"request": {
-					"method": "PATCH",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Cookie",
-							"value": "SESSION={{SESSION_TOKEN}}",
-							"type": "text"
-						}
-					],
-					"body": {
-						"mode": "raw",
-						"raw": "{\n  \"errorCode\": \"access_denied\",\n  \"errorMessage\": \"User denied authorization to share credentials\"\n}",
-						"options": {
-							"raw": {
-								"language": "json"
-							}
-						}
-					},
-					"url": {
-						"raw": "{{HOST}}/wallets/{{walletId}}/presentations/{{presentationId}}",
-						"host": [
-							"{{HOST}}"
-						],
-						"path": [
-							"wallets",
-							"{{walletId}}",
-							"presentations",
-							"{{presentationId}}"
-						]
-					}
-				},
-				"response": []
-			},
 		{
 			"name": "Users",
 			"item": [
