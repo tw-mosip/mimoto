@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,10 +34,20 @@ public class IssuersServiceImpl implements IssuersService {
 
     private final IssuerConfigUtil issuersConfigUtil;
 
-    public IssuersServiceImpl(Utilities utilities, ObjectMapper objectMapper, IssuerConfigUtil issuersConfigUtil) {
+    private final String mosipApiPublicUrl;
+
+    private final String contextPath;
+
+    private static final String GET_TOKEN_PATH = "/get-token/";
+
+    public IssuersServiceImpl(Utilities utilities, ObjectMapper objectMapper, IssuerConfigUtil issuersConfigUtil,
+                              @Value("${mosip.api.public.url}") String mosipApiPublicUrl,
+                              @Value("${server.servlet.context-path}") String contextPath) {
         this.utilities = utilities;
         this.objectMapper = objectMapper;
         this.issuersConfigUtil = issuersConfigUtil;
+        this.mosipApiPublicUrl = mosipApiPublicUrl;
+        this.contextPath = contextPath;
     }
 
     @Override
@@ -86,6 +97,16 @@ public class IssuersServiceImpl implements IssuersService {
         }
 
         issuersDTO = objectMapper.readValue(issuersConfigJsonValue, IssuersDTO.class);
+
+        if (issuersDTO != null && issuersDTO.getIssuers() != null) {
+            String baseTokenEndpoint = new StringBuilder()
+                    .append(mosipApiPublicUrl).append(contextPath).append(GET_TOKEN_PATH)
+                    .toString();
+
+            issuersDTO.getIssuers().stream()
+                    .filter(java.util.Objects::nonNull)
+                    .forEach(issuer -> issuer.setToken_endpoint(baseTokenEndpoint + issuer.getIssuer_id()));
+        }
 
         return issuersDTO;
     }
