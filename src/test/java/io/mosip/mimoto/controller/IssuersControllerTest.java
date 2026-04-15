@@ -207,16 +207,6 @@ public class IssuersControllerTest {
     }
 
     @Test
-    public void getIssuerDetailsTestForInvalidIssuerId() throws Exception {
-        Mockito.when(issuersService.getIssuerDetails("invalidId")).thenThrow(InvalidIssuerIdException.class);
-
-        mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getCode())))
-                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getMessage())));
-    }
-
-    @Test
     public void getIssuerWellknownTest() throws Exception {
         String issuerId = "issuer1";
         String expectedCredentialIssuerWellknownResponse = getExpectedWellKnownJson();
@@ -231,6 +221,17 @@ public class IssuersControllerTest {
 
         JSONAssert.assertEquals(new JSONObject(expectedCredentialIssuerWellknownResponse), new JSONObject(actualResponse), JSONCompareMode.LENIENT);
     }
+
+    @Test
+    public void getIssuerDetailsTestForInvalidIssuerId() throws Exception {
+        Mockito.when(issuersService.getIssuerDetails("invalidId")).thenThrow(InvalidIssuerIdException.class);
+
+        mockMvc.perform(get("/issuers/invalidId").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].errorCode", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getCode())))
+                .andExpect(jsonPath("$.errors[0].errorMessage", Matchers.is(INVALID_ISSUER_ID_EXCEPTION.getMessage())));
+    }
+
 
     @Test
     public void getIssuerWellknownWhenServiceThrowsReturnsNotFound() throws Exception {

@@ -1,16 +1,19 @@
 package io.mosip.mimoto.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.mimoto.constant.VCSpecificationVersion;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.exception.ApiNotAccessibleException;
 import io.mosip.mimoto.exception.AuthorizationServerWellknownResponseException;
 import io.mosip.mimoto.exception.InvalidWellknownResponseException;
+import io.mosip.mimoto.util.parser.WellknownParserFactory;
+import io.mosip.mimoto.util.parser.WellknownResponseParser;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -21,17 +24,19 @@ import java.util.Set;
 @Slf4j
 public class IssuerConfigUtil {
 
-    @Autowired
-    private RestApiClient restApiClient;
+    private final RestApiClient restApiClient;
+    private final VCSpecVersionDetector versionDetector;
+    private final WellknownParserFactory parserFactory;
+    private final ObjectMapper objectMapper;
+    private final Validator validator;
 
-    @Autowired
-    private CredentialIssuerWellknownResponseValidator credentialIssuerWellknownResponseValidator;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
-    private Validator validator;
+    public IssuerConfigUtil(RestApiClient restApiClient, VCSpecVersionDetector versionDetector, WellknownParserFactory parserFactory, ObjectMapper objectMapper, Validator validator) {
+        this.restApiClient = restApiClient;
+        this.versionDetector = versionDetector;
+        this.parserFactory = parserFactory;
+        this.objectMapper = objectMapper;
+        this.validator = validator;
+    }
 
     public static String camelToTitleCase(String input) {
         if (input == null || input.isEmpty()) return input;
@@ -67,9 +72,15 @@ public class IssuerConfigUtil {
         if (wellknownResponse == null) {
             throw new ApiNotAccessibleException();
         }
-        CredentialIssuerWellKnownResponse credentialIssuerWellKnownResponse = objectMapper.readValue(wellknownResponse, CredentialIssuerWellKnownResponse.class);
-        credentialIssuerWellknownResponseValidator.validate(credentialIssuerWellKnownResponse, validator);
-        return credentialIssuerWellKnownResponse;
+
+        JsonNode jsonNode = objectMapper.readTree(wellknownResponse);
+        VCSpecificationVersion version = versionDetector.detectVersion(jsonNode);
+
+        WellknownResponseParser parser = parserFactory.getParser(version);
+        CredentialIssuerWellKnownResponse parsedResponse = parser.parse(wellknownResponse);
+        parser.validate(parsedResponse, validator);
+
+        return parsedResponse;
     }
 
     @Cacheable(value = "authServerWellknown", key = "#p0")
