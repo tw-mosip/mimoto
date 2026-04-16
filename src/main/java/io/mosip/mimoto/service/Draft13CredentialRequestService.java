@@ -1,12 +1,9 @@
-package io.mosip.mimoto.service.impl;
+package io.mosip.mimoto.service;
 
 import io.mosip.mimoto.constant.SigningAlgorithm;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.mimoto.*;
-import io.mosip.mimoto.service.CredentialFormatHandler;
-import io.mosip.mimoto.service.CredentialFormatHandlerFactory;
-import io.mosip.mimoto.service.CredentialRequestService;
-import io.mosip.mimoto.service.KeyPairRetrievalService;
+import io.mosip.mimoto.util.Draft13CredentialRequestBuilder;
 import io.mosip.mimoto.util.SigningKeyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,19 +15,19 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CredentialRequestServiceImpl implements CredentialRequestService {
+public class Draft13CredentialRequestService {
 
     @Value("${signing.algorithms.priority.order:ED25519,ES256K,ES256,RS256}")
     private String signingAlgorithmsPriorityOrder;
 
     private static final SigningAlgorithm FALLBACK_SIGNING_ALG = SigningAlgorithm.ED25519;
 
-    private final CredentialFormatHandlerFactory credentialFormatHandlerFactory;
+    private final Draft13CredentialRequestBuilder draft13CredentialRequestBuilder;
 
     private final KeyPairRetrievalService keyPairService;
 
-    public CredentialRequestServiceImpl(CredentialFormatHandlerFactory credentialFormatHandlerFactory, KeyPairRetrievalService keyPairService) {
-        this.credentialFormatHandlerFactory = credentialFormatHandlerFactory;
+    public Draft13CredentialRequestService(Draft13CredentialRequestBuilder draft13CredentialRequestBuilder, KeyPairRetrievalService keyPairService) {
+        this.draft13CredentialRequestBuilder = draft13CredentialRequestBuilder;
         this.keyPairService = keyPairService;
     }
 
@@ -39,8 +36,7 @@ public class CredentialRequestServiceImpl implements CredentialRequestService {
                 .map(String::trim).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    @Override
-    public VCCredentialRequest buildRequest(IssuerDTO issuerDTO,
+    public Draft13VCCredentialRequest buildRequest(IssuerDTO issuerDTO,
                                             String credentialConfigurationId,
                                             CredentialIssuerWellKnownResponse wellKnownResponse,
                                             String cNonce,
@@ -70,8 +66,7 @@ public class CredentialRequestServiceImpl implements CredentialRequestService {
                             .proofType(proofType)
                             .jwt(jwt)
                             .build();
-                    CredentialFormatHandler handler = credentialFormatHandlerFactory.getHandler(format);
-                    return handler.buildCredentialRequest(proof, credentialsSupportedResponse);
+                    return draft13CredentialRequestBuilder.buildCredentialRequest(format, proof, credentialsSupportedResponse);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("No proof type available"));
     }

@@ -5,7 +5,6 @@ import io.mosip.mimoto.constant.SigningAlgorithm;
 import io.mosip.mimoto.dto.IssuerDTO;
 import io.mosip.mimoto.dto.mimoto.*;
 import io.mosip.mimoto.repository.ProofSigningKeyRepository;
-import io.mosip.mimoto.service.impl.CredentialRequestServiceImpl;
 import io.mosip.mimoto.service.impl.LdpVcCredentialFormatHandler;
 import io.mosip.mimoto.util.*;
 import org.junit.After;
@@ -30,14 +29,14 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {CredentialRequestServiceImpl.class})
+@SpringBootTest(classes = {Draft13CredentialRequestService.class, Draft13CredentialRequestBuilder.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class CredentialRequestServiceTest {
     @MockBean
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CredentialRequestServiceImpl credentialRequestServiceImpl;
+    private Draft13CredentialRequestService credentialRequestServiceImpl;
 
     @MockBean
     private ProofSigningKeyRepository proofSigningKeyRepository;
@@ -47,6 +46,9 @@ public class CredentialRequestServiceTest {
 
     @MockBean
     private KeyPairRetrievalService keyPairService;
+
+    @Autowired
+    private Draft13CredentialRequestBuilder draft13CredentialRequestBuilder;
 
     private final MockedStatic<SigningKeyUtil> keyGenerationUtilMockedStatic = Mockito.mockStatic(SigningKeyUtil.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
@@ -78,7 +80,7 @@ public class CredentialRequestServiceTest {
                 Map.of("CredentialType1", credentialsSupportedResponse)
         );
 
-        VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
+        Draft13VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
                 issuerDTO,
                 "CredentialType1",
                 issuerWellKnownResponse,
@@ -104,7 +106,7 @@ public class CredentialRequestServiceTest {
         issuerWellKnownResponse.setCredentialConfigurationsSupported(
                 Map.of("CredentialType1", credentialsSupportedResponse)
         );
-        VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
+        Draft13VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
                 issuerDTO,
                 "CredentialType1",
                 issuerWellKnownResponse,
@@ -132,7 +134,7 @@ public class CredentialRequestServiceTest {
                 Map.of("CredentialType1", credentialsSupportedResponse)
         );
 
-        VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
+        Draft13VCCredentialRequest result = credentialRequestServiceImpl.buildRequest(
                 issuerDTO,
                 "CredentialType1",
                 issuerWellKnownResponse,
