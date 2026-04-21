@@ -1,7 +1,6 @@
 package io.mosip.mimoto.util;
 
 import com.google.gson.Gson;
-import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.mimoto.core.http.RequestWrapper;
 import io.mosip.mimoto.dto.SecretKeyRequest;
 import io.mosip.mimoto.exception.TokenGenerationFailedException;
@@ -79,7 +78,6 @@ public class RestApiClient {
 
     @Autowired
     Environment environment;
-
     /**
      * HTTP GET API
      *
@@ -187,6 +185,25 @@ public class RestApiClient {
             log.error("RestApiClient::postApi()::error uri: {} {} {}", uri, e.getMessage(), e);
         }
         return result;
+    }
+
+    public <T> T postApiWithErrorResponse(String uri, MediaType mediaType, Object requestType, Class<T> responseClass, String bearerToken) {
+        try {
+            log.info("RestApiClient::postApiWithErrorResponse()::entry uri: {}", uri);
+            return plainRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, bearerToken), responseClass);
+        } catch (HttpClientErrorException e) {
+            log.error("RestApiClient::postApiWithErrorResponse()::client error uri: {} status: {}", uri, e.getStatusCode());
+log.debug("RestApiClient::postApiWithErrorResponse()::client error response body: {}", e.getResponseBodyAsString());
+            try {
+                return new com.fasterxml.jackson.databind.ObjectMapper().readValue(e.getResponseBodyAsString(), responseClass);
+            } catch (Exception ex) {
+                log.error("RestApiClient::postApiWithErrorResponse()::failed to parse error body as {}: {}", responseClass.getSimpleName(), ex.getMessage());
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("RestApiClient::postApiWithErrorResponse()::error uri: {} {}", uri, e.getMessage(), e);
+            return null;
+        }
     }
 
     private HttpEntity<Object> setRequestHeader(Object requestType, MediaType mediaType, String bearerToken){
