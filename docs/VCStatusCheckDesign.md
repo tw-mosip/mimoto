@@ -91,7 +91,7 @@ sequenceDiagram
     Mimoto->>Database: fetch credential record using credentialId
     Database-->>Mimoto: credential record
     alt status list check applicable for the credential
-        Mimoto->>VCVerifier: getCredentialStatus
+        Mimoto->>VCVerifier: verifyAndGetCredentialStatus
         VCVerifier->>Issuer: Get the bitstring status list
         Issuer-->>VCVerifier: Return the status list credential
         VCVerifier->>VCVerifier: Extract the status for the credential
@@ -132,7 +132,7 @@ sequenceDiagram
     participant InjiWeb as Inji Web Wallet
     participant Mimoto
     participant VCVerifier as VC Verifier library
-    participant Database as Database(PostgresSQL)
+    participant Database as Database(PostgreSQL)
     participant Issuer
     User->>InjiWeb: Logs in
     InjiWeb->>Mimoto: Authorize user
@@ -147,14 +147,14 @@ sequenceDiagram
             Issuer-->>VCVerifier: status list credential
             VCVerifier->>VCVerifier: process the status list and extract status for the credential
             VCVerifier-->>Mimoto: isValid, status, status list credential, error(if any)
-            Mimoto->>Database: Store credential with status details in verifiable_credential table
+            Mimoto->>Database: Store credential with status details in verifiable_credentials table
             Database-->>Mimoto: Acknowledgement of storage
             Mimoto->>Mimoto: Update status list credential cache with status list credential(s)
             Mimoto-->>InjiWeb: Success
             InjiWeb-->User: Show success message, land the user on stored card page
         else status list check not applicable for the credential
             VCVerifier-->>Mimoto: isValid, error(if any)
-            Mimoto->>Database: Store credential with status in verifiable_credential table
+            Mimoto->>Database: Store credential with status in verifiable_credentials table
             Database-->>Mimoto: Acknowledgement of storage
             Mimoto-->>InjiWeb: Success
             InjiWeb-->User: Show success message, land the user on stored card page
@@ -178,7 +178,7 @@ sequenceDiagram
 
 **Response**:
 
-Three new fields to be added in the response payload:
+Four new fields to be added in the response payload:
 - `isSchemaAndSignatureValid` (boolean): Indicates if the schema and signature validation passed
 - `isExpired` (boolean): Indicates if the credential has expired
 - `statusChecks` (array): Array of status purposes and their validity
@@ -229,7 +229,7 @@ Three new fields to be added in the response payload:
     {"purpose": "revocation", "valid":true },
     {"purpose": "suspension", "valid":true }
   ],  
-  "lastCheckedAt": "2024-12-11T10:30:00Z",
+  "lastCheckedAt": "2025-12-11T10:30:00Z",
   "message": "string (optional)"
 }
 ```
@@ -286,9 +286,9 @@ Three new fields to be added in the response payload:
 
 ### Database Schema
 
-#### verifiable_credential Table
+#### verifiable_credentials Table
 
-This table stores the verifiable credentials along with their status information. Two columns to be introduced for status tracking : 
+This table stores the verifiable credentials along with their status information. Four columns to be introduced for status tracking : 
 
 | Column Name               | Data Type | Nullable? | Description                                                                                                                                                                                                       |
 |---------------------------|-----------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -299,7 +299,7 @@ This table stores the verifiable credentials along with their status information
 
 ### Migration of existing credentials
 
-A one-time migration script will be executed to initialize the `is_schema_signature_valid` and `status_last_checked_at` fields for existing credentials in the `verifiable_credential` table. The script will set the `is_schema_signature_valid` value to true and the `status_last_checked_at` to the current timestamp.
+A one-time migration script will be executed to initialize the `is_schema_signature_valid` and `status_last_checked_at` fields for existing credentials in the `verifiable_credentials` table. The script will set the `is_schema_signature_valid` value to true and the `status_last_checked_at` to the current timestamp.
 
 
 ### Caching Strategy
